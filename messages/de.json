@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "Startseite",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "profile": "Profil",
+    "reservations": "Reservierungen",
+    "search": "Suchen",
+    "language": "Sprache",
+    "establishments": "Unterkünfte",
+    "contact": "Kontakt"
+  },
+  "home": {
+    "title": "Finden Sie Ihre ideale Unterkunft",
+    "subtitle": "Entdecken Sie einzigartige Reiseziele und buchen Sie Ihren Traumaufenthalt",
+    "search_placeholder": "Wohin möchten Sie reisen?",
+    "featured_destinations": "Beliebte Reiseziele",
+    "popular_establishments": "Beliebte Unterkünfte",
+    "discover": "Entdecken",
+    "view_details": "Details anzeigen",
+    "book_now": "Jetzt buchen",
+    "per_night": "pro Nacht"
+  },
+  "establishment": {
+    "rooms": "Zimmer",
+    "services": "Dienstleistungen",
+    "location": "Lage",
+    "reviews": "Bewertungen",
+    "availability": "Verfügbarkeit",
+    "book_room": "Dieses Zimmer buchen"
+  },
+  "reservation": {
+    "my_reservations": "Meine Reservierungen",
+    "no_reservations": "Sie haben noch keine Reservierungen",
+    "check_in": "Anreise",
+    "check_out": "Abreise",
+    "status": "Status",
+    "total_price": "Gesamtpreis",
+    "cancel": "Stornieren",
+    "confirmed": "Bestätigt",
+    "pending": "Ausstehend",
+    "cancelled": "Storniert"
+  }
+}

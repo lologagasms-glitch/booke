@@ -1,0 +1,43 @@
+{
+  "common": {
+    "home": "Inicio",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "profile": "Perfil",
+    "reservations": "Reservas",
+    "search": "Buscar",
+    "language": "Idioma"
+  },
+  "home": {
+    "title": "Encuentra tu alojamiento ideal",
+    "subtitle": "Descubre destinos únicos y reserva tu estancia soñada",
+    "search_placeholder": "¿Dónde quieres ir?",
+    "featured_destinations": "Destinos populares",
+    "popular_establishments": "Establecimientos populares",
+    "discover": "Descubrir",
+    "view_details": "Ver detalles",
+    "book_now": "Reservar ahora",
+    "per_night": "por noche"
+  },
+  "establishment": {
+    "rooms": "Habitaciones",
+    "services": "Servicios",
+    "location": "Ubicación",
+    "reviews": "Opiniones",
+    "availability": "Disponibilidad",
+    "book_room": "Reservar esta habitación"
+  },
+  "reservation": {
+    "my_reservations": "Mis reservas",
+    "no_reservations": "Aún no tienes reservas",
+    "check_in": "Entrada",
+    "check_out": "Salida",
+    "status": "Estado",
+    "total_price": "Precio total",
+    "cancel": "Cancelar",
+    "confirmed": "Confirmada",
+    "pending": "Pendiente",
+    "cancelled": "Cancelada"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "ホーム",
+    "login": "ログイン",
+    "register": "登録",
+    "logout": "ログアウト",
+    "profile": "プロフィール",
+    "reservations": "予約",
+    "search": "検索",
+    "language": "言語",
+    "establishments": "施設",
+    "contact": "お問い合わせ"
+  },
+  "home": {
+    "title": "理想的な宿泊施設を見つける",
+    "subtitle": "ユニークな目的地を発見し、夢の滞在を予約しましょう",
+    "search_placeholder": "どこに行きたいですか？",
+    "featured_destinations": "人気の目的地",
+    "popular_establishments": "人気の施設",
+    "discover": "発見する",
+    "view_details": "詳細を見る",
+    "book_now": "今すぐ予約",
+    "per_night": "一泊あたり"
+  },
+  "establishment": {
+    "rooms": "部屋",
+    "services": "サービス",
+    "location": "場所",
+    "reviews": "レビュー",
+    "availability": "空室状況",
+    "book_room": "この部屋を予約"
+  },
+  "reservation": {
+    "my_reservations": "私の予約",
+    "no_reservations": "まだ予約がありません",
+    "check_in": "チェックイン",
+    "check_out": "チェックアウト",
+    "status": "ステータス",
+    "total_price": "合計金額",
+    "cancel": "キャンセル",
+    "confirmed": "確認済み",
+    "pending": "保留中",
+    "cancelled": "キャンセル済み"
+  }
+}

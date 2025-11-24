@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "Главная",
+    "login": "Вход",
+    "register": "Регистрация",
+    "logout": "Выход",
+    "profile": "Профиль",
+    "reservations": "Бронирования",
+    "search": "Поиск",
+    "language": "Язык",
+    "establishments": "Заведения",
+    "contact": "Контакты"
+  },
+  "home": {
+    "title": "Найдите идеальное жилье",
+    "subtitle": "Откройте для себя уникальные направления и забронируйте жилье своей мечты",
+    "search_placeholder": "Куда вы хотите поехать?",
+    "featured_destinations": "Популярные направления",
+    "popular_establishments": "Популярные заведения",
+    "discover": "Открыть",
+    "view_details": "Посмотреть детали",
+    "book_now": "Забронировать сейчас",
+    "per_night": "за ночь"
+  },
+  "establishment": {
+    "rooms": "Номера",
+    "services": "Услуги",
+    "location": "Расположение",
+    "reviews": "Отзывы",
+    "availability": "Доступность",
+    "book_room": "Забронировать этот номер"
+  },
+  "reservation": {
+    "my_reservations": "Мои бронирования",
+    "no_reservations": "У вас еще нет бронирований",
+    "check_in": "Заезд",
+    "check_out": "Выезд",
+    "status": "Статус",
+    "total_price": "Общая стоимость",
+    "cancel": "Отменить",
+    "confirmed": "Подтверждено",
+    "pending": "В ожидании",
+    "cancelled": "Отменено"
+  }
+}

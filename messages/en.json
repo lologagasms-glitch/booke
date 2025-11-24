@@ -1,0 +1,49 @@
+{
+  "common": {
+    "home": "Home",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "profile": "Profile",
+    "reservations": "Reservations",
+    "search": "Search",
+    "language": "Language",
+    "contact": "Contact",
+    "establishments": "Establishments",
+    "teams": "Teams",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "users": "Users"
+  },
+  "home": {
+    "title": "Find your ideal accommodation",
+    "subtitle": "Discover unique destinations and book your dream stay",
+    "search_placeholder": "Where do you want to go?",
+    "featured_destinations": "Popular destinations",
+    "popular_establishments": "Popular establishments",
+    "discover": "Discover",
+    "view_details": "View details",
+    "book_now": "Book now",
+    "per_night": "per night"
+  },
+  "establishment": {
+    "rooms": "Rooms",
+    "services": "Services",
+    "location": "Location",
+    "reviews": "Reviews",
+    "availability": "Availability",
+    "book_room": "Book this room"
+  },
+  "reservation": {
+    "my_reservations": "My reservations",
+    "no_reservations": "You don't have any reservations yet",
+    "check_in": "Check-in",
+    "check_out": "Check-out",
+    "status": "Status",
+    "total_price": "Total price",
+    "cancel": "Cancel",
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "cancelled": "Cancelled"
+  }
+}

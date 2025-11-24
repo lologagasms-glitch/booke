@@ -1,0 +1,49 @@
+{
+  "common": {
+    "home": "Accueil",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "profile": "Profil",
+    "reservations": "Réservations",
+    "search": "Rechercher",
+    "language": "Langue",
+    "contact": "Contact",
+    "establishments": "Établissements",
+    "teams": "Équipes",
+    "admin": "Admin",
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs"
+  },
+  "home": {
+    "title": "Trouvez votre hébergement idéal",
+    "subtitle": "Découvrez des destinations uniques et réservez votre séjour de rêve",
+    "search_placeholder": "Où souhaitez-vous aller?",
+    "featured_destinations": "Destinations populaires",
+    "popular_establishments": "Établissements populaires",
+    "discover": "Découvrir",
+    "view_details": "Voir les détails",
+    "book_now": "Réserver maintenant",
+    "per_night": "par nuit"
+  },
+  "establishment": {
+    "rooms": "Chambres",
+    "services": "Services",
+    "location": "Emplacement",
+    "reviews": "Avis",
+    "availability": "Disponibilité",
+    "book_room": "Réserver cette chambre"
+  },
+  "reservation": {
+    "my_reservations": "Mes réservations",
+    "no_reservations": "Vous n'avez pas encore de réservations",
+    "check_in": "Arrivée",
+    "check_out": "Départ",
+    "status": "Statut",
+    "total_price": "Prix total",
+    "cancel": "Annuler",
+    "confirmed": "Confirmée",
+    "pending": "En attente",
+    "cancelled": "Annulée"
+  }
+}

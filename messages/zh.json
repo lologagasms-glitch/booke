@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "首页",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "profile": "个人资料",
+    "reservations": "预订",
+    "search": "搜索",
+    "language": "语言",
+    "establishments": "住宿",
+    "contact": "联系我们"
+  },
+  "home": {
+    "title": "找到您理想的住宿",
+    "subtitle": "发现独特的目的地，预订您梦想中的住宿",
+    "search_placeholder": "您想去哪里？",
+    "featured_destinations": "热门目的地",
+    "popular_establishments": "热门住宿",
+    "discover": "探索",
+    "view_details": "查看详情",
+    "book_now": "立即预订",
+    "per_night": "每晚"
+  },
+  "establishment": {
+    "rooms": "房间",
+    "services": "服务",
+    "location": "位置",
+    "reviews": "评价",
+    "availability": "可用性",
+    "book_room": "预订此房间"
+  },
+  "reservation": {
+    "my_reservations": "我的预订",
+    "no_reservations": "您还没有预订",
+    "check_in": "入住",
+    "check_out": "退房",
+    "status": "状态",
+    "total_price": "总价",
+    "cancel": "取消",
+    "confirmed": "已确认",
+    "pending": "待处理",
+    "cancelled": "已取消"
+  }
+}

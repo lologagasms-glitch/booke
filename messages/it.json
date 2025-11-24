@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "Home",
+    "login": "Accedi",
+    "register": "Registrati",
+    "logout": "Esci",
+    "profile": "Profilo",
+    "reservations": "Prenotazioni",
+    "search": "Cerca",
+    "language": "Lingua",
+    "establishments": "Strutture",
+    "contact": "Contatti"
+  },
+  "home": {
+    "title": "Trova il tuo alloggio ideale",
+    "subtitle": "Scopri destinazioni uniche e prenota il tuo soggiorno da sogno",
+    "search_placeholder": "Dove vuoi andare?",
+    "featured_destinations": "Destinazioni popolari",
+    "popular_establishments": "Strutture popolari",
+    "discover": "Scopri",
+    "view_details": "Vedi dettagli",
+    "book_now": "Prenota ora",
+    "per_night": "per notte"
+  },
+  "establishment": {
+    "rooms": "Camere",
+    "services": "Servizi",
+    "location": "Posizione",
+    "reviews": "Recensioni",
+    "availability": "Disponibilità",
+    "book_room": "Prenota questa camera"
+  },
+  "reservation": {
+    "my_reservations": "Le mie prenotazioni",
+    "no_reservations": "Non hai ancora prenotazioni",
+    "check_in": "Check-in",
+    "check_out": "Check-out",
+    "status": "Stato",
+    "total_price": "Prezzo totale",
+    "cancel": "Annulla",
+    "confirmed": "Confermata",
+    "pending": "In attesa",
+    "cancelled": "Annullata"
+  }
+}

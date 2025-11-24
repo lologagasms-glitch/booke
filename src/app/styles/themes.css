@@ -1,0 +1,85 @@
+@layer base {
+  /* Mode 1: Jaune Classique (Saturé) */
+  [data-theme="yellow"] {
+    --background: 55 39% 98%;
+    --foreground: 55 53% 5%;
+    --muted: 45 22% 94%;
+    --muted-foreground: 45 15% 30%;
+    --popover: 55 39% 98%;
+    --popover-foreground: 55 53% 5%;
+    --card: 55 39% 98%;
+    --card-foreground: 55 53% 5%;
+    --border: 55 10% 92%;
+    --input: 55 10% 92%;
+    --primary: 55 93% 51%;
+    --primary-foreground: 55 93% 11%;
+    --secondary: 25 93% 51%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 45 93% 51%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 4 98% 34%;
+    --destructive-foreground: 4 98% 94%;
+    --ring: 55 93% 51%;
+    --chart-1: 55 93% 51%;
+    --chart-2: 35 93% 51%;
+    --chart-3: 45 93% 51%;
+    --chart-4: 65 93% 54%;
+    --chart-5: 55 96% 41%;
+  }
+
+  /* Mode 2: Light Mode (Jaune Pastel) */
+  [data-theme="white"] {
+    --background: 48 25% 98%;
+    --foreground: 48 30% 15%;
+    --muted: 48 15% 94%;
+    --muted-foreground: 48 12% 35%;
+    --popover: 48 25% 98%;
+    --popover-foreground: 48 30% 15%;
+    --card: 48 25% 98%;
+    --card-foreground: 48 30% 15%;
+    --border: 48 8% 88%;
+    --input: 48 8% 88%;
+    --primary: 48 75% 65%;
+    --primary-foreground: 48 75% 15%;
+    --secondary: 35 45% 75%;
+    --secondary-foreground: 35 45% 20%;
+    --accent: 45 55% 70%;
+    --accent-foreground: 45 55% 15%;
+    --destructive: 4 85% 45%;
+    --destructive-foreground: 4 85% 95%;
+    --ring: 48 75% 65%;
+    --chart-1: 48 75% 65%;
+    --chart-2: 35 45% 75%;
+    --chart-3: 45 55% 70%;
+    --chart-4: 55 40% 68%;
+    --chart-5: 48 70% 60%;
+  }
+
+  /* Mode 3: Dark Mode (Jaune Néon) */
+  [data-theme="dark"] {
+    --background: 48 60% 4%;
+    --foreground: 48 97% 95%;
+    --muted: 48 22% 12%;
+    --muted-foreground: 48 15% 65%;
+    --popover: 48 60% 4%;
+    --popover-foreground: 48 97% 95%;
+    --card: 48 60% 4%;
+    --card-foreground: 48 97% 95%;
+    --border: 48 25% 18%;
+    --input: 48 25% 18%;
+    --primary: 55 100% 55%;
+    --primary-foreground: 55 100% 10%;
+    --secondary: 320 100% 65%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 120 100% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 4 100% 55%;
+    --destructive-foreground: 4 100% 95%;
+    --ring: 55 100% 55%;
+    --chart-1: 55 100% 55%;
+    --chart-2: 320 100% 65%;
+    --chart-3: 120 100% 55%;
+    --chart-4: 200 100% 60%;
+    --chart-5: 35 100% 55%;
+  }
+}

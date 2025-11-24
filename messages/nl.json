@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "Home",
+    "login": "Inloggen",
+    "register": "Registreren",
+    "logout": "Uitloggen",
+    "profile": "Profiel",
+    "reservations": "Reserveringen",
+    "search": "Zoeken",
+    "language": "Taal",
+    "establishments": "Accommodaties",
+    "contact": "Contact"
+  },
+  "home": {
+    "title": "Vind uw ideale accommodatie",
+    "subtitle": "Ontdek unieke bestemmingen en boek uw droomverblijf",
+    "search_placeholder": "Waar wilt u naartoe?",
+    "featured_destinations": "Populaire bestemmingen",
+    "popular_establishments": "Populaire accommodaties",
+    "discover": "Ontdekken",
+    "view_details": "Details bekijken",
+    "book_now": "Nu boeken",
+    "per_night": "per nacht"
+  },
+  "establishment": {
+    "rooms": "Kamers",
+    "services": "Diensten",
+    "location": "Locatie",
+    "reviews": "Beoordelingen",
+    "availability": "Beschikbaarheid",
+    "book_room": "Deze kamer boeken"
+  },
+  "reservation": {
+    "my_reservations": "Mijn reserveringen",
+    "no_reservations": "U heeft nog geen reserveringen",
+    "check_in": "Inchecken",
+    "check_out": "Uitchecken",
+    "status": "Status",
+    "total_price": "Totaalprijs",
+    "cancel": "Annuleren",
+    "confirmed": "Bevestigd",
+    "pending": "In behandeling",
+    "cancelled": "Geannuleerd"
+  }
+}

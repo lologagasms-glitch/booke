@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { NextIntlClientProvider } from "next-intl";
+import { ProvidersQiery } from "@/components/query/providerQuery";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import 'leaflet/dist/leaflet.css';
+import './styles/themes.css';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,7 +31,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ProvidersQiery>
+          <ThemeProvider>
+            <NextIntlClientProvider>
+              {children}
+            </NextIntlClientProvider>
+          </ThemeProvider>
+        </ProvidersQiery>
       </body>
     </html>
   );
