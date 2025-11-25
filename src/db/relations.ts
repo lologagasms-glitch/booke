@@ -1,12 +1,12 @@
 import { relations } from 'drizzle-orm';
 import {
-  etablissements, chambres, etablissementImages, chambreImages,
+  etablissements, chambres, mediaEtablissements, mediaChambres,
   user, session, reservations, verification,
 } from './schema';
 
 export const etablissementRelations = relations(etablissements, ({ many }) => ({
   chambres: many(chambres),
-  imagesEtab: many(etablissementImages),
+  imagesEtab: many(mediaEtablissements),
   reservations: many(reservations),
 }));
 
@@ -15,20 +15,20 @@ export const chambreRelations = relations(chambres, ({ one, many }) => ({
     fields: [chambres.etablissementId],
     references: [etablissements.id],
   }),
-  imagesChambre: many(chambreImages),
+  imagesChambre: many(mediaChambres),
   reservations: many(reservations),
 }));
 
-export const etablissementImageRelations = relations(etablissementImages, ({ one }) => ({
+export const etablissementImageRelations = relations(mediaEtablissements, ({ one }) => ({
   etablissement: one(etablissements, {
-    fields: [etablissementImages.etablissementId],
+    fields: [mediaEtablissements.etablissementId],    
     references: [etablissements.id],
   }),
 }));
 
-export const chambreImageRelations = relations(chambreImages, ({ one }) => ({
+export const chambreImageRelations = relations(mediaChambres, ({ one }) => ({
   chambre: one(chambres, {
-    fields: [chambreImages.chambreId],
+    fields: [mediaChambres.chambreId],
     references: [chambres.id],
   }),
 }));

@@ -41,6 +41,7 @@ export default function ChambrePage() {
   } = useForm<NewReservation>({
     resolver: zodResolver(reservationSchema),
     defaultValues: {
+      userId: sessionData.user.id,
       nombrePersonnes: 1,
     },
   });

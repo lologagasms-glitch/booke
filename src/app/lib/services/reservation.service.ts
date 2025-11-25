@@ -15,7 +15,7 @@ type ServiceResponse<T> = {
 };
 
 /* 1  Toutes les réservations complètes (avec user, chambre, établissement) */
-export async function getAllReservations(): Promise<ServiceResponse<any[]>> {
+export async function getAllReservations() {
   try {
     const rows = await db
       .select({
@@ -37,10 +37,9 @@ export async function getAllReservations(): Promise<ServiceResponse<any[]>> {
       etablissement: r.etablissement ?? undefined,
     }));
 
-    return { success: true, data };
+    return data;
   } catch (error) {
     console.error('Error fetching all reservations:', error);
-    return { success: false, error: 'Impossible de récupérer les réservations.' };
   }
 }
 
@@ -270,3 +269,4 @@ export async function getAllReservationByUserAndByChambre() {
     return { success: false, error: 'Erreur lors de la récupération des réservations.' };
   }
 }
+

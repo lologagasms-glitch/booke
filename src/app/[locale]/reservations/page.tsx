@@ -212,7 +212,7 @@ export default function ReservationsPage() {
       <h1 className="text-3xl font-bold mb-8">Mes réservations</h1>
 
       <div className="space-y-6">
-        {reservations.map((r) => (
+        {reservations?.map((r) => (
           <div
             key={r.id}
             className="bg-white rounded-lg shadow-md overflow-hidden"

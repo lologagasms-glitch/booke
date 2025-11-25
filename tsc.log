@@ -1,0 +1,12 @@
+src/app/[locale]/etablissements/[id]/chambres/[chambreId]/page.tsx(52,5): error TS2322: Type 'Resolver<{ dateDebut: unknown; dateFin: unknown; nombrePersonnes: number; }, any, { dateDebut: Date; dateFin: Date; nombrePersonnes: number; }>' is not assignable to type 'Resolver<{ dateDebut: Date; dateFin: Date; nombrePersonnes: number; }, any, { dateDebut: Date; dateFin: Date; nombrePersonnes: number; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ dateDebut: Date; dateFin: Date; nombrePersonnes: number; }>' is not assignable to type 'ResolverOptions<{ dateDebut: unknown; dateFin: unknown; nombrePersonnes: number; }>'.
+      Type 'unknown' is not assignable to type 'Date'.
+src/app/[locale]/etablissements/[id]/chambres/[chambreId]/page.tsx(229,38): error TS2345: Argument of type '(data: ReservationFormData) => void' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ dateDebut: Date; dateFin: Date; nombrePersonnes: number; }'.
+      Type 'FieldValues' is missing the following properties from type '{ dateDebut: Date; dateFin: Date; nombrePersonnes: number; }': dateDebut, dateFin, nombrePersonnes
+src/app/reservations/page.tsx(20,48): error TS2339: Property 'map' does not exist on type 'ServiceResponse<any[]>'.
+src/app/reservations/page.tsx(20,52): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/db/relations.ts(3,29): error TS2724: '"./schema"' has no exported member named 'etablissementImages'. Did you mean 'etablissements'?
+src/db/relations.ts(3,50): error TS2305: Module '"./schema"' has no exported member 'chambreImages'.

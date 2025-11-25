@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { reservationService } from '@/app/lib/services/reservation.service';
+import { getReservationById, getReservationsByUser, createReservation } from '@/app/lib/services/reservation.service';
 import { auth } from '@/app/lib/auth';
 import { headers } from 'next/headers';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({headers:await headers()});
+    const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
     }
@@ -20,21 +20,23 @@ export async function GET(request: NextRequest) {
     }
 
     if (id) {
-      const reservation = await reservationService.getById(id);
-      if (!reservation) {
+      const result = await getReservationById(id);
+      if (!result.success || !result.data) {
         return NextResponse.json({ error: 'Réservation non trouvée' }, { status: 404 });
       }
-      
+
+      const reservation = result.data;
+
       // Vérifier que l'utilisateur accède à sa propre réservation ou est admin
       if (reservation.userId !== session.user.id && session.user.role !== 'ADMIN') {
         return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
       }
-      
+
       return NextResponse.json(reservation);
     }
 
     const userIdToUse = userId || session.user.id;
-    const reservations = await reservationService.getByUserId(userIdToUse);
+    const reservations = await getReservationsByUser(userIdToUse);
     return NextResponse.json(reservations);
   } catch (error) {
     console.error('Erreur lors de la récupération des réservations:', error);
@@ -44,26 +46,27 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({headers:await headers()});
+    const session = await auth.api.getSession({ headers: await headers() });
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
     }
 
     const data = await request.json();
-    
+
     // Vérifier que l'utilisateur crée une réservation pour lui-même
     if (data.userId !== session.user.id && session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
     }
 
-    const reservation = await reservationService.create({
+    const reservation = await createReservation({
       userId: data.userId,
       roomId: data.roomId,
       etablissementId: data.etablissementId,
       dateDebut: new Date(data.dateDebut),
       dateFin: new Date(data.dateFin),
       nombrePersonnes: data.nombrePersonnes,
-      prixTotal: data.prixTotal
+      prixTotal: data.prixTotal,
+      statut: 'en_attente'
     });
 
     return NextResponse.json(reservation, { status: 201 });

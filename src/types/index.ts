@@ -84,7 +84,7 @@ export type EtablissementWithRooms = {
 }
 export const reservationSchema = z.object({
   roomId: z.string().uuid(),
-  userId: z.string().uuid(),
+  userId: z.string().uuid().nullable().optional(),
   etablissementId: z.string().uuid(),
   dateDebut: z.date(),
   dateFin: z.date(),

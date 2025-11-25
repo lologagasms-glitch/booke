@@ -17,7 +17,7 @@ export default async function ReservationsPage() {
     // Our component expects:
     // { id, dateDebut, dateFin, nombrePersonnes, prixTotal, statut, etablissement: { nom, ville, pays, type }, chambre: { nom, type }, user: { name, email } }
 
-    const formattedReservations = reservations.map(r => ({
+    const formattedReservations = reservations?.map(r => ({
         id: r.id,
         dateDebut: r.dateDebut,
         dateFin: r.dateFin,
@@ -52,7 +52,7 @@ export default async function ReservationsPage() {
                     </p>
                 </div>
 
-                <ReservationsList reservations={formattedReservations} />
+                <ReservationsList reservations={formattedReservations || []} />
             </div>
         </div>
     )
