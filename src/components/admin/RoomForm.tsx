@@ -9,14 +9,17 @@ import { getChambreById, update, create } from '@/app/lib/services/chambre.servi
 import { chambreSchema } from '@/types';
 import { ArrowPathIcon, ExclamationTriangleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { usePopup } from '../popup';
+import { useTranslations } from 'next-intl';
 
 const schema = chambreSchema;
 type FormValues = z.infer<typeof schema>;
 
 export default function RoomForm({ etablissementId, id }: { etablissementId: string; id?: string }) {
+  const t = useTranslations('room');
+  const tForms = useTranslations('forms');
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { show, PopupComponent } = usePopup(); // added usePop hook usage
+  const { show, PopupComponent } = usePopup();
 
   const { data: defaultValuesChambre, isLoading, isError, isSuccess } = useQuery({
     queryKey: ['chambres', id],
@@ -58,11 +61,16 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chambres'] });
       setIsSubmitting(false);
-      show({ type: 'success', message: id ? 'Chambre mise à jour avec succès.' : 'Chambre créée avec succès.' }); // added pop success
+      show({ type: 'success', message: id ? t('update_success') : t('create_success') });
+
+      // Clear form only on creation
+      if (!id) {
+        reset();
+      }
     },
     onError: () => {
       setIsSubmitting(false);
-      show({ type: 'error', message: 'Une erreur est survenue lors de l\'enregistrement.' }); // added pop error
+      show({ type: 'error', message: tForms('error_submit') });
     },
   });
 
@@ -88,9 +96,9 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
   );
 
   const roomTypes = [
-    { value: 'simple', label: 'Simple', description: '1-2 pers.' },
-    { value: 'double', label: 'Double', description: '2-3 pers.' },
-    { value: 'suite', label: 'Suite', description: '2-4 pers.' },
+    { value: 'simple', label: t('simple'), description: '1-2 pers.' },
+    { value: 'double', label: t('double'), description: '2-3 pers.' },
+    { value: 'suite', label: t('suite'), description: '2-4 pers.' },
   ];
 
   // ✅ CORRECTION : Utiliser watch pour obtenir les valeurs actuelles
@@ -130,7 +138,7 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {defaultValuesChambre ? 'Modifier la chambre' : 'Nouvelle chambre'}
+            {defaultValuesChambre ? t('edit_room') : t('new_room')}
           </h1>
           <p className="text-gray-600">
             Définissez les caractéristiques et services de votre chambre
@@ -140,25 +148,24 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
         {/* Formulaire Card */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <form onSubmit={handleSubmit(onSubmit)} className="p-8">
-            
+
             {/* Section 1: Informations principales */}
             <div className="space-y-6 border-b border-gray-100 pb-8 mb-8">
               <h2 className="text-lg font-semibold text-gray-900">Informations principales</h2>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Nom */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Nom de la chambre
+                    {t('room_name')}
                   </label>
                   <input
                     {...register('nom')}
-                    className={`w-full px-4 py-2.5 border rounded-md transition-colors text-black ${
-                      errors.nom 
-                        ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500' 
+                    className={`w-full px-4 py-2.5 border rounded-md transition-colors text-black ${errors.nom
+                        ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500'
                         : 'border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500'
-                    }`}
-                    placeholder="Ex. Chambre Deluxe Océan"
+                      }`}
+                    placeholder={t('placeholder_name')}
                   />
                   {errors.nom && (
                     <p className="text-red-600 text-sm flex items-center gap-1">
@@ -171,7 +178,7 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
                 {/* Type */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Type de chambre
+                    {t('room_type')}
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     {roomTypes.map((roomType) => (
@@ -199,17 +206,16 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
               {/* Description */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Description détaillée
+                  {t('room_description')}
                 </label>
                 <textarea
                   {...register('description')}
                   rows={4}
-                  className={`w-full px-4 py-2.5 border rounded-md resize-none transition-colors text-black ${
-                    errors.description 
-                      ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500' 
+                  className={`w-full px-4 py-2.5 border rounded-md resize-none transition-colors text-black ${errors.description
+                      ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500'
                       : 'border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500'
-                  }`}
-                  placeholder="Décrivez les caractéristiques uniques de cette chambre..."
+                    }`}
+                  placeholder={t('placeholder_description')}
                 />
                 {errors.description && (
                   <p className="text-red-600 text-sm flex items-center gap-1">
@@ -223,22 +229,21 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
             {/* Section 2: Capacité et Tarification */}
             <div className="space-y-6 border-b border-gray-100 pb-8 mb-8">
               <h2 className="text-lg font-semibold text-gray-900">Capacité & Tarification</h2>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Capacité */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Capacité maximale
+                    {t('max_capacity')}
                   </label>
                   <div className="relative">
                     <input
                       type="number"
                       {...register('capacite', { valueAsNumber: true })}
-                      className={`w-full px-4 py-2.5 border rounded-md transition-colors text-black ${
-                        errors.capacite 
-                          ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500' 
+                      className={`w-full px-4 py-2.5 border rounded-md transition-colors text-black ${errors.capacite
+                          ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500'
                           : 'border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500'
-                      }`}
+                        }`}
                       min={1}
                       placeholder="2"
                     />
@@ -257,7 +262,7 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
                 {/* Prix */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Prix par nuit
+                    {t('price_per_night')}
                   </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -267,11 +272,10 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
                       type="number"
                       step={0.01}
                       {...register('prix', { valueAsNumber: true })}
-                      className={`w-full pl-8 pr-10 py-2.5 border rounded-md transition-colors text-black ${
-                        errors.prix 
-                          ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500' 
+                      className={`w-full pl-8 pr-10 py-2.5 border rounded-md transition-colors text-black ${errors.prix
+                          ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500'
                           : 'border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500'
-                      }`}
+                        }`}
                       min={0}
                       placeholder="150.00"
                     />
@@ -291,8 +295,8 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
 
             {/* Section 3: Services */}
             <div className="space-y-6 border-b border-gray-100 pb-8 mb-8">
-              <h2 className="text-lg font-semibold text-gray-900">Services & Équipements</h2>
-              
+              <h2 className="text-lg font-semibold text-gray-900">{t('services_equipments')}</h2>
+
               <Controller
                 name="services"
                 control={control}
@@ -313,11 +317,10 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
                               : [...currentServices, service.key];
                             field.onChange(arr);
                           }}
-                          className={`p-4 rounded-md border text-sm transition-all ${
-                            isSelected
+                          className={`p-4 rounded-md border text-sm transition-all ${isSelected
                               ? 'bg-blue-50 border-blue-300 shadow-sm'
                               : 'bg-white border-gray-300 hover:border-gray-400'
-                          }`}
+                            }`}
                         >
                           <div className="flex flex-col items-center gap-1">
                             <span className="text-xl">{service.icon}</span>
@@ -341,7 +344,7 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
                   className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-100"
                 />
                 <div>
-                  <h3 className="font-medium text-gray-900">Disponible à la réservation</h3>
+                  <h3 className="font-medium text-gray-900">{t('available_for_booking')}</h3>
                   <p className="text-sm text-gray-600">
                     Cette chambre peut être réservée par les clients
                   </p>
@@ -356,29 +359,28 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
               <button
                 type="submit"
                 disabled={isSubmitting || mutation.isPending}
-                className={`w-full py-3 px-4 rounded-md font-medium transition-all ${
-                  isSubmitting || mutation.isPending
+                className={`w-full py-3 px-4 rounded-md font-medium transition-all ${isSubmitting || mutation.isPending
                     ? 'bg-gray-400 cursor-not-allowed opacity-60'
                     : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow'
-                }`}
+                  }`}
               >
                 {isSubmitting || mutation.isPending ? (
                   <span className="flex items-center justify-center gap-2">
                     <ArrowPathIcon className="h-4 w-4 animate-spin" />
-                    Enregistrement en cours...
+                    {tForms('saving')}
                   </span>
                 ) : defaultValuesChambre ? (
-                  'Mettre à jour la chambre'
+                  tForms('update')
                 ) : (
-                  'Créer la chambre'
+                  tForms('create')
                 )}
               </button>
-              
+
               {mutation.isError && (
                 <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
                   <p className="text-red-700 text-sm flex items-center gap-2">
                     <ExclamationTriangleIcon className="h-4 w-4" />
-                    Une erreur est survenue. Veuillez réessayer.
+                    {tForms('error_submit')}
                   </p>
                 </div>
               )}
