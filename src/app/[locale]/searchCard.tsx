@@ -1,3 +1,5 @@
+import { TransletText } from "../lib/services/translation/transletText";
+
 export interface ChambreDTO {
   id: string;
   nom: string;
@@ -37,12 +39,12 @@ export default function ChambreCard({ chambre }: { chambre: ChambreDTO }) {
         </div>
         <div className="text-left sm:text-right shrink-0">
           <p className="text-xl sm:text-2xl font-bold text-indigo-600">{chambre.prix}&nbsp;€</p>
-          <p className="text-xs text-gray-500">par nuit</p>
+          <p className="text-xs text-gray-500"><TransletText> par nuit</TransletText></p>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-sm text-gray-700 break-words">{chambre.description}</p>
+      <p className="text-sm text-gray-700 break-words"><TransletText>{chambre.description}</TransletText></p>
 
       {/* Services chambre */}
       <div className="flex flex-wrap gap-2">
@@ -60,7 +62,9 @@ export default function ChambreCard({ chambre }: { chambre: ChambreDTO }) {
       <div className="border-t pt-3 sm:pt-4">
         <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{chambre.etablissement.nom}</h4>
         <p className="text-xs sm:text-sm text-gray-600">
-          {chambre.etablissement.adresse}, {chambre.etablissement.ville}, {chambre.etablissement.pays}
+          <TransletText>{chambre.etablissement.adresse}</TransletText>,{' '}
+          <TransletText>{chambre.etablissement.ville}</TransletText>,{' '}
+          <TransletText>{chambre.etablissement.pays}</TransletText>
         </p>
 
         {/* Étoiles */}
@@ -81,7 +85,7 @@ export default function ChambreCard({ chambre }: { chambre: ChambreDTO }) {
 
         {/* Description établissement */}
         {chambre.etablissement.description && (
-          <p className="text-xs sm:text-sm text-gray-700 mt-2 break-words">{chambre.etablissement.description}</p>
+          <p className="text-xs sm:text-sm text-gray-700 mt-2 break-words"><TransletText>{chambre?.etablissement?.description?.toString()}</TransletText></p>
         )}
 
         {/* Services établissement */}
@@ -104,7 +108,7 @@ export default function ChambreCard({ chambre }: { chambre: ChambreDTO }) {
               href={`mailto:${chambre.etablissement.contact.email}`}
               className="text-indigo-600 hover:underline break-all"
             >
-              {chambre.etablissement.contact.email}
+              <TransletText>{chambre.etablissement.contact.email}</TransletText>
             </a>
           </p>
           <p>
@@ -113,7 +117,7 @@ export default function ChambreCard({ chambre }: { chambre: ChambreDTO }) {
               href={`tel:${chambre.etablissement.contact.telephone}`}
               className="text-indigo-600 hover:underline"
             >
-              {chambre.etablissement.contact.telephone}
+              <TransletText>{chambre.etablissement.contact.telephone}</TransletText>
             </a>
           </p>
           {chambre.etablissement.contact.siteWeb && (

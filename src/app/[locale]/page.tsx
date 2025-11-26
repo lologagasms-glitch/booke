@@ -36,14 +36,14 @@ export default async function Home({ params }: { params: { locale: string } }) {
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-5 md:mb-6 transition-all duration-300">
             <TranslatedText text="Hébergements populaires" targetLang={locale} />
           </h2>
-          <PopularEstablishments />
+          <PopularEstablishments locale={locale} />
         </section>
 
         {/* Promotional Section */}
         <section className="bg-blue-50 rounded-lg p-4 sm:p-5 md:p-6 lg:p-8 mb-6 sm:mb-8 md:mb-10 lg:mb-12">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 md:gap-8">
             <div className="w-full lg:w-2/3 space-y-3 sm:space-y-4">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold transition-all duration-300">
+              <h2 className="text-xl text-yellow-600 sm:text-2xl md:text-3xl font-bold transition-all duration-300">
                 <TranslatedText text="Économisez 15% avec les Offres de Dernière Minute" targetLang={locale} />
               </h2>
               <p className="text-gray-600 text-sm sm:text-base md:text-lg transition-all duration-300">
@@ -61,7 +61,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
             <div className="w-full lg:w-1/3">
               <div className="relative aspect-video sm:aspect-square lg:aspect-[4/3]">
                 <Image
-                  src="/file.svg"
+                  src="/file.jpg"
                   alt="Offres spéciales"
                   fill
                   className="rounded-lg object-cover object-center transition-transform duration-300 hover:scale-105"

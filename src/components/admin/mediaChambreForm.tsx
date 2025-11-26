@@ -259,16 +259,6 @@ export default function MediaChambreForm({ chambreId, onSuccess }: MediaChambreF
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Gestion des médias de la chambre</h2>
-          <button
-            type="submit"
-            disabled={saveMutation.isPending || newMedias.length === 0}
-            className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          >
-            {saveMutation.isPending ? (
-              <ArrowPathIcon className="w-4 h-4 animate-spin" /> 
-            ) : null}
-            {saveMutation.isPending ? 'Sauvegarde...' : 'Sauvegarder les nouveaux'}
-          </button>
         </div>
 
         {globalError && (
@@ -298,8 +288,8 @@ export default function MediaChambreForm({ chambreId, onSuccess }: MediaChambreF
           </div>
         )}
 
-        <div className="space-y-4 pt-6 border-t border-gray-200">
-          <h3 className="text-xl font-semibold text-gray-800">Ajouter de nouveaux médias</h3>
+        <div className="space-y-4 w-1/2 p-6 border-t border-gray-200">
+          <h3 className="text-xl font-semibold text-gray-100">Ajouter de nouveaux médias</h3>
           
           <div className="space-y-2">
             <div className="flex gap-2">
@@ -309,7 +299,7 @@ export default function MediaChambreForm({ chambreId, onSuccess }: MediaChambreF
                 onChange={(e) => setCurrentUrl(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Collez un lien YouTube ou une image..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                 aria-label="Lien média"
               />
               <button
@@ -325,70 +315,85 @@ export default function MediaChambreForm({ chambreId, onSuccess }: MediaChambreF
           </div>
 
           {newMedias.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {newMedias.map((field, index) => (
-                <div key={field.id} className="border border-gray-200 rounded-lg p-4 space-y-3 bg-white">
-                  <div className="relative">
-                    <TypeBadge type={field.type as 'image' | 'video'} />
-                    {field.type === 'video' ? (
-                      <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
-                        <iframe
-                          src={`https://www.youtube.com/embed/${extractYouTubeId(field.url)}`}
-                          className="absolute inset-0 w-full h-full"
-                          allowFullScreen
-                        />
-                      </div>
-                    ) : (
-                      <div 
-                        className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-zoom-in"
-                        onClick={() => openZoom(field.url)}
-                      >
-                        <img
-                          src={field.url}
-                          alt={field.name}
-                          className="absolute inset-0 w-full h-full object-cover"
-                          onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300?text=Image+Error'; }}
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Controller
-                      name={`medias.${index}.name`}
-                      control={control}
-                      render={({ field: nameField }) => (
-                        <input
-                          {...nameField}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Nom du média"
-                        />
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {newMedias.map((field, index) => (
+                  <div key={field.id} className="border border-gray-200 rounded-lg p-4 space-y-3 bg-white">
+                    <div className="relative">
+                      <TypeBadge type={field.type as 'image' | 'video'} />
+                      {field.type === 'video' ? (
+                        <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${extractYouTubeId(field.url)}`}
+                            className="absolute inset-0 w-full h-full"
+                            allowFullScreen
+                          />
+                        </div>
+                      ) : (
+                        <div 
+                          className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-zoom-in"
+                          onClick={() => openZoom(field.url)}
+                        >
+                          <img
+                            src={field.url}
+                            alt={field.name}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300?text=Image+Error'; }}
+                          />
+                        </div>
                       )}
-                    />
-                    {errors.medias?.[index]?.name && (
-                      <p className="text-sm text-red-600">{errors.medias[index].name?.message}</p>
-                    )}
-                  </div>
-
-                  <div className="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-mono truncate">{field.filename}</p>
-                      <p className="truncate">{field.url}</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeNewMedia(index);
-                      }}
-                      className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors shrink-0"
-                    >
-                      Supprimer
-                    </button>
+
+                    <div className="space-y-2">
+                      <Controller
+                        name={`medias.${index}.name`}
+                        control={control}
+                        render={({ field: nameField }) => (
+                          <input
+                            {...nameField}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                            placeholder="Nom du média"
+                          />
+                        )}
+                      />
+                      {errors.medias?.[index]?.name && (
+                        <p className="text-sm text-red-600">{errors.medias[index].name?.message}</p>
+                      )}
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-mono truncate">{field.filename}</p>
+                        <p className="truncate">{field.url}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeNewMedia(index);
+                        }}
+                        className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors shrink-0"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={saveMutation.isPending}
+                  className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                >
+                  {saveMutation.isPending ? (
+                    <ArrowPathIcon className="w-4 h-4 animate-spin" /> 
+                  ) : null}
+                  {saveMutation.isPending ? 'Sauvegarde...' : 'Sauvegarder les nouveaux'}
+                </button>
+              </div>
+            </>
           )}
         </div>
       </form>

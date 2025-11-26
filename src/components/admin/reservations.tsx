@@ -168,18 +168,18 @@ export default function ReservationsDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6">
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-black tracking-tight">
                 Tableau de bord
               </h1>
               <div className="flex items-center gap-2 mt-1">
                 <SignalIcon className="h-4 w-4 text-green-500 animate-pulse flex-shrink-0" />
-                <p className="text-sm sm:text-base text-gray-600 truncate">
+                <p className="text-sm sm:text-base text-black truncate">
                   Suivi des réservations en temps réel
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 flex-shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-black flex-shrink-0">
               <div className="flex items-center gap-1.5 bg-green-50 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-full">
                 <div className="relative">
                   <div className="h-2 w-2 sm:h-2.5 sm:w-2.5 bg-green-500 rounded-full"></div>
@@ -205,11 +205,11 @@ export default function ReservationsDashboard() {
               ${stat.highlight ? 'bg-red-50 border-red-200' : 'bg-white border-gray-200'}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs sm:text-sm font-medium text-gray-600">{stat.label}</p>
+                  <p className="text-xs sm:text-sm font-medium text-black">{stat.label}</p>
                   <p className={`text-2xl sm:text-3xl font-bold mt-0.5 ${
-                    stat.highlight ? 'text-red-700' : 'text-gray-900'
+                    stat.highlight ? 'text-red-700' : 'text-black'
                   }`}>{stat.value}</p>
-                  <p className="text-xs text-gray-500 mt-1">{stat.sub}</p>
+                  <p className="text-xs text-black mt-1">{stat.sub}</p>
                 </div>
                 <div className={`p-1.5 sm:p-2 rounded-lg transition-colors flex-shrink-0
                   ${stat.highlight ? `bg-${stat.color}-100` : `bg-${stat.color}-50 group-hover:bg-${stat.color}-100`}`}>
@@ -231,7 +231,7 @@ export default function ReservationsDashboard() {
                   placeholder="Rechercher..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-black"
                 />
               </div>
             </div>
@@ -239,7 +239,7 @@ export default function ReservationsDashboard() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                className="px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black"
               >
                 <option value="all">Tous</option>
                 <option value="confirm">Confirmé</option>
@@ -251,7 +251,7 @@ export default function ReservationsDashboard() {
                   setSearchQuery('');
                   setStatusFilter('all');
                 }}
-                className="px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors border border-gray-300 flex-shrink-0"
+                className="px-3 sm:px-4 py-2.5 sm:py-3 text-black hover:bg-gray-50 rounded-lg transition-colors border border-gray-300 flex-shrink-0"
                 title="Réinitialiser les filtres"
               >
                 <ArrowPathIcon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -278,14 +278,14 @@ export default function ReservationsDashboard() {
                   className={`relative flex-1 min-w-0 px-4 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm font-medium transition-all whitespace-nowrap
                     ${activeTab === tab.id 
                       ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600' 
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-black hover:text-gray-900 hover:bg-gray-50'
                     }`}
                 >
                   <span className="flex items-center justify-center gap-1.5 sm:gap-2">
                     {tab.label}
                     {tab.count > 0 && (
                       <span className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-semibold
-                        ${activeTab === tab.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                        ${activeTab === tab.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-black'}`}>
                         {tab.count}
                       </span>
                     )}
@@ -300,7 +300,7 @@ export default function ReservationsDashboard() {
             {paginatedData.length === 0 ? (
               <div className="text-center py-12 px-4">
                 <CalendarDaysIcon className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                <h3 className="text-lg font-medium text-gray-900">Aucune réservation</h3>
+                <h3 className="text-lg font-medium text-black">Aucune réservation</h3>
                 <p className="text-gray-500 text-sm mt-1">Essayez d'ajuster vos filtres</p>
               </div>
             ) : (
@@ -315,10 +315,10 @@ export default function ReservationsDashboard() {
                             <UserIcon className="h-5 w-5 text-blue-600" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="font-semibold text-gray-900 text-sm truncate">
+                            <div className="font-semibold text-black text-sm truncate">
                               {reservation.user?.name || 'N/A'}
                             </div>
-                            <div className="text-xs text-gray-500 truncate">
+                            <div className="text-xs text-black truncate">
                               {reservation.user?.email || 'N/A'}
                             </div>
                           </div>
@@ -333,7 +333,7 @@ export default function ReservationsDashboard() {
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-sm">
                           <HomeModernIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          <span className="text-gray-900 font-medium">
+                          <span className="text-black font-medium">
                             {reservation.chambre?.nom || 'N/A'}
                           </span>
                           <span className="text-gray-500 text-xs truncate">
@@ -343,7 +343,7 @@ export default function ReservationsDashboard() {
 
                         <div className="flex items-center gap-2 text-sm">
                           <CalendarDaysIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          <span className="text-gray-900">
+                          <span className="text-black">
                             {format(reservation.dateDebut, 'dd MMM', { locale: fr })} → {format(reservation.dateFin, 'dd MMM', { locale: fr })}
                           </span>
                           <span className="text-gray-500 text-xs">
@@ -356,7 +356,7 @@ export default function ReservationsDashboard() {
                             <ExclamationTriangleIcon className="h-3 w-3" />
                             {urgency.label}
                           </div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-gray-900">
+                          <div className="flex items-center gap-1 text-sm font-bold text-black">
                             <BanknotesIcon className="h-4 w-4 text-gray-500" />
                             {reservation.prixTotal.toFixed(2)} €
                           </div>
@@ -386,19 +386,19 @@ export default function ReservationsDashboard() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                     Client
                   </th>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                     Chambre
                   </th>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                     Période
                   </th>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                     Statut & Prix
                   </th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -414,13 +414,13 @@ export default function ReservationsDashboard() {
                             <UserIcon className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
                           </div>
                           <div className="min-w-0">
-                            <div className="text-sm font-semibold text-gray-900 truncate">
+                            <div className="text-sm font-semibold text-black truncate">
                               {reservation.user?.name || 'N/A'}
                             </div>
-                            <div className="text-xs text-gray-500 truncate">
+                            <div className="text-xs text-black truncate">
                               {reservation.user?.email || 'N/A'}
                             </div>
-                            <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+                            <div className="flex items-center gap-1 text-xs text-black mt-0.5">
                               <UserIcon className="h-3 w-3" />
                               {reservation.nombrePersonnes} pers.
                             </div>
@@ -429,10 +429,10 @@ export default function ReservationsDashboard() {
                       </td>
                       <td className="px-4 md:px-6 py-4">
                         <div className="min-w-0">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-black">
                             {reservation.chambre?.nom || 'N/A'}
                           </div>
-                          <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                          <div className="text-xs text-black mt-0.5 flex items-center gap-1">
                             <HomeModernIcon className="h-3 w-3" />
                             <span className="truncate">{reservation?.etablissement?.nom || 'N/A'}</span>
                           </div>
@@ -440,10 +440,10 @@ export default function ReservationsDashboard() {
                       </td>
                       <td className="px-4 md:px-6 py-4">
                         <div className="space-y-1.5">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-black">
                             {format(reservation.dateDebut, 'dd MMM', { locale: fr })} → {format(reservation.dateFin, 'dd MMM', { locale: fr })}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-black">
                             {differenceInDays(reservation.dateFin, reservation.dateDebut)} nuits
                           </div>
                           <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${getUrgencyStyles(urgency.level)}`}>
@@ -461,7 +461,7 @@ export default function ReservationsDashboard() {
                             {reservation.statut === 'confirm' ? 'Confirmé' : 
                              reservation.statut === 'en_attente' ? 'En attente' : 'Annulé'}
                           </div>
-                          <div className="text-sm font-bold text-gray-900">
+                          <div className="text-sm font-bold text-black">
                             {reservation.prixTotal.toFixed(2)} €
                           </div>
                         </div>
@@ -488,7 +488,7 @@ export default function ReservationsDashboard() {
             {paginatedData.length === 0 && (
               <div className="text-center py-16 px-6">
                 <CalendarDaysIcon className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                <h3 className="text-lg font-medium text-gray-900">Aucune réservation trouvée</h3>
+                <h3 className="text-lg font-medium text-black">Aucune réservation trouvée</h3>
                 <p className="text-gray-500 mb-6">Essayez d'ajuster vos filtres ou votre recherche</p>
                 <button 
                   onClick={() => {
@@ -518,7 +518,7 @@ export default function ReservationsDashboard() {
         </div>
 
         {/* ===== INDICATEUR MOBILE ===== */}
-        <div className="flex sm:hidden items-center justify-center gap-2 text-xs text-gray-600">
+        <div className="flex sm:hidden items-center justify-center gap-2 text-xs text-black">
           <div className="flex items-center gap-1.5 bg-green-50 px-2.5 py-1.5 rounded-full">
             <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-green-700 font-medium">LIVE</span>

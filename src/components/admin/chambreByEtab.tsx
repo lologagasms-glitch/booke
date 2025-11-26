@@ -83,10 +83,10 @@ export default function ChambreByEtab() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">
+        <h1 className="text-4xl text-white font-bold tracking-tight text-gray-900 mb-4">
           Explorer nos établissements
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-200 max-w-2xl mx-auto">
           Découvrez une sélection d'établissements soigneusement choisis pour vous
         </p>
       </div>

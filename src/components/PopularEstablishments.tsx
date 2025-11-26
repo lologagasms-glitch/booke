@@ -17,6 +17,7 @@ import { usePopularEtablissements } from '@/components/hooks/etablissements';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { CompanyAdvantages, CompanyHero, CompanyTestimonials } from './HomeComponents';
+import { TransletText } from '@/app/lib/services/translation/transletText';
 
 /* ---------- mapping service → icône ---------- */
 const serviceIcons: Record<string, React.ElementType> = {
@@ -42,9 +43,11 @@ const SkeletonCard = () => (
 
 /* ---------- carte individuelle ---------- */
 function EstablishmentCard({
+  locale,
   e,
   priority = false,
 }: {
+  locale: string;
   e: NonNullable<
     Awaited<ReturnType<typeof usePopularEtablissements>>['data']
   >[number];
@@ -58,11 +61,11 @@ function EstablishmentCard({
   const percent = e.prixMin && e.prixMin ? Math.round((1 - e.prixMin / e.prixMin) * 100) : null;
 
   return (
-    <Link href={`/fr/etablissements/${e.etablissementId}`} >
+    <Link href={`/${locale}/etablissements/${e.etablissementId}`} >
       <article className="group relative flex flex-col overflow-hidden rounded-2xl bg-surface shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1">
 
         <div className="flex items-center justify-between text-foreground/60 p-4 ">
-          {e.nom}
+          <TransletText>{e.nom}</TransletText>
         </div>
 
 
@@ -148,23 +151,33 @@ function EstablishmentCard({
 /* ---------- Bloc chiffres clés (statique) ---------- */
 const CompanyStats = () => (
   <section className="mb-10 rounded-2xl bg-gradient-to-r from-primary/5 to-primary/10 p-6 shadow-sm">
-    <h2 className="mb-4 text-center text-2xl font-extrabold text-foreground">Bookeing en quelques chiffres</h2>
+    <h2 className="mb-4 text-center text-2xl font-extrabold text-foreground">
+      <TransletText>Evasion en quelques chiffres </TransletText>
+    </h2>
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
       <div className="text-center">
         <p className="text-3xl font-bold text-primary">250+</p>
-        <p className="text-sm text-foreground/60">Établissements partenaires</p>
+        <p className="text-sm text-foreground/60">
+          <TransletText>Établissements partenaires</TransletText>
+        </p>
       </div>
       <div className="text-center">
         <p className="text-3xl font-bold text-purple-600">12 000+</p>
-        <p className="text-sm text-foreground/60">Nuits réservées</p>
+        <p className="text-sm text-foreground/60">
+          <TransletText>Nuits réservées</TransletText>
+        </p>
       </div>
       <div className="text-center">
         <p className="text-3xl font-bold text-pink-600">4.8/5</p>
-        <p className="text-sm text-foreground/60">Note moyenne</p>
+        <p className="text-sm text-foreground/60">
+          <TransletText>Note moyenne</TransletText>
+        </p>
       </div>
       <div className="text-center">
         <p className="text-3xl font-bold text-amber-600">24h</p>
-        <p className="text-sm text-foreground/60">Support réactif</p>
+        <p className="text-sm text-foreground/60">
+          <TransletText>Support réactif</TransletText>
+        </p>
       </div>
     </div>
   </section>
@@ -172,11 +185,13 @@ const CompanyStats = () => (
 
 /* ---------- liste complète ---------- */
 export default function PopularEstablishments({
+  locale,
   limit = 10,
 }: {
+  locale: string;
   limit?: number;
 }) {
-  const { data, isLoading, isError, refetch } = usePopularEtablissements({ limit });
+  const { data, isLoading, isError, refetch } = usePopularEtablissements({  limit });
   const [shuffled, setShuffled] = useState(data);
 
   useEffect(() => {
@@ -202,13 +217,15 @@ export default function PopularEstablishments({
       <>
         <CompanyStats />
         <div className="flex flex-col items-center gap-4 text-center">
-          <p className="text-red-600">Impossible de charger les établissements populaires.</p>
+          <p className="text-red-600">
+            <TransletText>Impossible de charger les établissements populaires.</TransletText>
+          </p>
           <button
             onClick={() => refetch()}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
           >
             <ArrowPathIcon className="h-4 w-4" />
-            Réessayer
+            <TransletText>Réessayer</TransletText>
           </button>
         </div>
       </>
@@ -218,7 +235,9 @@ export default function PopularEstablishments({
     return (
       <>
         <CompanyStats />
-        <p className="text-center text-foreground/60">Aucun établissement trouvé.</p>
+        <p className="text-center text-foreground/60">
+          <TransletText>Aucun établissement trouvé.</TransletText>
+        </p>
       </>
     );
 
@@ -226,7 +245,7 @@ export default function PopularEstablishments({
     <>
       <CompanyStats />
 
-      <CompanyHero />
+      <CompanyHero locale={locale} />
       <CompanyAdvantages />
       <div
         className={clsx(
@@ -235,10 +254,10 @@ export default function PopularEstablishments({
         )}
       >
         {shuffled.map((e, i) => (
-          <EstablishmentCard key={e.etablissementId} e={e} priority={i === 0} />
+          <EstablishmentCard key={e.etablissementId} e={e} priority={i === 0} locale={locale} />
         ))}
       </div>
-      <CompanyTestimonials />
+      <CompanyTestimonials  />
     </>
   );
 }

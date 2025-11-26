@@ -84,83 +84,83 @@ export default function AdminPaymentsPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-8 text-gray-800">Validation des Paiements & Reçus</h1>
+        <div className="max-w-5xl mx-auto p-6">
+            <h1 className="text-4xl font-extrabold mb-10 text-gray-900 tracking-tight">Validation des Paiements & Reçus</h1>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Client Info */}
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Informations Client</h2>
-                        <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-3">Informations Client</h2>
+                        <div className="grid grid-cols-1 gap-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom du Client</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Nom du Client</label>
                                 <input
                                     type="text"
                                     name="clientName"
                                     value={formData.clientName}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                                     placeholder="ex: Jean Dupont"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email Client</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Email Client</label>
                                 <input
                                     type="email"
                                     name="customerEmail"
                                     value={formData.customerEmail}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                                     placeholder="client@example.com"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse Client</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Adresse Client</label>
                                 <input
                                     type="text"
                                     name="customerAddress"
                                     value={formData.customerAddress}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                                     placeholder="Adresse complète"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Référence</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Référence</label>
                                 <input
                                     type="text"
                                     name="reference"
                                     value={formData.reference}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Payment Info */}
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Détails Paiement</h2>
-                        <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-green-500 pb-3">Détails Paiement</h2>
+                        <div className="grid grid-cols-2 gap-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Montant</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Montant</label>
                                 <input
                                     type="number"
                                     name="amount"
                                     value={formData.amount}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 transition-all duration-200"
                                     placeholder="0.00"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Devise</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Devise</label>
                                 <select
                                     name="currency"
                                     value={formData.currency}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 transition-all duration-200"
                                 >
                                     <option value="EUR">EUR (€)</option>
                                     <option value="USD">USD ($)</option>
@@ -169,86 +169,86 @@ export default function AdminPaymentsPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
                             <input
                                 type="date"
                                 name="date"
                                 value={formData.date}
                                 onChange={handleChange}
-                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                className="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 transition-all duration-200"
                             />
                         </div>
                     </div>
 
                     {/* Service Details */}
-                    <div className="space-y-4 md:col-span-2">
-                        <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Détails du Service</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-6 md:col-span-2">
+                        <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-purple-500 pb-3">Détails du Service</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Type de Service</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Type de Service</label>
                                 <input
                                     type="text"
                                     name="serviceType"
                                     value={formData.serviceType}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-200"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Date d'arrivée</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Date d'arrivée</label>
                                 <input
                                     type="date"
                                     name="checkInDate"
                                     value={formData.checkInDate}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-200"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de départ</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Date de départ</label>
                                 <input
                                     type="date"
                                     name="checkOutDate"
                                     value={formData.checkOutDate}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-200"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Voyageurs</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Voyageurs</label>
                                 <input
                                     type="number"
                                     name="guests"
                                     value={formData.guests}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-200"
                                 />
                             </div>
                         </div>
                         <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nom du Directeur (Signature)</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Nom du Directeur (Signature)</label>
                             <input
                                 type="text"
                                 name="managerName"
                                 value={formData.managerName}
                                 onChange={handleChange}
-                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                className="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-200"
                                 placeholder="ex: Ghislain K."
                             />
                         </div>
                     </div>
 
                     {/* Details */}
-                    <div className="space-y-4 md:col-span-2">
-                        <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Détails & Options</h2>
+                    <div className="space-y-6 md:col-span-2">
+                        <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-orange-500 pb-3">Détails & Options</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Moyen de Paiement</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Moyen de Paiement</label>
                                 <select
                                     name="paymentMethod"
                                     value={formData.paymentMethod}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
                                 >
                                     <option value="Carte Bancaire">Carte Bancaire</option>
                                     <option value="Virement">Virement</option>
@@ -257,12 +257,12 @@ export default function AdminPaymentsPage() {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
                                 <select
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
                                 >
                                     <option value="Validé">Validé</option>
                                     <option value="En attente">En attente</option>
@@ -271,28 +271,28 @@ export default function AdminPaymentsPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
                                 onChange={handleChange}
-                                rows={3}
-                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                rows={4}
+                                className="w-full rounded-xl border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
                             />
                         </div>
                     </div>
 
                     {/* Generation Options */}
-                    <div className="space-y-4 md:col-span-2 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                        <h2 className="text-lg font-semibold text-blue-800">Génération du Document</h2>
-                        <div className="flex items-center gap-4">
+                    <div className="space-y-6 md:col-span-2 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200 shadow-inner">
+                        <h2 className="text-xl font-bold text-blue-900">Génération du Document</h2>
+                        <div className="flex items-center gap-6">
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-blue-900 mb-1">Langue du document</label>
+                                <label className="block text-sm font-semibold text-blue-900 mb-2">Langue du document</label>
                                 <select
                                     name="targetLanguage"
                                     value={formData.targetLanguage}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border-blue-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-blue-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 transition-all duration-200"
                                 >
                                     <option value="fr">Français</option>
                                     <option value="en">Anglais</option>
@@ -305,12 +305,12 @@ export default function AdminPaymentsPage() {
                                     <option value="ja">Japonais</option>
                                 </select>
                             </div>
-                            <div className="flex-none pt-6">
+                            <div className="flex-none pt-8">
                                 {!pdfLabels ? (
                                     <button
                                         onClick={generatePdf}
                                         disabled={isGenerating || !formData.clientName || !formData.amount}
-                                        className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
                                     >
                                         {isGenerating ? 'Traduction...' : 'Préparer le PDF'}
                                     </button>
@@ -318,11 +318,11 @@ export default function AdminPaymentsPage() {
                                     <PDFDownloadLink
                                         document={<PaymentReceiptPdf data={formData} labels={pdfLabels} />}
                                         fileName={`recu-${formData.reference}.pdf`}
-                                        className="inline-flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                                        className="inline-flex items-center gap-3 px-8 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl"
                                     >
                                         {({ loading }: { loading: boolean }) => (
                                             <>
-                                                <ArrowDownTrayIcon className="w-5 h-5" />
+                                                <ArrowDownTrayIcon className="w-6 h-6" />
                                                 {loading ? 'Génération...' : 'Télécharger le PDF'}
                                             </>
                                         )}
@@ -331,7 +331,7 @@ export default function AdminPaymentsPage() {
                             </div>
                         </div>
                         {pdfLabels && (
-                            <p className="text-sm text-green-700 mt-2">
+                            <p className="text-sm text-green-800 mt-3 font-semibold">
                                 ✓ Document prêt et traduit en {formData.targetLanguage.toUpperCase()}
                             </p>
                         )}
