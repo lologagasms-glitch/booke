@@ -175,7 +175,10 @@ export default function Navbar() {
         className={`relative ${isMobile ? 'w-full' : ''}`}
       >
         <button
-          onClick={() => toggleMenu(item.label)}
+          onClick={(e) => {
+            e.stopPropagation(); // Empêche la fermeture immédiate
+            toggleMenu(item.label);
+          }}
           aria-label={`Menu ${item.label}`}
           aria-haspopup="true"
           aria-expanded={isOpen}
@@ -203,25 +206,31 @@ export default function Navbar() {
           )}
         </button>
 
-        <div className={`transition-all duration-200 ${isOpen
-          ? isMobile
-            ? 'max-h-64 opacity-100'
-            : 'opacity-100 translate-y-0 visible'
-          : isMobile
-            ? 'max-h-0 opacity-0 overflow-hidden'
-            : 'opacity-0 -translate-y-2 invisible'
-          } ${isMobile ? 'pl-4 mt-1 space-y-1' : 'absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50'}`}>
-          {item.children?.map((child) => (
+        <div
+          onClick={(e) => e.stopPropagation()} // Empêche la fermeture au clic sur un lien
+          className={`transition-all duration-200 ${isOpen
+            ? isMobile
+              ? 'max-h-64 opacity-100'
+              : 'opacity-100 translate-y-0 visible'
+            : isMobile
+              ? 'max-h-0 opacity-0 overflow-hidden'
+              : 'opacity-0 -translate-y-2 invisible'
+            } ${isMobile ? 'pl-4 mt-1 space-y-1' : 'absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50'}`}
+        >
+          {item.children?.map((child) => {
+            console.log(child.href)
+           return  (
             <Link
               key={child.href}
               href={child.href}
-              onClick={closeAllMenus}
               className={`block px-4 py-2 text-sm text-foreground hover:bg-primary/20 transition flex items-center gap-3 ${isPathActive(child.href) ? 'text-primary font-semibold bg-primary/10' : ''
                 } ${isMobile ? 'rounded-lg' : ''}`}
             >
-              <TransletText>{child.label}</TransletText>
+              
+            <TransletText> {child.label}</TransletText>
             </Link>
-          ))}
+          )
+          })}
         </div>
       </div>
     );
