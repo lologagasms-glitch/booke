@@ -1,7 +1,7 @@
 // next.config.ts
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
-
+import { withWorkflow } from 'workflow/next';
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -30,4 +30,4 @@ const nextConfig: NextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin();
-export default withNextIntl(nextConfig);
+export default withWorkflow(withNextIntl(nextConfig));

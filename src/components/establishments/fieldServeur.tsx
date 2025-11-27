@@ -11,6 +11,6 @@ import { TransletText } from "@/app/lib/services/translation/transletText"
     return (
         <div>
       <div className="mb-2 text-sm font-medium text-gray-700"><TransletText>{label||""}</TransletText></div>
-      {children}
+     {children}
     </div>
   )}

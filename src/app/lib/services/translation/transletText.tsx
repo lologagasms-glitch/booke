@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import {  traduireTexteSecurise } from "./translateApiWithLingvaAndVercel";
-import { useEffect } from "react";
 
 interface TransletTextProps {
   children: string | string[];
@@ -29,7 +28,7 @@ export function TransletText({ children }: TransletTextProps) {
   });
 
   if (!shouldTranslate) return <>{children}</>;
-  if (isLoading) return
+  if (isLoading) return <>{children}</>;
   if (error) return <>Erreur : {error.message}</>;
 
   const translated = translateText || textArray;

@@ -1,11 +1,9 @@
 'use client'
 
 import { Fragment } from 'react'
-import { useQueryStates } from 'nuqs'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, StarIcon as StarOutline } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid'
-import { filtersParsers } from '@/app/[locale]/etablissements/filter'
 import { TransletText } from '@/app/lib/services/translation/transletText'
 import { Field } from './fieldServeur'
 import { Input } from '@/app/lib/services/translation/inputTranslate'

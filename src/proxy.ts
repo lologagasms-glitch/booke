@@ -11,7 +11,7 @@ export async function proxy(request: NextRequest) {
 	});
 
 	const isAdminRoute = url.pathname.includes("/admin");
-	const isAuthRoute = url.pathname.includes("/signin") || url.pathname.includes("/signup");
+	const isAuthRoute = url.pathname.includes("/auth") ;
 	const isProfileRoute = url.pathname.includes("/profile");
 	// 1. Admin Routes Protection
 	if (isAdminRoute) {
