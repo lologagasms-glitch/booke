@@ -359,7 +359,7 @@ const PaymentReceiptPdf: React.FC<PaymentReceiptProps> = ({ data, labels }) => {
                 {/* Header */}
                 <View style={styles.header}>
                     <View style={styles.logoContainer}>
-                        <Text style={styles.logoText}>{data.companyName || 'Évasion'}</Text>
+                        <Image src="/vercel.svg" style={{ width: 100, height: 24, marginBottom: 10 }} />
                         <Text style={styles.companyInfo}>{data.companyAddress}</Text>
                         <Text style={styles.companyInfo}>{data.companyEmail}</Text>
                         <Text style={styles.companyInfo}>{data.companyPhone}</Text>
