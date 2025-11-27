@@ -4,16 +4,27 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { ChevronDownIcon, Bars3Icon, XMarkIcon, UsersIcon, SunIcon, MoonIcon, SwatchIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { 
+  ChevronDownIcon, 
+  Bars3Icon, 
+  XMarkIcon, 
+  UsersIcon, 
+  SunIcon, 
+  MoonIcon, 
+  SwatchIcon, 
+  ShieldCheckIcon,
+  UserCircleIcon,
+  CalendarDaysIcon,
+  Cog6ToothIcon
+} from '@heroicons/react/24/outline';
 import { useTheme } from '@/components/providers/ThemeProvider';
 import { signOut, useSession } from '@/app/lib/auth-client';
 import { flagEmoji, localeNames, routing } from '@/i18n/routing';
 import { TransletText } from '@/app/lib/services/translation/transletText';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Composant espaceur à placer juste après la navbar
-export const NavbarSpacer = () => {
-  return <div className="h-20" />;
-};
+// Composant espaceur
+export const NavbarSpacer = () => <div className="h-20" />;
 
 type NavItem = {
   href?: string;
@@ -38,7 +49,7 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-// Hook personnalisé pour détecter les clics à l'extérieur
+// Hook pour détecter les clics à l'extérieur
 const useOutsideClick = <T extends HTMLElement>(
   refs: React.RefObject<T>[],
   callback: () => void
@@ -59,22 +70,22 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-
   const { theme, setTheme } = useTheme();
-  const [openMenu, setOpenMenu] = useState<string>('none');
+
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
   const langMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const themeMenuRef = useRef<HTMLDivElement>(null);
+  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const { useLocale } = require('next-intl');
   const locale = useLocale();
-  const closeAllMenus = useCallback(() => setOpenMenu('none'), []);
 
-  // Collect all refs for outside click
+  const closeAllMenus = useCallback(() => setOpenMenu(null), []);
+
   const allRefs = useMemo(() => {
     const refs = [userMenuRef, langMenuRef, mobileMenuRef, themeMenuRef];
     Object.values(dropdownRefs.current).forEach(ref => {
@@ -114,14 +125,12 @@ export default function Navbar() {
   );
 
   const toggleMenu = useCallback((menu: string) => {
-    setOpenMenu(prev => (prev === menu ? 'none' : menu));
+    setOpenMenu(prev => (prev === menu ? null : menu));
   }, []);
 
   const Logo = () => (
     <Link href="/" onClick={closeAllMenus} className="flex items-center">
-      <span className="text-2xl font-serif font-extrabold text-primary">
-        Évasion
-      </span>
+      <span className="text-2xl font-serif font-extrabold text-primary">Évasion</span>
     </Link>
   );
 
@@ -134,103 +143,30 @@ export default function Navbar() {
       <div ref={isMobile ? mobileMenuRef : langMenuRef} className={`relative ${isMobile ? 'w-full' : ''}`}>
         <button
           onClick={() => toggleMenu('lang')}
-          aria-haspopup="true"
-          aria-expanded={isOpen}
-          className={`flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-foreground hover:bg-foreground/10 transition ${isMobile ? 'w-full justify-center' : ''
-            }`}
+          className={`flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm hover:bg-foreground/10 transition ${
+            isMobile ? 'w-full justify-center' : ''
+          }`}
         >
           <span className="text-base">{currentFlag}</span>
           <span className="hidden sm:inline">{currentLabel}</span>
-          <ChevronDownIcon className={`h-4 w-4 text-foreground/70 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
-        <div className={`absolute right-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all duration-200 ${isOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
-          } ${isMobile ? 'relative w-full mt-1' : ''}`}>
+        <div className={`absolute right-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${
+          isOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
+        } ${isMobile ? 'relative w-full mt-1' : ''}`}>
           {routing.locales.map((code) => (
             <button
               key={code}
               onClick={() => switchLanguage(code)}
-              className={`w-full text-left px-4 py-2 text-sm text-foreground hover:bg-primary/20 transition flex items-center gap-3 ${code === locale ? 'text-primary font-semibold bg-primary/10' : ''
-                }`}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/20 transition flex items-center gap-3 ${
+                code === locale ? 'text-primary font-semibold bg-primary/10' : ''
+              }`}
             >
               <span className="text-base">{flagEmoji[code]}</span>
               <span>{localeNames[code as keyof typeof localeNames]}</span>
             </button>
           ))}
-        </div>
-      </div>
-    );
-  };
-
-  const NavDropdown = ({ item, isMobile = false }: { item: NavItem; isMobile?: boolean }) => {
-    const isOpen = openMenu === item.label;
-    const isParentActive = item.children?.some(child => isPathActive(child.href)) || false;
-    const Icon = item.icon;
-
-    return (
-      <div
-        ref={(el) => {
-          if (!isMobile) dropdownRefs.current[item.label] = el;
-        }}
-        className={`relative ${isMobile ? 'w-full' : ''}`}
-      >
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Empêche la fermeture immédiate
-            toggleMenu(item.label);
-          }}
-          aria-label={`Menu ${item.label}`}
-          aria-haspopup="true"
-          aria-expanded={isOpen}
-          className={
-            isMobile
-              ? `flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-medium transition ${isParentActive
-                ? 'bg-primary/20 text-primary'
-                : 'text-foreground/80 hover:bg-primary/20'
-              }`
-              : `relative text-foreground/90 hover:text-primary transition text-sm font-medium group flex items-center gap-2 ${isParentActive ? 'text-primary' : ''
-              }`
-          }
-        >
-          <span className="flex items-center gap-2">
-            {Icon && (
-              <Icon className={`${isMobile ? 'h-6 w-6' : 'h-5 w-5'} transition-colors ${isParentActive ? 'text-primary' : 'text-foreground/90'
-                }`} />
-            )}
-            <TransletText>{item.label}</TransletText>
-            <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-          </span>
-          {!isMobile && (
-            <span className={`absolute left-0 -bottom-1 h-0.5 bg-primary transition-all duration-300 ${isParentActive ? 'w-full' : 'w-0 group-hover:w-full'
-              }`} />
-          )}
-        </button>
-
-        <div
-          onClick={(e) => e.stopPropagation()} // Empêche la fermeture au clic sur un lien
-          className={`transition-all duration-200 ${isOpen
-            ? isMobile
-              ? 'max-h-64 opacity-100'
-              : 'opacity-100 translate-y-0 visible'
-            : isMobile
-              ? 'max-h-0 opacity-0 overflow-hidden'
-              : 'opacity-0 -translate-y-2 invisible'
-            } ${isMobile ? 'pl-4 mt-1 space-y-1' : 'absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50'}`}
-        >
-          {item.children?.map((child) => {
-            console.log(child.href)
-           return  (
-            <Link
-              key={child.href}
-              href={child.href}
-              className={`block px-4 py-2 text-sm text-foreground hover:bg-primary/20 transition flex items-center gap-3 ${isPathActive(child.href) ? 'text-primary font-semibold bg-primary/10' : ''
-                } ${isMobile ? 'rounded-lg' : ''}`}
-            >
-              
-            <TransletText> {child.label}</TransletText>
-            </Link>
-          )
-          })}
         </div>
       </div>
     );
@@ -255,123 +191,205 @@ export default function Navbar() {
     );
   };
 
-  const finalNavItems = useMemo(() => {
-    const items = [...NAV_ITEMS];
-    if (session?.user?.role === 'admin') {
-      items.push({
-        label: 'admin',
-        icon: ShieldCheckIcon,
-        children: [
-          { href: '/admin', label: 'dashboard' },
-          { href: '/admin/users', label: 'users' },
-          { href: '/admin/etablissements', label: 'establishments' },
-          { href: '/admin/reservations', label: 'reservations' },
-        ]
-      });
-    }
-    return items;
-  }, [session]);
+  const MobileDropdown = ({ item }: { item: NavItem }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const Icon = item.icon;
+    const isParentActive = item.children?.some(child => isPathActive(child.href)) || false;
+
+    return (
+      <div className="space-y-1">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`flex items-center justify-between w-full text-left px-4 py-3 rounded-xl transition-all ${
+            isParentActive
+              ? 'bg-primary/20 text-primary font-semibold'
+              : 'text-foreground/80 hover:bg-primary/10 hover:text-foreground'
+            }`}
+          >
+            <span className="flex items-center gap-4">
+              {Icon && <Icon className="h-5 w-5" />}
+              <TransletText>{item.label}</TransletText>
+            </span>
+            <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          </button>
+          
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="pl-6 space-y-1 overflow-hidden"
+              >
+                {item.children?.map((child) => (
+                  <Link
+                    key={child.href}
+                    href={child.href}
+                    onClick={closeAllMenus}
+                    className={`block px-4 py-2 text-sm rounded-lg transition-all ${
+                      isPathActive(child.href)
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-foreground/70 hover:bg-primary/5 hover:text-foreground'
+                    }`}
+                  >
+                    <TransletText>{child.label}</TransletText>
+                  </Link>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+  };
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? ' backdrop-blur-xl bg-background/70 shadow-2xl' : 'bg-background/40 backdrop-blur-lg'
-        }`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'backdrop-blur-xl bg-background/70 shadow-2xl' : 'bg-background/40 backdrop-blur-lg'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             <Logo />
 
-            {/* Desktop nav */}
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex lg:items-center lg:space-x-10">
-              {finalNavItems.map((item) => {
+              {NAV_ITEMS.map((item) => {
                 if (item.children) {
-                  return <NavDropdown key={item.label} item={item} />;
+                  return (
+                    <div key={item.label} className="relative" ref={(el: HTMLDivElement | null) => { dropdownRefs.current[item.label] = el; }}>
+                      <button
+                        onClick={() => toggleMenu(item.label)}
+                        className={`flex items-center gap-2 text-foreground/90 hover:text-primary transition text-sm font-medium ${
+                          item.children.some(child => isPathActive(child.href)) ? 'text-primary' : ''
+                        }`}
+                      >
+                        <TransletText>{item.label}</TransletText>
+                        <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                          openMenu === item.label ? 'rotate-180' : ''
+                        }`} />
+                      </button>
+                      
+                      <div className={`absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${
+                        openMenu === item.label ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
+                      }`}>
+                        {item.children?.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={closeAllMenus}
+                            className={`block px-4 py-2 text-sm hover:bg-primary/20 transition ${
+                              isPathActive(child.href) ? 'text-primary font-semibold bg-primary/10' : ''
+                            }`}
+                          >
+                            <TransletText>{child.label}</TransletText>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
                 }
                 return (
                   <Link
                     key={item.href}
                     href={item.href!}
                     onClick={closeAllMenus}
-                    className={`relative text-foreground/90 hover:text-primary transition text-sm font-medium group ${isPathActive(item.href!) ? 'text-primary' : ''
-                      }`}
+                    className={`relative text-foreground/90 hover:text-primary transition text-sm font-medium ${
+                      isPathActive(item.href!) ? 'text-primary' : ''
+                    }`}
                   >
                     <TransletText>{item.label}</TransletText>
-                    <span className={`absolute left-0 -bottom-1 h-0.5 bg-primary transition-all duration-300 ${isPathActive(item.href!) ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`} />
                   </Link>
                 );
               })}
             </div>
 
-            {/* Desktop right */}
+            {/* Desktop Right */}
             <div className="hidden lg:flex lg:items-center lg:space-x-6">
+              {session?.user?.role === 'ADMIN' && (
+                <Link
+                  href="/admin"
+                  onClick={closeAllMenus}
+                  className="flex items-center gap-2 rounded-lg border border-destructive/50 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition"
+                >
+                  <ShieldCheckIcon className="h-4 w-4" />
+                  {t('admin')}
+                </Link>
+              )}
+
               {session?.user ? (
                 <div ref={userMenuRef} className="relative">
                   <button
                     onClick={() => toggleMenu('user')}
-                    aria-haspopup="true"
-                    aria-expanded={openMenu === 'user'}
                     className="flex items-center space-x-2 rounded-lg p-2 hover:bg-foreground/10 transition"
                   >
                     <UserAvatar />
                   </button>
 
-                  <div className={`absolute right-0 mt-3 w-56 rounded-xl bg-popover/95 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all duration-200 ${openMenu === 'user' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
-                    }`}>
+                  <div className={`absolute right-0 mt-3 w-56 rounded-xl bg-popover/95 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${
+                    openMenu === 'user' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
+                  }`}>
                     <div className="px-4 py-3 border-b border-border">
                       <p className="text-foreground font-medium">{session.user.name}</p>
                       <p className="text-muted-foreground text-xs truncate">{session.user.email}</p>
                     </div>
-                    <Link href="/profile" onClick={closeAllMenus} className="block px-4 py-2 text-foreground/80 hover:bg-primary/20">
+                    <Link href="/profile" onClick={closeAllMenus} className="block px-4 py-2 text-sm hover:bg-primary/20">
                       {t('profile')}
                     </Link>
-                    <Link href="/reservations" onClick={closeAllMenus} className="block px-4 py-2 text-foreground/80 hover:bg-primary/20">
+                    <Link href="/reservations" onClick={closeAllMenus} className="block px-4 py-2 text-sm hover:bg-primary/20">
                       {t('reservations')}
                     </Link>
-                    {session.user.role === 'ADMIN' && (
-                      <Link href="/admin" onClick={closeAllMenus} className="block px-4 py-2 text-foreground/80 hover:bg-primary/20">
-                        {t('admin')}
-                      </Link>
-                    )}
-                    <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-foreground/80 hover:bg-primary/20">
+                    <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm hover:bg-primary/20">
                       {t('logout')}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center space-x-3">
-                  <Link href="/auth/signin" onClick={closeAllMenus} className="rounded-lg border border-primary/50 px-4 py-2 text-sm text-foreground hover:bg-primary/10 transition">
-                    connexion
+                  <Link href="/auth/signin" onClick={closeAllMenus} className="px-4 py-2 text-sm border border-primary/50 rounded-lg hover:bg-primary/10 transition">
+                    <TransletText>connexion</TransletText>
                   </Link>
-                  <Link href="/auth/signup" onClick={closeAllMenus} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition">
-                    inscription
+                  <Link href="/auth/signup" onClick={closeAllMenus} className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition font-semibold">
+                    <TransletText>inscription</TransletText>
                   </Link>
                 </div>
               )}
+
               <div ref={themeMenuRef} className="relative">
-                <button
-                  onClick={() => toggleMenu('theme')}
-                  className="p-2 rounded-lg text-foreground/80 hover:bg-foreground/10 transition"
-                >
+                <button onClick={() => toggleMenu('theme')} className="p-2 rounded-lg hover:bg-foreground/10 transition">
                   {theme === 'white' && <SunIcon className="h-5 w-5" />}
                   {theme === 'dark' && <MoonIcon className="h-5 w-5" />}
                   {theme === 'yellow' && <SwatchIcon className="h-5 w-5" />}
                 </button>
 
-                <div className={`absolute right-0 mt-2 w-32 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all duration-200 ${openMenu === 'theme' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
-                  <button onClick={() => { setTheme('white'); closeAllMenus(); }} className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-primary/20 ${theme === 'white' ? 'text-primary font-bold' : 'text-foreground'}`}><SunIcon className="h-4 w-4" /> White</button>
-                  <button onClick={() => { setTheme('dark'); closeAllMenus(); }} className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-primary/20 ${theme === 'dark' ? 'text-primary font-bold' : 'text-foreground'}`}><MoonIcon className="h-4 w-4" /> Black</button>
-                  <button onClick={() => { setTheme('yellow'); closeAllMenus(); }} className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-primary/20 ${theme === 'yellow' ? 'text-primary font-bold' : 'text-foreground'}`}><SwatchIcon className="h-4 w-4" /> Yellow</button>
+                <div className={`absolute right-0 mt-2 w-32 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${
+                  openMenu === 'theme' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
+                }`}>
+                  {['white', 'dark', 'yellow'].map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => { setTheme(t as 'white' | 'dark' | 'yellow'); closeAllMenus(); }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/20 flex items-center gap-2 ${
+                        theme === t ? 'text-primary font-bold' : ''
+                      }`}
+                    >
+                      {t === 'white' && <SunIcon className="h-4 w-4" />}
+                      {t === 'dark' && <MoonIcon className="h-4 w-4" />}
+                      {t === 'yellow' && <SwatchIcon className="h-4 w-4" />}
+                      {t}
+                    </button>
+                  ))}
                 </div>
               </div>
+
               <LanguageDropdown />
             </div>
 
-            {/* Mobile burger */}
+            {/* Mobile Burger */}
             <div className="lg:hidden flex items-center">
               <button
                 onClick={() => toggleMenu('mobile')}
                 aria-label="Toggle menu"
-                aria-expanded={openMenu === 'mobile'}
                 className="p-2 rounded-md text-foreground/80 hover:bg-foreground/10 transition"
               >
                 {openMenu === 'mobile' ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
@@ -379,69 +397,161 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        <div ref={mobileMenuRef} className={`lg:hidden fixed top-20 left-0 right-0 bottom-0 bg-background/95 backdrop-blur-lg transition-transform duration-300 z-40 ${openMenu === 'mobile' ? 'translate-x-0' : 'translate-x-full'
-          }`}>
-          <div className="px-4 pt-6 pb-8 overflow-y-auto h-full">
-            <div className="space-y-3">
-              {finalNavItems.map((item) => {
-                if (item.children) {
-                  return <NavDropdown key={item.label} item={item} isMobile={true} />;
-                }
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href!}
-                    onClick={closeAllMenus}
-                    className={`block rounded-lg px-4 py-3 text-base font-medium transition ${isPathActive(item.href!) ? 'bg-primary/20 text-primary' : 'text-foreground/80 hover:bg-primary/20'
-                      }`}
-                  >
-                    <TransletText>{item.label}</TransletText>
-                  </Link>
-                );
-              })}
-            </div>
-
-            <div className="pt-4 border-t border-border space-y-3">
-              {session?.user ? (
-                <>
-                  <div className="px-4 py-3 rounded-lg bg-surface/50">
-                    <p className="text-foreground font-medium">{session.user.name}</p>
-                    <p className="text-muted-foreground text-xs truncate">{session.user.email}</p>
-                  </div>
-                  <Link href="/profile" onClick={closeAllMenus} className="block px-4 py-3 text-foreground/80 hover:bg-primary/20 rounded-lg">
-                    {t('profile')}
-                  </Link>
-                  <Link href="/reservations" onClick={closeAllMenus} className="block px-4 py-3 text-foreground/80 hover:bg-primary/20 rounded-lg">
-                    {t('reservations')}
-                  </Link>
-                  {session.user.role === 'ADMIN' && (
-                    <Link href="/admin" onClick={closeAllMenus} className="block px-4 py-3 text-foreground/80 hover:bg-primary/20 rounded-lg">
-                      {t('admin')}
-                    </Link>
-                  )}
-                  <button onClick={() => signOut()} className="block w-full text-left px-4 py-3 text-foreground/80 hover:bg-primary/20 rounded-lg">
-                    {t('logout')}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link href="/auth/signin" onClick={closeAllMenus} className="block rounded-lg border border-primary/50 px-4 py-3 text-foreground/80 hover:bg-primary/20 text-center">
-                    connexion
-                  </Link>
-                  <Link href="/auth/signup" onClick={closeAllMenus} className="block rounded-lg bg-primary px-4 py-3 text-primary-foreground font-semibold hover:opacity-90 text-center">
-                    inscription
-                  </Link>
-                </>
-              )}
-              <div className="pt-2">
-                <LanguageDropdown isMobile={true} />
-              </div>
-            </div>
-          </div>
-        </div>
       </nav>
+
+      {/* MOBILE DRAWER */}
+      <AnimatePresence>
+        {openMenu === 'mobile' && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+              onClick={closeAllMenus}
+            />
+            
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed right-0 top-0 h-full w-5/6 max-w-sm z-50 bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl lg:hidden"
+              ref={mobileMenuRef}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-border">
+                <Logo />
+                <button
+                  onClick={closeAllMenus}
+                  aria-label="Fermer le menu"
+                  className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition"
+                >
+                  <XMarkIcon className="h-6 w-6 text-foreground" />
+                </button>
+              </div>
+
+              <div className="h-[calc(100%-5rem)] overflow-y-auto px-6 py-4">
+                <nav className="space-y-2">
+                  {NAV_ITEMS.map((item, index) => (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1, type: 'spring' }}
+                    >
+                      {item.children ? (
+                        <MobileDropdown item={item} />
+                      ) : (
+                        <Link
+                          href={item.href!}
+                          onClick={closeAllMenus}
+                          className={`flex items-center gap-4 w-full text-left px-4 py-3 rounded-xl transition-all ${
+                            isPathActive(item.href!)
+                              ? 'bg-primary/20 text-primary font-semibold'
+                              : 'text-foreground/80 hover:bg-primary/10 hover:text-foreground'
+                          }`}
+                        >
+                          <span className="w-6 flex justify-center">
+                            {item.href === '/' && '🏠'}
+                            {item.href === '/etablissements' && '🏨'}
+                          </span>
+                          <TransletText>{item.label}</TransletText>
+                        </Link>
+                      )}
+                    </motion.div>
+                  ))}
+                </nav>
+
+                <div className="mt-8 pt-6 border-t border-border space-y-3">
+                  {/* Theme Switcher */}
+                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-surface/30">
+                    <span className="text-foreground/80 flex items-center gap-2">
+                      <SwatchIcon className="h-5 w-5" />
+                      Theme
+                    </span>
+                    <div className="flex gap-1 p-1 rounded-lg bg-surface">
+                      {['white', 'dark', 'yellow'].map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => setTheme(t as 'white' | 'dark' | 'yellow')}
+                          className={`px-3 py-1 rounded-md text-xs transition ${
+                            theme === t ? 'bg-primary text-primary-foreground' : 'text-foreground/60'
+                          }`}
+                        >
+                          {t === 'white' && '☀️'}
+                          {t === 'dark' && '🌙'}
+                          {t === 'yellow' && '🟡'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Language */}
+                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-surface/30">
+                    <span className="text-foreground/80 flex items-center gap-2">
+                      🌐 <TransletText>language</TransletText>
+                    </span>
+                    <select
+                      value={locale}
+                      onChange={(e) => switchLanguage(e.target.value)}
+                      className="bg-surface rounded-md px-3 py-1 text-sm border border-border"
+                    >
+                      {routing.locales.map((code) => (
+                        <option key={code} value={code}>
+                          {localeNames[code as keyof typeof localeNames]}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-6 pt-6 border-t border-border space-y-3"
+                >
+                  {session?.user ? (
+                    <>
+                      <div className="px-4 py-4 rounded-xl bg-primary/10 mb-2">
+                        <p className="text-foreground font-semibold">{session.user.name}</p>
+                        <p className="text-muted-foreground text-sm truncate">{session.user.email}</p>
+                      </div>
+                      <Link href="/profile" onClick={closeAllMenus} className="block px-4 py-3 rounded-xl hover:bg-primary/10 transition">
+                        👤 <TransletText>profile</TransletText>
+                      </Link>
+                      <Link href="/reservations" onClick={closeAllMenus} className="block px-4 py-3 rounded-xl hover:bg-primary/10 transition">
+                        📋 <TransletText>reservations</TransletText>
+                      </Link>
+                      {session.user.role === 'ADMIN' && (
+                        <Link href="/admin" onClick={closeAllMenus} className="block px-4 py-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition">
+                          🛡️ <TransletText>admin</TransletText>
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => { signOut(); closeAllMenus(); }}
+                        className="block w-full text-left px-4 py-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition mt-4"
+                      >
+                        🚪 <TransletText>logout</TransletText>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/auth/signin" onClick={closeAllMenus} className="block w-full text-center px-4 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition font-medium">
+                        🔐 <TransletText>login</TransletText>
+                      </Link>
+                      <Link href="/auth/signup" onClick={closeAllMenus} className="block w-full text-center px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition font-semibold">
+                        ✨ <TransletText>signup</TransletText>
+                      </Link>
+                    </>
+                  )}
+                </motion.div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <NavbarSpacer />
     </>
