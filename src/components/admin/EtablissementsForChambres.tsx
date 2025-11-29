@@ -145,15 +145,15 @@ export default function EstablishmentsForChambres() {
   const filtered = useMemo(() => {
     return (Array.isArray(etablissements) ? etablissements : etablissements).filter((e) => {
       const matchSearch =
-        e.nom.toLowerCase().includes(search.toLowerCase()) ||
-        e.ville.toLowerCase().includes(search.toLowerCase());
-      const matchType = typeFilter ? e.type === typeFilter : true;
+        e.etablissements.nom.toLowerCase().includes(search.toLowerCase()) ||
+         e.etablissements.ville.toLowerCase().includes(search.toLowerCase());
+      const matchType = typeFilter ?  e.etablissements.type === typeFilter : true;
       return matchSearch && matchType;
     });
   }, [etablissements, search, typeFilter]);
 
   /* ---- UI helpers ---- */
-  const typeOptions = [...new Set((Array.isArray(etablissements) ? etablissements : etablissements).map((e) => e.type))];
+  const typeOptions = [...new Set((Array.isArray(etablissements) ? etablissements : etablissements).map((e) =>  e.etablissements.type))];
 
   if (isLoading)
     return (
@@ -201,10 +201,10 @@ export default function EstablishmentsForChambres() {
           {filtered.map((e) => (
             <Card
               locale={locale}
-              key={e.id}
-              etablissement={{ ...e, etoiles: e.etoiles ?? 0 ,firstImage:e.firstImageUrl}}
+              key={ e.etablissements.id}
+              etablissement={{ ... e.etablissements, etoiles:  e.etablissements.etoiles ?? 0 ,firstImage:e.firstImageUrl}}
               onDelete={() => {
-                if (confirm(`Supprimer « ${e.nom} » ?`)) deleteMutation.mutate({ id: e.id });
+                if (confirm(`Supprimer « ${ e.etablissements.nom} » ?`)) deleteMutation.mutate({ id:  e.etablissements.id });
               }}
             />
           ))}

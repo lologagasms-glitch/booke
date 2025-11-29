@@ -13,6 +13,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import 'swiper/css/effect-creative';
 import 'swiper/css/parallax';
+import { TransletText } from '../lib/services/translation/transletText';
 
 export default function ModernCarousel() {
   const { data, isLoading } = useCarousel();
@@ -92,10 +93,11 @@ export default function ModernCarousel() {
                 className="text-white max-w-2xl transform translate-y-8"
               >
                 <h2 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                  { 'Établissement'}
+                 <TransletText>{ 'Établissement'}</TransletText> 
                 </h2>
                 <p className="text-lg md:text-xl opacity-80">
-                  { 'Découvrez nos espaces uniques'}
+                  <TransletText> { 'Découvrez nos espaces uniques'}</TransletText> 
+                 
                 </p>
               </div>
             </div>

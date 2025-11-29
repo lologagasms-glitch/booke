@@ -13,9 +13,11 @@ export async function proxy(request: NextRequest) {
 	const isAdminRoute = url.pathname.includes("/admin");
 	const isAuthRoute = url.pathname.includes("/auth") ;
 	const isProfileRoute = url.pathname.includes("/profile");
+	const isDashboard = url.pathname.includes("/dashboard");
+	const isBaseRoute=url.pathname==="/"
 	// 1. Admin Routes Protection
 	if (isAdminRoute) {
-		if (!sessionCookie) {
+		if (!session?.user) {
 			url.pathname = `/${locale}/auth/signin`;
 			return NextResponse.redirect(url);
 		}
@@ -31,11 +33,16 @@ export async function proxy(request: NextRequest) {
 	}
 
 	// 2. Auth Routes (Redirect logged-in users away)
-	if (isAuthRoute && sessionCookie) {
+	if (isAuthRoute && session?.user) {
 		url.pathname = `/${locale}/profile`;
 		return NextResponse.redirect(url);
 	}
-
+	// Redirect root and /dashboard to localized home
+	if (isBaseRoute || isDashboard) {
+		url.pathname = `/en`;
+		return NextResponse.redirect(url);
+	}
+	
 	// 3. Profile Route Protection (Optional: Redirect guests to signin)
 	// The original code redirected logged-in users AWAY from profile, which was likely a bug.
 	// Now we ensure guests are redirected to signin if they try to access profile.

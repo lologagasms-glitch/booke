@@ -8,19 +8,31 @@ import {
   ChevronDownIcon,
   Bars3Icon,
   XMarkIcon,
-  UsersIcon,
   SunIcon,
   MoonIcon,
   SwatchIcon,
   ShieldCheckIcon,
+  GlobeAltIcon,
+  HomeIcon,
+  BuildingOfficeIcon,
+  EnvelopeIcon,
+  UserGroupIcon,
+  UserIcon,
+  ArrowRightOnRectangleIcon,
+  ArrowLeftOnRectangleIcon,
+  UserCircleIcon,
+  ClipboardDocumentListIcon,
+  Cog6ToothIcon,
+  UserPlusIcon,
 } from '@heroicons/react/24/outline';
 import { useTheme } from '@/components/providers/ThemeProvider';
 import { signOut, useSession } from '@/app/lib/auth-client';
 import { flagEmoji, localeNames, routing } from '@/i18n/routing';
 import { TransletText } from '@/app/lib/services/translation/transletText';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useParams } from 'next/navigation';
 
-// Composant espaceur
+// Spacer component
 export const NavbarSpacer = () => <div className="h-20" />;
 
 type NavItem = {
@@ -30,23 +42,24 @@ type NavItem = {
   children?: Array<{
     href: string;
     label: string;
+    icon?: React.ElementType;
   }>;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/', label: 'home' },
-  { href: '/etablissements', label: 'establishments' },
+  { href: '/', label: 'acceuil', icon: HomeIcon },
+  { href: '/etablissements', label: 'établissements', icon: BuildingOfficeIcon },
   {
     label: 'contact',
-    icon: UsersIcon,
+    icon: EnvelopeIcon,
     children: [
-      { href: '/contact', label: 'contact' },
-      { href: '/teams', label: 'teams' }
+      { href: '/contact', label: 'contact', icon: EnvelopeIcon },
+      { href: '/teams', label: 'Membres', icon: UserGroupIcon }
     ]
   },
 ];
 
-// Hook pour détecter les clics à l'extérieur
+// Hook to detect outside clicks
 const useOutsideClick = <T extends HTMLElement>(
   refs: React.RefObject<T>[],
   callback: () => void
@@ -78,8 +91,7 @@ export default function Navbar() {
   const themeMenuRef = useRef<HTMLDivElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  const { useLocale } = require('next-intl');
-  const locale = useLocale();
+  const { locale } = useParams();
 
   const closeAllMenus = useCallback(() => setOpenMenu(null), []);
 
@@ -107,7 +119,8 @@ export default function Navbar() {
 
   const switchLanguage = useCallback(
     (newLocale: string) => {
-      router.replace(pathname, { locale: newLocale });
+      const cleanPath = pathname.replace(/^\/[^\/]+/, '') || '/';
+      router.replace(cleanPath, { locale: newLocale });
       closeAllMenus();
     },
     [pathname, router, closeAllMenus]
@@ -132,39 +145,37 @@ export default function Navbar() {
         alt="Logo"
         width={100}
         height={24}
-        className="h-20 w-auto "
+        className="h-20 w-auto"
       />
     </Link>
   );
 
   const LanguageDropdown = ({ isMobile = false }: { isMobile?: boolean }) => {
     const currentLabel = localeNames[locale as keyof typeof localeNames];
-    const currentFlag = flagEmoji[locale];
+    const currentFlag = flagEmoji[locale as keyof typeof flagEmoji];
     const isOpen = openMenu === 'lang';
 
     return (
       <div ref={isMobile ? mobileMenuRef : langMenuRef} className={`relative ${isMobile ? 'w-full' : ''}`}>
         <button
           onClick={() => toggleMenu('lang')}
-          className={`flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm hover:bg-foreground/10 transition ${isMobile ? 'w-full justify-center' : ''
-            }`}
+          className={`flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm hover:bg-foreground/10 transition ${isMobile ? 'w-full justify-center' : ''}`}
         >
+          <GlobeAltIcon className="h-4 w-4" />
+          <span className="hidden sm:inline"><TransletText>{currentLabel}</TransletText></span>
           <span className="text-base">{currentFlag}</span>
-          <span className="hidden sm:inline">{currentLabel}</span>
           <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
-        <div className={`absolute right-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${isOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
-          } ${isMobile ? 'relative w-full mt-1' : ''}`}>
+        <div className={`absolute right-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${isOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'} ${isMobile ? 'relative w-full mt-1' : ''}`}>
           {routing.locales.map((code) => (
             <button
               key={code}
               onClick={() => switchLanguage(code)}
-              className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/20 transition flex items-center gap-3 ${code === locale ? 'text-primary font-semibold bg-primary/10' : ''
-                }`}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/20 transition flex items-center gap-3 ${code === locale ? 'text-primary font-semibold bg-primary/10' : ''}`}
             >
               <span className="text-base">{flagEmoji[code]}</span>
-              <span>{localeNames[code as keyof typeof localeNames]}</span>
+              <span><TransletText>{localeNames[code as keyof typeof localeNames]}</TransletText></span>
             </button>
           ))}
         </div>
@@ -223,7 +234,7 @@ export default function Navbar() {
             >
               {item.children?.map((child) => (
                 <Link
-                  key={child.href}
+                  key={`${child.href}`}
                   href={child.href}
                   onClick={closeAllMenus}
                   className={`block px-4 py-2 text-sm rounded-lg transition-all ${isPathActive(child.href)
@@ -231,7 +242,10 @@ export default function Navbar() {
                       : 'text-foreground/70 hover:bg-primary/5 hover:text-foreground'
                     }`}
                 >
-                  <TransletText>{child.label}</TransletText>
+                  <span className="flex items-center gap-3">
+                    {child.icon && <child.icon className="h-4 w-4" />}
+                    <TransletText>{child.label}</TransletText>
+                  </span>
                 </Link>
               ))}
             </motion.div>
@@ -243,8 +257,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'backdrop-blur-xl bg-background/70 shadow-2xl' : 'bg-background/40 backdrop-blur-lg'
-        }`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'backdrop-blur-xl bg-background/70 shadow-2xl' : 'bg-background/40 backdrop-blur-lg'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             <Logo />
@@ -257,25 +270,24 @@ export default function Navbar() {
                     <div key={item.label} className="relative" ref={(el: HTMLDivElement | null) => { dropdownRefs.current[item.label] = el; }}>
                       <button
                         onClick={() => toggleMenu(item.label)}
-                        className={`flex items-center gap-2 text-foreground/90 hover:text-primary transition text-sm font-medium ${item.children.some(child => isPathActive(child.href)) ? 'text-primary' : ''
-                          }`}
+                        className={`flex items-center gap-2 text-foreground/90 hover:text-primary transition text-sm font-medium ${item.children.some(child => isPathActive(child.href)) ? 'text-primary' : ''}`}
                       >
                         <TransletText>{item.label}</TransletText>
-                        <ChevronDownIcon className={`h-4 w-4 transition-transform ${openMenu === item.label ? 'rotate-180' : ''
-                          }`} />
+                        <ChevronDownIcon className={`h-4 w-4 transition-transform ${openMenu === item.label ? 'rotate-180' : ''}`} />
                       </button>
 
-                      <div className={`absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${openMenu === item.label ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
-                        }`}>
+                      <div className={`absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${openMenu === item.label ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
                         {item.children?.map((child) => (
                           <Link
-                            key={child.href}
+                            key={`${child.href}`}
                             href={child.href}
                             onClick={closeAllMenus}
-                            className={`block px-4 py-2 text-sm hover:bg-primary/20 transition ${isPathActive(child.href) ? 'text-primary font-semibold bg-primary/10' : ''
-                              }`}
+                            className={`block px-4 py-2 text-sm hover:bg-primary/20 transition ${isPathActive(child.href) ? 'text-primary font-semibold bg-primary/10' : ''}`}
                           >
-                            <TransletText>{child.label}</TransletText>
+                            <span className="flex items-center gap-2">
+                              {child.icon && <child.icon className="h-4 w-4" />}
+                              <TransletText>{child.label}</TransletText>
+                            </span>
                           </Link>
                         ))}
                       </div>
@@ -284,13 +296,15 @@ export default function Navbar() {
                 }
                 return (
                   <Link
-                    key={item.href}
+                    key={`${item.href}`}
                     href={item.href!}
                     onClick={closeAllMenus}
-                    className={`relative text-foreground/90 hover:text-primary transition text-sm font-medium ${isPathActive(item.href!) ? 'text-primary' : ''
-                      }`}
+                    className={`relative text-foreground/90 hover:text-primary transition text-sm font-medium ${isPathActive(item.href!) ? 'text-primary' : ''}`}
                   >
-                    <TransletText>{item.label}</TransletText>
+                    <span className="flex items-center gap-2">
+                      {item.icon && <item.icon className="h-4 w-4" />}
+                      <TransletText>{item.label}</TransletText>
+                    </span>
                   </Link>
                 );
               })}
@@ -318,30 +332,34 @@ export default function Navbar() {
                     <UserAvatar />
                   </button>
 
-                  <div className={`absolute right-0 mt-3 w-56 rounded-xl bg-popover/95 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${openMenu === 'user' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
-                    }`}>
+                  <div className={`absolute right-0 mt-3 w-56 rounded-xl bg-popover/95 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${openMenu === 'user' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
                     <div className="px-4 py-3 border-b border-border">
                       <p className="text-foreground font-medium">{session.user.name}</p>
                       <p className="text-muted-foreground text-xs truncate">{session.user.email}</p>
                     </div>
                     <Link href="/profile" onClick={closeAllMenus} className="block px-4 py-2 text-sm hover:bg-primary/20">
-                      {t('profile')}
+                      <UserCircleIcon className="h-4 w-4 inline mr-2" />
+                      <TransletText>profile</TransletText>
                     </Link>
                     <Link href="/reservations" onClick={closeAllMenus} className="block px-4 py-2 text-sm hover:bg-primary/20">
+                      <ClipboardDocumentListIcon className="h-4 w-4 inline mr-2" />
                       {t('reservations')}
                     </Link>
                     <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm hover:bg-primary/20">
-                      {t('logout')}
+                      <ArrowRightOnRectangleIcon className="h-4 w-4 inline mr-2" />
+                      <TransletText>logout</TransletText>
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center space-x-3">
                   <Link href="/auth/signin" onClick={closeAllMenus} className="px-4 py-2 text-sm border border-primary/50 rounded-lg hover:bg-primary/10 transition">
-                    <TransletText>connexion</TransletText>
+                    <ArrowLeftOnRectangleIcon className="h-4 w-4 inline mr-2" />
+                    <TransletText>Connexion</TransletText>
                   </Link>
                   <Link href="/auth/signup" onClick={closeAllMenus} className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition font-semibold">
-                    <TransletText>inscription</TransletText>
+                    <UserPlusIcon className="h-4 w-4 inline mr-2" />
+                    <TransletText> {"s'inscrire"} </TransletText>
                   </Link>
                 </div>
               )}
@@ -353,14 +371,12 @@ export default function Navbar() {
                   {theme === 'yellow' && <SwatchIcon className="h-5 w-5" />}
                 </button>
 
-                <div className={`absolute right-0 mt-2 w-32 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${openMenu === 'theme' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
-                  }`}>
+                <div className={`absolute right-0 mt-2 w-32 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${openMenu === 'theme' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
                   {['white', 'dark', 'yellow'].map((t) => (
                     <button
                       key={t}
                       onClick={() => { setTheme(t as 'white' | 'dark' | 'yellow'); closeAllMenus(); }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/20 flex items-center gap-2 ${theme === t ? 'text-primary font-bold' : ''
-                        }`}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/20 flex items-center gap-2 ${theme === t ? 'text-primary font-bold' : ''}`}
                     >
                       {t === 'white' && <SunIcon className="h-4 w-4" />}
                       {t === 'dark' && <MoonIcon className="h-4 w-4" />}
@@ -413,7 +429,7 @@ export default function Navbar() {
                 <Logo />
                 <button
                   onClick={closeAllMenus}
-                  aria-label="Fermer le menu"
+                  aria-label="Close menu"
                   className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition"
                 >
                   <XMarkIcon className="h-6 w-6 text-foreground" />
@@ -421,6 +437,7 @@ export default function Navbar() {
               </div>
 
               <div className="h-[calc(100%-5rem)] overflow-y-auto px-6 py-4">
+                {/* Navigation */}
                 <nav className="space-y-2">
                   {NAV_ITEMS.map((item, index) => (
                     <motion.div
@@ -441,8 +458,7 @@ export default function Navbar() {
                             }`}
                         >
                           <span className="w-6 flex justify-center">
-                            {item.href === '/' && '🏠'}
-                            {item.href === '/etablissements' && '🏨'}
+                            {item.icon && <item.icon className="h-5 w-5" />}
                           </span>
                           <TransletText>{item.label}</TransletText>
                         </Link>
@@ -451,48 +467,69 @@ export default function Navbar() {
                   ))}
                 </nav>
 
-                <div className="mt-8 pt-6 border-t border-border space-y-3">
-                  {/* Theme Switcher */}
-                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-surface/30">
-                    <span className="text-foreground/80 flex items-center gap-2">
-                      <SwatchIcon className="h-5 w-5" />
+                {/* Settings Section */}
+                <div className="mt-8 pt-6 border-t border-border space-y-4">
+                  {/* Theme Switcher - Modern Cards */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider">
+                      <SwatchIcon className="h-4 w-4 inline mr-2" />
                       Theme
-                    </span>
-                    <div className="flex gap-1 p-1 rounded-lg bg-surface">
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
                       {['white', 'dark', 'yellow'].map((t) => (
                         <button
                           key={t}
                           onClick={() => setTheme(t as 'white' | 'dark' | 'yellow')}
-                          className={`px-3 py-1 rounded-md text-xs transition ${theme === t ? 'bg-primary text-primary-foreground' : 'text-foreground/60'
-                            }`}
+                          className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg border-2 transition-all ${
+                            theme === t 
+                              ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20' 
+                              : 'border-transparent bg-surface hover:border-primary/50 hover:bg-primary/5'
+                          }`}
                         >
-                          {t === 'white' && '☀️'}
-                          {t === 'dark' && '🌙'}
-                          {t === 'yellow' && '🟡'}
+                          {t === 'white' && <SunIcon className="h-5 w-5 text-amber-500" />}
+                          {t === 'dark' && <MoonIcon className="h-5 w-5 text-indigo-400" />}
+                          {t === 'yellow' && <SwatchIcon className="h-5 w-5 text-yellow-500" />}
+                          <span className="text-xs capitalize">{t}</span>
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Language */}
-                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-surface/30">
-                    <span className="text-foreground/80 flex items-center gap-2">
-                      🌐 <TransletText>language</TransletText>
-                    </span>
-                    <select
-                      value={locale}
-                      onChange={(e) => switchLanguage(e.target.value)}
-                      className="bg-surface rounded-md px-3 py-1 text-sm border border-border"
-                    >
+                  {/* Language Selector - Modern Cards with Icons */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider">
+                      <GlobeAltIcon className="h-4 w-4 inline mr-2" />
+                      <TransletText>language</TransletText>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
                       {routing.locales.map((code) => (
-                        <option key={code} value={code}>
-                          {localeNames[code as keyof typeof localeNames]}
-                        </option>
+                        <button
+                          key={code}
+                          onClick={() => switchLanguage(code)}
+                          className={`flex items-center justify-between px-4 py-3 rounded-lg border-2 transition-all ${
+                            code === locale
+                              ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                              : 'border-transparent bg-surface hover:border-primary/50 hover:bg-primary/5'
+                          }`}
+                        >
+                          <span className="flex items-center gap-3">
+                            <span className="text-lg">{flagEmoji[code]}</span>
+                            <span className="text-sm font-medium">
+                              {localeNames[code as keyof typeof localeNames]}
+                            </span>
+                          </span>
+                          {code === locale && (
+                            <svg className="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
                       ))}
-                    </select>
+                    </div>
                   </div>
                 </div>
 
+                {/* User Section */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -505,33 +542,44 @@ export default function Navbar() {
                         <p className="text-foreground font-semibold">{session.user.name}</p>
                         <p className="text-muted-foreground text-sm truncate">{session.user.email}</p>
                       </div>
-                      <Link href="/profile" onClick={closeAllMenus} className="block px-4 py-3 rounded-xl hover:bg-primary/10 transition">
-                        👤 <TransletText>profile</TransletText>
-                      </Link>
-                      <Link href="/reservations" onClick={closeAllMenus} className="block px-4 py-3 rounded-xl hover:bg-primary/10 transition">
-                        📋 <TransletText>reservations</TransletText>
-                      </Link>
-                      {session.user.role === 'admin' && (
-                        <Link href="/admin" onClick={closeAllMenus} className="block px-4 py-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition">
-                          🛡️ <TransletText>admin</TransletText>
+                      
+                      <div className="space-y-1">
+                        <Link href="/profile" onClick={closeAllMenus} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-primary/10 transition">
+                          <UserCircleIcon className="h-5 w-5" />
+                          <TransletText>profile</TransletText>
                         </Link>
-                      )}
+                        <Link href="/reservations" onClick={closeAllMenus} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-primary/10 transition">
+                          <ClipboardDocumentListIcon className="h-5 w-5" />
+                          <TransletText>reservations</TransletText>
+                        </Link>
+                        {session.user.role === 'admin' && (
+                          <Link href="/admin" onClick={closeAllMenus} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition">
+                            <ShieldCheckIcon className="h-5 w-5" />
+                            <TransletText>admin</TransletText>
+                          </Link>
+                        )}
+                      </div>
+                      
+                      {/* Logout button moved inside scrollable area */}
                       <button
                         onClick={() => { signOut(); closeAllMenus(); }}
-                        className="block w-full text-left px-4 py-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition mt-4"
+                        className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition"
                       >
-                        🚪 <TransletText>logout</TransletText>
+                        <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                        <TransletText>logout</TransletText>
                       </button>
                     </>
                   ) : (
-                    <>
-                      <Link href="/auth/signin" onClick={closeAllMenus} className="block w-full text-center px-4 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition font-medium">
-                        🔐 <TransletText>login</TransletText>
+                    <div className="space-y-3">
+                      <Link href="/auth/signin" onClick={closeAllMenus} className="flex items-center gap-3 justify-center w-full px-4 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition font-medium">
+                        <ArrowLeftOnRectangleIcon className="h-5 w-5" />
+                        <TransletText>login</TransletText>
                       </Link>
-                      <Link href="/auth/signup" onClick={closeAllMenus} className="block w-full text-center px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition font-semibold">
-                        ✨ <TransletText>signup</TransletText>
+                      <Link href="/auth/signup" onClick={closeAllMenus} className="flex items-center gap-3 justify-center w-full px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition font-semibold">
+                        <UserPlusIcon className="h-5 w-5" />
+                        <TransletText>signup</TransletText>
                       </Link>
-                    </>
+                    </div>
                   )}
                 </motion.div>
               </div>

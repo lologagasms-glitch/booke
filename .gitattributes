@@ -1,0 +1,15 @@
+# .gitattributes
+* text=auto eol=lf
+*.{ts,tsx,js,jsx,json,css,scss,md} text eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.mp4 binary
+*.webm binary

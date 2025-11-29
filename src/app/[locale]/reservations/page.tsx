@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -85,20 +85,23 @@ const fakeReservations = (): ReservationWithDetails[] => [
 export default function ReservationsPage() {
   const { data: session } = useSession();
   const router = useRouter();
-
+  const {locale}=useParams()
   const [reservations, setReservations] = useState<ReservationWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/auth/signin?callbackUrl=/reservations');
+    if (session?.user?.role?.toLowerCase()!=="admin") {
+      router.replace(`/${locale}/auth/signin?callbackUrl=/reservations`);
       return;
     }
-    if (status !== 'authenticated') return;
+    if (!session?.user){
+      notFound()
+      return
+    }
 
     (async () => {
       try {
-        const res = await fetch(`/api/reservations?userId=${session?.user.id}`);
+        const res = await fetch(`/${locale}/api/reservations?userId=${session?.user.id}`);
         if (!res.ok) throw new Error('fetch error');
         const data: ReservationWithDetails[] = await res.json();
         setReservations(data);
@@ -109,7 +112,7 @@ export default function ReservationsPage() {
         setIsLoading(false);
       }
     })();
-  }, [status, router, session]);
+  }, [ router, session]);
 
   /* --------------------------------- */
   /* Helpers                           */

@@ -15,9 +15,9 @@ export default function ForgotPasswordPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
   const { locale } = useParams();
-  // Redirect if user is already signed in
+   const { data: session } = useSession();
   useEffect(() => {
-    const { data: session } = useSession();
+   
     if (session) {
       router.push(`/${locale}`);
     }
