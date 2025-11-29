@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getEtablissementByIdAction } from '@/app/lib/services/actions/etablissements';
 import { getEtablissementById } from '@/app/lib/services/etablissement.service';
 import Link from 'next/link';
+import { EtabAndContentsType } from '@/app/api/etablissement/getById/route';
 
 export default function EstablishmentPage() {
   const params = useParams();
@@ -17,7 +18,11 @@ export default function EstablishmentPage() {
 
   const { data: establishment, isLoading, error } = useQuery({
     queryKey: ['etablissement', id],
-    queryFn: () => getEtablissementById(id),
+    queryFn: async():Promise<EtabAndContentsType> => {
+      const response = await fetch(`/api/etablissement/getById?id=${id}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    },
     enabled: !!id,
   });
   if (isLoading) {

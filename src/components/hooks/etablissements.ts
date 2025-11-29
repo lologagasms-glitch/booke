@@ -1,19 +1,17 @@
 // hooks/etablissement.ts
 "use client"
-import { getPopularEtablissementsAction } from '@/app/lib/services/actions/etablissements';
-import { getPopularEtablissements } from '@/app/lib/services/etablissement.service';
+import { DataEtabsPopularType } from '@/app/api/etablissement/getPopular/route';
 import { useQuery } from '@tanstack/react-query';
-
 export function usePopularEtablissements(opts?: { limit?: number }) {
-  return useQuery({
-    queryKey: ['popular-etablissements', opts?.limit],
-    queryFn: () =>
-      getPopularEtablissements(opts?.limit ?? 10).then(
-        (data) => {
-          console.log("popular-etablissements",data)
-          return data||[]
-        }
-      ),
+   return useQuery<DataEtabsPopularType>({
+    queryKey: ['popular-etablissements', opts?.limit ?? 10],
+    queryFn: async () => {
+      const response = await fetch(`/api/etablissement/getPopular?limit=${opts?.limit ?? 10}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    },
+    staleTime: 5 * 60 * 1000, 
+    gcTime: 10 * 60 * 1000, 
   });
 }
 

@@ -25,46 +25,31 @@ export type EtablissementWithMediasAndRooms = Etablissement & {
 // Server Actions
 // ------------------------------------------------------------------
 export async function getAllEtablissements(limit?: number, offset?: number) {
-  const etabs = await db.query.etablissements.findMany({
-    orderBy: (t, { desc }) => [desc(t.createdAt)],
-    ...(limit ? { limit } : {}),
-    ...(offset ? { offset } : {}),
-  });
-
-  if (!etabs.length) return [];
-
-  const ids = etabs.map(e => e.id);
-
-  // Récupérer la première image de chaque établissement
-  const firstImages = await db
-    .select({
+  const firstImage = db.$with('first_image').as(
+    db.select({
       etablissementId: mediaEtablissements.etablissementId,
       url: mediaEtablissements.url,
+      row_num: sql<number>`row_number() over (partition by ${mediaEtablissements.etablissementId} order by ${mediaEtablissements.createdAt} asc)`.as('row_num'),
     })
     .from(mediaEtablissements)
-    .where(
-      and(
-        inArray(mediaEtablissements.etablissementId, ids),
-        eq(mediaEtablissements.type, 'image')
-      )
-    )
-    .groupBy(mediaEtablissements.etablissementId, mediaEtablissements.url)
-    .orderBy(mediaEtablissements.etablissementId);
+    .where(eq(mediaEtablissements.type, 'image'))
+  );
 
-  // Mapper la première image par établissement
-  const imageMap = new Map<string, string>();
-  for (const img of firstImages) {
-    if (!imageMap.has(img.etablissementId)) {
-      imageMap.set(img.etablissementId, img.url);
-    }
-  }
-
-  return etabs.map(e => ({
-    ...e,
-    firstImageUrl: imageMap.get(e.id) ?? null,
-  }));
+  const data = await db.with(firstImage)
+    .select({
+      etablissements,
+      firstImageUrl: firstImage.url,
+    })
+    .from(etablissements)
+    .leftJoin(firstImage, and(
+      eq(etablissements.id, firstImage.etablissementId),
+      eq(firstImage.row_num, 1) // Ne garde que la première image
+    ))
+    .orderBy(desc(etablissements.createdAt))
+    .limit(limit ?? 10) 
+    .offset(offset ?? 0); 
+    return data     
 }
-
 
 export const getAllEtablissementsOnlyNameAndId = async (limit?: number, offset?: number) => {
   const query = db
@@ -260,7 +245,7 @@ export async function getFirstMediaImageEtablissement(etablissementId: string) {
   return media || null;
 }
 
-export async function getAllMediaImages(limit = 10) {
+export async function getAllMediaImages(limit = 10, offset = 0) {
   const etabImages = await db
     .select({
       id: mediaEtablissements.id,
@@ -271,7 +256,8 @@ export async function getAllMediaImages(limit = 10) {
     })
     .from(mediaEtablissements)
     .where(eq(mediaEtablissements.type, 'image'))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   const chambreImages = await db
     .select({
@@ -283,7 +269,8 @@ export async function getAllMediaImages(limit = 10) {
     })
     .from(mediaChambres)
     .where(eq(mediaChambres.type, 'image'))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   return [...etabImages, ...chambreImages].slice(0, limit);
 }

@@ -2,25 +2,29 @@
 
 import { useState } from 'react';
 import EstablishmentCard from './EstablishmentCard';
-import { Etablissement } from '@/types';
 import Loading from '../Loading';
 import { useQuery } from '@tanstack/react-query';
-import { getAllEtablissementsAction } from '@/app/lib/services/actions/etablissements';
-import { getAllEtablissements } from '@/app/lib/services/etablissement.service';
 import { TransletText } from '@/app/lib/services/translation/transletText';
+import { DataEtabs } from '@/app/api/etablissement/getall/route';
 
 const LIMIT = 10; // items per page
 
 const EstablishmentList = () => {
   const [offset, setOffset] = useState(0);
 
-  const { data: etablissements = [], isLoading } = useQuery({
+   const { data: etablissements = [], isLoading, error } = useQuery({
     queryKey: ['etablissements', LIMIT, offset],
-    queryFn: async () => {
-      const res = await getAllEtablissements(LIMIT, offset);
-      if (!res) throw new Error('Failed to fetch');
-      return res ?? [];
+    queryFn: async (): Promise<DataEtabs> => {
+      const res = await fetch(`/api/etablissement/getall?limit=${LIMIT}&offset=${offset}`);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText} – ${errorText}`);
+      }
+      return res.json();
     },
+    staleTime: 60 * 1000, // 1 minute
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1,
   });
 
   const hasNext = etablissements.length === LIMIT;
@@ -64,8 +68,8 @@ const EstablishmentList = () => {
       <div className="space-y-4">
         {etablissements.map((establishment) => (
           <EstablishmentCard
-            key={establishment.id}
-            establishment={establishment}
+            key={establishment.etablissements.id}
+            establishment={establishment.etablissements}
             firstImageUrl={establishment.firstImageUrl}
           />
         ))}
