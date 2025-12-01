@@ -17,12 +17,10 @@ import {
   BuildingOfficeIcon,
   EnvelopeIcon,
   UserGroupIcon,
-  UserIcon,
   ArrowRightOnRectangleIcon,
   ArrowLeftOnRectangleIcon,
   UserCircleIcon,
   ClipboardDocumentListIcon,
-  Cog6ToothIcon,
   UserPlusIcon,
 } from '@heroicons/react/24/outline';
 import { useTheme } from '@/components/providers/ThemeProvider';
@@ -266,45 +264,53 @@ export default function Navbar() {
             <div className="hidden lg:flex lg:items-center lg:space-x-10">
               {NAV_ITEMS.map((item) => {
                 if (item.children) {
+                  const isActive = item.children.some(child => isPathActive(child.href));
                   return (
                     <div key={item.label} className="relative" ref={(el: HTMLDivElement | null) => { dropdownRefs.current[item.label] = el; }}>
                       <button
                         onClick={() => toggleMenu(item.label)}
-                        className={`flex items-center gap-2 text-foreground/90 hover:text-primary transition text-sm font-medium ${item.children.some(child => isPathActive(child.href)) ? 'text-primary' : ''}`}
+                        className={`flex items-center gap-2 text-foreground/90 hover:text-primary transition text-sm font-medium ${isActive ? 'text-primary' : ''}`}
+                        aria-expanded={openMenu === item.label}
+                        aria-haspopup="true"
                       >
                         <TransletText>{item.label}</TransletText>
-                        <ChevronDownIcon className={`h-4 w-4 transition-transform ${openMenu === item.label ? 'rotate-180' : ''}`} />
+                        <ChevronDownIcon className={`h-4 w-4 transition-transform duration-200 ${openMenu === item.label ? 'rotate-180' : ''}`} />
                       </button>
 
-                      <div className={`absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50 transition-all ${openMenu === item.label ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
-                        {item.children?.map((child) => (
-                          <Link
-                            key={`${child.href}`}
-                            href={child.href}
-                            onClick={closeAllMenus}
-                            className={`block px-4 py-2 text-sm hover:bg-primary/20 transition ${isPathActive(child.href) ? 'text-primary font-semibold bg-primary/10' : ''}`}
+                      <AnimatePresence>
+                        {openMenu === item.label && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={{ duration: 0.2, ease: 'easeOut' }}
+                            className="absolute left-0 mt-2 w-48 rounded-xl bg-surface/90 backdrop-blur-md border border-border shadow-2xl overflow-hidden z-50"
                           >
-                            <span className="flex items-center gap-2">
-                              {child.icon && <child.icon className="h-4 w-4" />}
-                              <TransletText>{child.label}</TransletText>
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
+                            {item.children?.map((child) => (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className={`flex items-center gap-3 cursor-pointer px-4 py-2 text-sm hover:bg-primary/20 transition-colors ${isPathActive(child.href) ? 'text-primary font-semibold bg-primary/10' : ''}`}
+                              >
+                                {child.icon && <child.icon className="h-4 w-4" />}
+                                <TransletText>{child.label}</TransletText>
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 }
                 return (
                   <Link
-                    key={`${item.href}`}
+                    key={item.href!}
                     href={item.href!}
                     onClick={closeAllMenus}
-                    className={`relative text-foreground/90 hover:text-primary transition text-sm font-medium ${isPathActive(item.href!) ? 'text-primary' : ''}`}
+                    className={`flex items-center gap-2 text-foreground/90 hover:text-primary transition text-sm font-medium ${isPathActive(item.href!) ? 'text-primary' : ''}`}
                   >
-                    <span className="flex items-center gap-2">
-                      {item.icon && <item.icon className="h-4 w-4" />}
-                      <TransletText>{item.label}</TransletText>
-                    </span>
+                    {item.icon && <item.icon className="h-4 w-4" />}
+                    <TransletText>{item.label}</TransletText>
                   </Link>
                 );
               })}

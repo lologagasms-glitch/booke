@@ -6,9 +6,7 @@ export async function proxy(request: NextRequest) {
 	const sessionCookie = getSessionCookie(request);
 	const url = request.nextUrl.clone();
 	const locale = url.pathname.split("/")[1];
-	const session = await auth.api.getSession({
-		headers: request.headers,
-	});
+	
 
 	const isAdminRoute = url.pathname.includes("/admin");
 	const isAuthRoute = url.pathname.includes("/auth") ;
@@ -17,26 +15,16 @@ export async function proxy(request: NextRequest) {
 	const isBaseRoute=url.pathname==="/"
 	// 1. Admin Routes Protection
 	if (isAdminRoute) {
-		if (!session?.user) {
+		if (!sessionCookie) {
 			url.pathname = `/${locale}/auth/signin`;
 			return NextResponse.redirect(url);
 		}
 
-		// Fetch session only if we have a cookie and are accessing admin area
-
-		if (session?.user?.role !== "admin") {
-			
-			url.pathname = `/${locale}/profile`;
-			return NextResponse.redirect(url);
-		}
+		
 		return NextResponse.next();
 	}
 
-	// 2. Auth Routes (Redirect logged-in users away)
-	if (isAuthRoute && session?.user) {
-		url.pathname = `/${locale}/profile`;
-		return NextResponse.redirect(url);
-	}
+
 	// Redirect root and /dashboard to localized home
 	if (isBaseRoute || isDashboard) {
 		url.pathname = `/en`;

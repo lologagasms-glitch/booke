@@ -4,6 +4,22 @@ import createNextIntlPlugin from 'next-intl/plugin';
 import { withWorkflow } from 'workflow/next';
 const nextConfig: NextConfig = {
   images: {
+   domains: [
+      'images.pexels.com',
+      'upload.wikimedia.org',
+      'www.hilton.com',
+      'www.ihg.com',
+      'www.hyatt.com',
+      'www.melia.com',
+      'www.nh-hotels.com',
+      'www.radissonhotels.com',
+      'www.louvrehotels.com',
+      'www.scandichotels.com',
+      'www.kempinski.com',
+      'www.marriott.com',
+      'www.accor.com',
+      'www.premierinn.com'
+    ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -25,6 +41,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'img.youtube.com',
       },
+      
     ],
   },
 };
