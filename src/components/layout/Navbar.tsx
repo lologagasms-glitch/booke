@@ -361,11 +361,11 @@ export default function Navbar() {
                       isOpen={activeDropdown === item.label}
                       onToggle={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
                       trigger={
-                        <button className={`flex items-center gap-1 text-sm font-medium transition-colors ${
+                        <span className={`flex items-center gap-1 text-sm font-medium transition-colors ${
                           isActive ? 'text-primary' : 'text-foreground/80 hover:text-primary'
                         }`}>
                           <span><TransletText>{item.label}</TransletText></span>
-                        </button>
+                        </span>
                       }
                     >
                       <div className="py-1">
@@ -487,7 +487,7 @@ export default function Navbar() {
                         >
                           <div className="flex items-center gap-3">
                             {item.icon && <item.icon className="h-5 w-5" />}
-                            <span className="font-medium">{t(item.label)}</span>
+                            <TransletText>{item.label}</TransletText> 
                           </div>
                           <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                         </button>

@@ -335,7 +335,7 @@ export default function ProfilePage() {
       </section>
 
       {/* Admin */}
-      {user.role === 'ADMIN' && (
+      {user.role.toLowerCase() === 'admin' && (
         <div className="max-w-7xl mx-auto px-6 mt-8">
           <div className="bg-gray-900 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -369,7 +369,7 @@ function Card({
   color = "bg-gray-50 border-gray-200 hover:border-blue-300"
 }: {
   icon: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   value: string;
   link: string;
   color?: string;
@@ -386,7 +386,7 @@ function Card({
         {icon}
       </div>
       <div className="text-center">
-        <p className="text-sm text-gray-600 font-medium">{title}</p>
+        <p className="text-sm text-gray-600 font-medium">{title as string}</p>
         <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
       </div>
     </Link>
