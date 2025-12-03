@@ -164,7 +164,7 @@ export default function EstablishmentForm({ userId = 'default-user-id' }: Establ
   const { data: session } = useSession();
   const { user } = session || {};
   const { show: showPopup ,PopupComponent} = usePopup();
-  const { register, handleSubmit, control, watch, setValue, formState: { errors, isSubmitting } } =
+  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isSubmitting } } =
     useForm<FormValues>({
       resolver: zodResolver(baseSchema),
       defaultValues: {
@@ -187,7 +187,7 @@ export default function EstablishmentForm({ userId = 'default-user-id' }: Establ
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['etablissements'] });
       showPopup({ type: 'success', message: 'Établissement publié ✨' });
-      router.push('/admin/etablissements');
+      reset(); 
     },
     onError: (err: any) => {
       console.error('Erreur complète:', err);

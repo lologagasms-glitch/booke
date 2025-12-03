@@ -9,14 +9,12 @@ import { create } from '@/app/lib/services/chambre.service';
 import { chambreSchema } from '@/types';
 import { ArrowPathIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { usePopup } from '../popup';
-import { useTranslations } from 'next-intl';
 
 const schema = chambreSchema;
 type FormValues = z.infer<typeof schema>;
 
 export default function CreateRoomForm({ etablissementId }: { etablissementId: string }) {
-  const t = useTranslations('room');
-  const tForms = useTranslations('forms');
+ 
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { show: showPopup, PopupComponent } = usePopup();
@@ -36,12 +34,12 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
     mutationFn: async (data: FormValues) => create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chambres'] });
-      showPopup({ type: 'success', message: t('create_success') });
+      showPopup({ type: 'success', message: "Chambre créée avec succès"});
       setIsSubmitting(false);
       reset(); // Clear form on success
     },
     onError: () => {
-      showPopup({ type: 'error', message: tForms('error_submit') });
+      showPopup({ type: 'error', message: "Erreur lors de la création de la chambre"});
       setIsSubmitting(false);
     },
   });
@@ -68,20 +66,17 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
   );
 
   const roomTypes = [
-    { value: 'simple', label: t('simple'), description: '1-2 pers.' },
-    { value: 'double', label: t('double'), description: '2-3 pers.' },
-    { value: 'suite', label: t('suite'), description: '2-4 pers.' },
+    { value: 'simple', label: 'Chambre simple', description: '1-2 pers.' },
+    { value: 'double', label: 'Chambre double', description: '2-3 pers.' },
+    { value: 'suite', label: 'Suite', description: '2-4 pers.' },
   ];
 
-  const watchedServices = watch('services') || [];
-  const watchedDisponible = watch('disponible');
-  const watchedEtablissementId = watch('etablissementId');
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('new_room')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Créer une chambre</h1>
           <p className="text-gray-600">
             Définissez les caractéristiques et services de votre chambre
           </p>
@@ -93,14 +88,14 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
               <h2 className="text-lg font-semibold text-gray-900">Informations principales</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">{t('room_name')}</label>
+                  <label className="block text-sm font-medium text-gray-700">Nom de la chambre</label>
                   <input
                     {...register('nom')}
                     className={`w-full px-4 py-2.5 border rounded-md transition-colors text-black ${errors.nom
                         ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500'
                         : 'border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500'
                       }`}
-                    placeholder={t('placeholder_name')}
+                    placeholder="Ex: Chambre Vue Mer"
                   />
                   {errors.nom && (
                     <p className="text-red-600 text-sm flex items-center gap-1">
@@ -111,7 +106,7 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
                 </div>
                 <input type="hidden" {...register('etablissementId')} value={etablissementId} />
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">{t('room_type')}</label>
+                  <label className="block text-sm font-medium text-gray-700">Type de chambre</label>
                   <div className="grid grid-cols-3 gap-3">
                     {roomTypes.map((roomType) => (
                       <label key={roomType.value} className="flex flex-col items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50">
@@ -131,7 +126,7 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">{t('room_description')}</label>
+                <label className="block text-sm font-medium text-gray-700">Description</label>
                 <textarea
                   {...register('description')}
                   rows={4}
@@ -139,7 +134,7 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
                       ? 'border-red-300 focus:ring-2 focus:ring-red-100 focus:border-red-500'
                       : 'border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500'
                     }`}
-                  placeholder={t('placeholder_description')}
+                  placeholder="Décrivez les particularités de la chambre"
                 />
                 {errors.description && (
                   <p className="text-red-600 text-sm flex items-center gap-1">
@@ -154,7 +149,7 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
               <h2 className="text-lg font-semibold text-gray-900">Capacité & Tarification</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">{t('max_capacity')}</label>
+                  <label className="block text-sm font-medium text-gray-700">Capacité maximale</label>
                   <div className="relative">
                     <input
                       type="number"
@@ -177,7 +172,7 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">{t('price_per_night')}</label>
+                  <label className="block text-sm font-medium text-gray-700">Prix par nuit</label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</div>
                     <input
@@ -204,7 +199,7 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
             </div>
 
             <div className="space-y-6 border-b border-gray-100 pb-8 mb-8">
-              <h2 className="text-lg font-semibold text-gray-900">{t('services_equipments')}</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Services & Équipements</h2>
               <Controller
                 name="services"
                 control={control}
@@ -248,7 +243,7 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
                   className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-100"
                 />
                 <div>
-                  <h3 className="font-medium text-gray-900">{t('available_for_booking')}</h3>
+                  <h3 className="font-medium text-gray-900">Disponible à la réservation</h3>
                   <p className="text-sm text-gray-600">
                     Cette chambre peut être réservée par les clients
                   </p>
@@ -269,17 +264,17 @@ export default function CreateRoomForm({ etablissementId }: { etablissementId: s
                 {isSubmitting || mutation.isPending ? (
                   <span className="flex items-center justify-center gap-2">
                     <ArrowPathIcon className="h-4 w-4 animate-spin" />
-                    {tForms('saving')}
+                    Enregistrement...
                   </span>
                 ) : (
-                  tForms('create')
+                  'Créer la chambre'
                 )}
               </button>
               {mutation.isError && (
                 <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
                   <p className="text-red-700 text-sm flex items-center gap-2">
                     <ExclamationTriangleIcon className="h-4 w-4" />
-                    {tForms('error_submit')}
+                    Une erreur est survenue lors de la création.
                   </p>
                 </div>
               )}

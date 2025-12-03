@@ -2,12 +2,14 @@
 
 import { TransletText } from '@/app/lib/services/translation/transletText';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
-
+  const {locale}=useParams()
+  const router=useRouter()
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert(`Merci ${email} pour votre inscription !`);
@@ -36,8 +38,11 @@ export default function Footer() {
             <button
               type="submit"
               className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition font-semibold"
+              onClick={()=>{
+                router.push('/'+locale+'/auth/signin')
+              }}
             >
-              <TransletText>S’inscrire</TransletText>
+              <TransletText>{"S’inscrire"}</TransletText>
             </button>
           </form>
         </div>
@@ -48,37 +53,36 @@ export default function Footer() {
             {
               title: 'À propos',
               links: [
-                { label: 'Qui sommes-nous', href: '/about' },
-                { label: 'Comment ça marche', href: '/how-it-works' },
-                { label: 'Carrières', href: '/careers' },
-                { label: 'Presse', href: '/press' },
+                { label: 'Qui sommes-nous', href: '/'+locale+'/teams' },
+                { label: 'Comment ça marche', href: '/'+locale+'/how-it-works' },
+                { label: 'Carrières', href: '/'+locale+'/careers' },
+                { label: 'Presse', href: '/'+locale+'/press' },
               ],
             },
             {
               title: 'Assistance',
               links: [
-                { label: 'Centre d’aide', href: '/help' },
-                { label: 'FAQ', href: '/faq' },
-                { label: 'Nous contacter', href: '/contact' },
-                { label: 'COVID-19', href: '/covid' },
+                { label: 'Centre d’aide', href: '/'+locale+'/help' },
+                { label: 'FAQ', href: '/'+locale+'/faqs' },
+                { label: 'Nous contacter', href: '/'+locale+'/contact' },
+                { label: 'COVID-19', href:'/'+locale+ '/covid' },
               ],
             },
             {
               title: 'Hébergements',
               links: [
-                { label: 'Hôtels', href: '/etablissements?type=hotel' },
-                { label: 'Appartements', href: '/etablissements?type=apartment' },
-                { label: 'Villas', href: '/etablissements?type=villa' },
-                { label: 'Resorts', href: '/etablissements?type=resort' },
+                { label: 'Hôtels', href: '/'+locale+'/etablissements?type=hotel' },
+                { label: 'Appartements', href: '/'+locale+'/etablissements?type=apartment' },
+                { label: 'Villas', href: '/'+locale+'/etablissements?type=villa' },
+                { label: 'Resorts', href: '/'+locale+'/etablissements?type=resort' },
               ],
             },
             {
               title: 'Légal',
               links: [
-                { label: 'Confidentialité', href: '/privacy' },
-                { label: 'Conditions', href: '/terms' },
-                { label: 'Cookies', href: '/cookies' },
-                { label: 'Mentions', href: '/legal' },
+                { label: 'Confidentialité', href: '/'+locale+'/privacy' },
+                { label: 'Conditions', href: '/'+locale+'/terms' },
+                { label: 'Mentions', href: '/'+locale+'/legal' },
               ],
             },
           ].map((section) => (
@@ -104,7 +108,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © {currentYear} Booking Clone. Tous droits réservés.
+            © {currentYear} Evasion services. Tous droits réservés.
           </p>
           <div className="flex space-x-5 mt-4 md:mt-0">
             {['facebook', 'instagram', 'twitter'].map((social) => (

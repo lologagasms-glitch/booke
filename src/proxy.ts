@@ -1,28 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 import { auth } from "./app/lib/auth";
+import { headers } from "next/headers";
 
 export async function proxy(request: NextRequest) {
 	const sessionCookie = getSessionCookie(request);
+	const session = await auth.api.getSession({
+        headers: await headers()
+    })
 	const url = request.nextUrl.clone();
 	const locale = url.pathname.split("/")[1];
 	
 
-	const isAdminRoute = url.pathname.includes("/admin");
-	const isAuthRoute = url.pathname.includes("/auth") ;
+	const isAdminRoute = url.pathname.includes("/admin"); ;
 	const isProfileRoute = url.pathname.includes("/profile");
 	const isDashboard = url.pathname.includes("/dashboard");
 	const isBaseRoute=url.pathname==="/"
 	// 1. Admin Routes Protection
 	if (isAdminRoute) {
-		if (!sessionCookie) {
+		if (!session || !session.user || session.user.role?.toLowerCase() !== 'admin') {
 			url.pathname = `/${locale}/auth/signin`;
 			return NextResponse.redirect(url);
 		}
-
+		if (session.user.role?.toLowerCase() !== 'admin') {
+			url.pathname = `/${locale}`;
+			return NextResponse.redirect(url);
+		}
 		
 		return NextResponse.next();
 	}
+	
 
 
 	// Redirect root and /dashboard to localized home
@@ -31,9 +38,6 @@ export async function proxy(request: NextRequest) {
 		return NextResponse.redirect(url);
 	}
 	
-	// 3. Profile Route Protection (Optional: Redirect guests to signin)
-	// The original code redirected logged-in users AWAY from profile, which was likely a bug.
-	// Now we ensure guests are redirected to signin if they try to access profile.
 	if (isProfileRoute && !sessionCookie) {
 		url.pathname = `/${locale}/auth/signin`;
 		return NextResponse.redirect(url);

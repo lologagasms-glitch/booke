@@ -3,14 +3,9 @@
 import { useSession, authClient } from '@/app/lib/auth-client';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
-import clsx from 'clsx';
 import {
   CalendarDaysIcon,
-  HeartIcon,
   MapPinIcon,
-  TicketIcon,
-  StarIcon,
-  GiftIcon,
   ClockIcon,
   PencilIcon,
   XMarkIcon,
@@ -48,6 +43,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editImage, setEditImage] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   // Redirection si non connecté
   useEffect(() => {
@@ -82,12 +78,17 @@ export default function ProfilePage() {
 
   const handleUpdateProfile = async () => {
     try {
-      await authClient.updateUser({
-        name: editName,
-        image: editImage || undefined,
-      });
+      let imageUrl: string | undefined = editImage || undefined;
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append('file', avatarFile);
+        const res = await fetch('/api/user/avatar', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Échec du téléchargement de la photo');
+        const data = await res.json();
+        imageUrl = data.url as string;
+      }
+      await authClient.updateUser({ name: editName, image: imageUrl });
       setIsEditing(false);
-      // Force reload or session update might be needed
       window.location.reload();
     } catch (error) {
       console.error("Failed to update profile", error);
@@ -97,10 +98,7 @@ export default function ProfilePage() {
 
   if (isPending || !session) return <Skeleton />;
 
-  const favorites = [
-    { id: '1', name: 'Parc Aventure', city: 'La Rochelle', img: '/mock/parc.jpg' },
-    { id: '2', name: 'Hôtel Thalasso', city: 'Biarritz', img: '/mock/thalasso.jpg' },
-  ];
+  
 
   return (
     <main className="bg-gray-50 min-h-screen pb-12">
@@ -147,11 +145,14 @@ export default function ProfilePage() {
                     placeholder="Votre nom"
                   />
                   <input
-                    type="text"
-                    value={editImage}
-                    onChange={(e) => setEditImage(e.target.value)}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0] || null;
+                      setAvatarFile(f);
+                      if (f) setEditImage(URL.createObjectURL(f));
+                    }}
                     className="px-3 py-2 rounded-lg text-gray-900 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
-                    placeholder="URL de l'image (optionnel)"
                   />
                   <div className="flex gap-2 justify-end">
                     <button onClick={() => setIsEditing(false)} className="p-2 hover:bg-white/10 rounded-lg transition">
@@ -175,23 +176,12 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Carte fidélité */}
-          <div className="hidden md:flex flex-col items-end gap-2">
-            <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 shadow-xl hover:bg-white/20 transition cursor-pointer group">
-              <div className="p-3 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                <GiftIcon className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-blue-100 font-medium uppercase tracking-wider">Points fidélité</p>
-                <p className="text-3xl font-bold text-white">{user.loyaltyPoints?.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </section>
 
       {/* GRILLE */}
-      <section className="max-w-7xl mx-auto px-6 -mt-10 relative z-10 grid md:grid-cols-3 gap-6">
+      <section className="max-w-7xl mx-auto px-6 -mt-10 relative z-10 grid md:grid-cols-2 gap-6">
         {/* Prochain séjour */}
         <div className="md:col-span-2 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
           <div className="flex items-center justify-between mb-6">
@@ -259,79 +249,11 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Favoris */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 flex flex-col">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
-            <div className="p-2 bg-red-50 rounded-lg">
-              <HeartIcon className="w-6 h-6 text-red-500" />
-            </div>
-            Favoris récents
-          </h2>
-          <div className="space-y-4 flex-1">
-            {favorites.map((f) => (
-              <Link key={f.id} href={`/etablissements/${f.id}`} className="flex items-center gap-4 p-2 rounded-xl hover:bg-gray-50 transition group">
-                <div className="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden relative flex-shrink-0">
-                  {/* Mock image */}
-                  <div className="absolute inset-0 bg-gray-300 animate-pulse" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-gray-900 truncate group-hover:text-blue-600 transition">{f.name}</p>
-                  <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-                    <MapPinIcon className="w-3 h-3" />
-                    {f.city}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <Link href="/favoris" className="mt-6 block w-full text-center py-2.5 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 hover:text-gray-900 transition">
-            Voir tous mes favoris
-          </Link>
-        </div>
+        
 
-        {/* Carte fidélité mobile */}
-        <div className="md:hidden col-span-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-6 shadow-xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-blue-100 text-sm font-medium uppercase tracking-wider">Points fidélité</p>
-              <p className="text-3xl font-bold mt-1">{user.loyaltyPoints?.toLocaleString()}</p>
-            </div>
-            <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
-              <TicketIcon className="w-8 h-8 text-white" />
-            </div>
-          </div>
-          <Link href="/rewards" className="mt-4 inline-block text-sm font-medium bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition">
-            Échanger mes points &rarr;
-          </Link>
-        </div>
+        
 
-        {/* Historique + actions rapides */}
-        <div className="md:col-span-3 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Tableau de bord personnel</h2>
-          <div className="grid sm:grid-cols-3 gap-4">
-            <Card
-              icon={<StarIcon className="w-6 h-6 text-yellow-500" />}
-              title="Avis laissés"
-              value="3"
-              link="/avis"
-              color="bg-yellow-50 border-yellow-100 hover:border-yellow-300"
-            />
-            <Card
-              icon={<GiftIcon className="w-6 h-6 text-purple-500" />}
-              title="Points gagnés"
-              value="+180"
-              link="/rewards"
-              color="bg-purple-50 border-purple-100 hover:border-purple-300"
-            />
-            <Card
-              icon={<TicketIcon className="w-6 h-6 text-blue-500" />}
-              title="Réductions actives"
-              value="2"
-              link="/coupons"
-              color="bg-blue-50 border-blue-100 hover:border-blue-300"
-            />
-          </div>
-        </div>
+        
       </section>
 
       {/* Admin */}
@@ -357,38 +279,5 @@ export default function ProfilePage() {
         </div>
       )}
     </main>
-  );
-}
-
-/* ---------- Sous-composant ---------- */
-function Card({
-  icon,
-  title,
-  value,
-  link,
-  color = "bg-gray-50 border-gray-200 hover:border-blue-300"
-}: {
-  icon: React.ReactNode;
-  title: React.ReactNode;
-  value: string;
-  link: string;
-  color?: string;
-}) {
-  return (
-    <Link
-      href={link}
-      className={clsx(
-        'flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg',
-        color
-      )}
-    >
-      <div className="p-3 bg-white rounded-full shadow-sm">
-        {icon}
-      </div>
-      <div className="text-center">
-        <p className="text-sm text-gray-600 font-medium">{title as string}</p>
-        <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-      </div>
-    </Link>
   );
 }

@@ -3,13 +3,10 @@ import EstablishmentsForChambres from "@/components/admin/EtablissementsForChamb
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function NewRoomPage({ params }: { params: { locale: string } }) {
+export default async function NewRoomPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
-   if(!session) {return redirect(`/${params.locale}/signin`);}
-    if (!(session?.user?.role !== "admin")) {
-      redirect(`/${params.locale}/profile`);
-    }
-  return (
-   <EstablishmentsForChambres />
-  );
+  if (!session) return redirect(`/${locale}/signin`);
+  if (session.user?.role?.toLowerCase() !== "admin") return redirect(`/${locale}/profile`);
+  return <EstablishmentsForChambres />;
 }

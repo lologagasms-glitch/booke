@@ -125,6 +125,26 @@ export const reservations = sqliteTable('reservation', {
   dateDebutIdx: index('reservation_dateDebut_idx').on(table.dateDebut),
 }));
 
+export const chatSessions = sqliteTable('chatSession', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  emailHash: text('emailHash').notNull(),
+  email: text('email'),
+  createdAt: integer('createdAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  lastActiveAt: integer('lastActiveAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()).$onUpdateFn(() => new Date()),
+  online: integer('online', { mode: 'boolean' }).notNull().default(false),
+  unreadCount: integer('unreadCount').notNull().default(0),
+});
+
+export const chatMessages = sqliteTable('chatMessage', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  sessionId: text('sessionId').notNull().references(() => chatSessions.id, { onDelete: 'cascade' }),
+  emailHash: text('emailHash').notNull(),
+  from: text('from', { enum: ['user', 'admin'] }).notNull(),
+  message: text('message').notNull(),
+  status: text('status', { enum: ['sent', 'delivered', 'read'] }).notNull().default('sent'),
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
 /* ------------------------------------------------------------------ */
 /* 3.  RELATIONS                                                      */
 /* ------------------------------------------------------------------ */
@@ -176,6 +196,14 @@ export const reservationRelations = relations(reservations, ({ one }) => ({
   etablissement: one(etablissements, { fields: [reservations.etablissementId], references: [etablissements.id] }),
 }));
 
+export const chatSessionRelations = relations(chatSessions, ({ many }) => ({
+  messages: many(chatMessages),
+}));
+
+export const chatMessageRelations = relations(chatMessages, ({ one }) => ({
+  session: one(chatSessions, { fields: [chatMessages.sessionId], references: [chatSessions.id] }),
+}));
+
 /* ------------------------------------------------------------------ */
 /* 4.  EXPORT UNIQUE                                                  */
 /* ------------------------------------------------------------------ */
@@ -184,11 +212,13 @@ export const schema = {
   // tables
   user, account, session, verification,
   etablissements, chambres, mediaEtablissements, mediaChambres, reservations,
+  chatSessions, chatMessages,
   // relations
   userRelations, accountRelations, sessionRelations,
   etablissementRelations, chambreRelations,
   mediaEtablissementRelations, mediaChambreRelations,
   reservationRelations,
+  chatSessionRelations, chatMessageRelations,
 };
 
 /* ---------------------------------------------------------- */

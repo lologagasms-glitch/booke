@@ -8,6 +8,13 @@
       "when": 1763894501119,
       "tag": "0000_past_whirlwind",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1764793549742,
+      "tag": "0001_bitter_shotgun",
+      "breakpoints": true
     }
   ]
 }

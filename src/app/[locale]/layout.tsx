@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import Footer from "@/components/layout/Footer";
 import { WebVitals } from "@/components/WebVitals";
+import ContactPopup from "@/components/ContactPopup";
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     siteName: 'Evasion',
     images: [
       {
-        url: 'https://evasion.com/og-image.jpg', // Placeholder
+        url: '/vercel.svg', // Placeholder
         width: 1200,
         height: 630,
       },
@@ -64,6 +65,7 @@ export default function RootLayout({
         </NuqsAdapter>
       </main>
       <Footer />
+      <ContactPopup />
       <WebVitals />
     </div>
   );

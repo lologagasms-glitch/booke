@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { StarIcon, MapPinIcon, PhoneIcon, EnvelopeIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { PencilIcon, TrashIcon, PlusIcon, PhotoIcon } from '@heroicons/react/24/solid';
 import { useSession } from '@/app/lib/auth-client';
 import { useQuery } from '@tanstack/react-query';
-import { getEtablissementByIdAction } from '@/app/lib/services/actions/etablissements';
 import { getEtablissementById } from '@/app/lib/services/etablissement.service';
 
 export default function AdminEstablishmentPage({ params }: { params: { id: string } }) {
@@ -15,11 +14,11 @@ export default function AdminEstablishmentPage({ params }: { params: { id: strin
   const { data: session } = useSession();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const { data: establishment, isLoading, error ,isSuccess} = useQuery({
+  const { data: establishment, isLoading, error } = useQuery({
     queryKey: ['etablissement', params.id],
     queryFn: async () => await getEtablissementById(params.id),
    
-    enabled: session?.user?.role === 'ADMIN',
+    enabled: session?.user?.role?.toLowerCase() === 'admin',
   });
 
   const handleDelete = async () => {

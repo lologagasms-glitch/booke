@@ -103,6 +103,6 @@ export async function traduireTexteSecurise(
         console.error('❌ Erreur inattendue:', erreur);
       }
     }
-    return null;
+    return texte;
   }
 }

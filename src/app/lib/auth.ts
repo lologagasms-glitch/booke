@@ -5,7 +5,7 @@ import nodemailer from "nodemailer"
 import { db } from "@/db";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { schema } from "@/db/schema";
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
   host: 'smtp.zoho.com',
   port: 465,
   secure: true, 
