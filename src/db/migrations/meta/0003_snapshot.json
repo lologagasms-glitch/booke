@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "051bf701-50b6-4423-9290-83bf5825178f",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "0b244a59-5e92-4807-ac01-b557ad5fd3f5",
+  "prevId": "7963ab5a-3974-4a75-ac4b-ce159a507f62",
   "tables": {
     "account": {
       "name": "account",
@@ -200,8 +200,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "chatMessage": {
-      "name": "chatMessage",
+    "conversation": {
+      "name": "conversation",
       "columns": {
         "id": {
           "name": "id",
@@ -210,58 +210,59 @@
           "notNull": true,
           "autoincrement": false
         },
-        "sessionId": {
-          "name": "sessionId",
+        "userId": {
+          "name": "userId",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "emailHash": {
-          "name": "emailHash",
-          "type": "text",
+        "lastMessageAt": {
+          "name": "lastMessageAt",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "from": {
-          "name": "from",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "message": {
-          "name": "message",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
+        "hasUnreadMessages": {
+          "name": "hasUnreadMessages",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'sent'"
+          "default": false
         },
-        "timestamp": {
-          "name": "timestamp",
+        "createdAt": {
+          "name": "createdAt",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "conversation_user_unique_idx": {
+          "name": "conversation_user_unique_idx",
+          "columns": [
+            "userId"
+          ],
+          "isUnique": false
+        },
+        "conversation_lastMessage_idx": {
+          "name": "conversation_lastMessage_idx",
+          "columns": [
+            "lastMessageAt"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
-        "chatMessage_sessionId_chatSession_id_fk": {
-          "name": "chatMessage_sessionId_chatSession_id_fk",
-          "tableFrom": "chatMessage",
-          "tableTo": "chatSession",
+        "conversation_userId_user_id_fk": {
+          "name": "conversation_userId_user_id_fk",
+          "tableFrom": "conversation",
+          "tableTo": "user",
           "columnsFrom": [
-            "sessionId"
+            "userId"
           ],
           "columnsTo": [
             "id"
@@ -270,67 +271,6 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "chatSession": {
-      "name": "chatSession",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "emailHash": {
-          "name": "emailHash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "lastActiveAt": {
-          "name": "lastActiveAt",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "online": {
-          "name": "online",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "unreadCount": {
-          "name": "unreadCount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -577,6 +517,65 @@
           "tableTo": "etablissement",
           "columnsFrom": [
             "etablissementId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "message": {
+      "name": "message",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "conversationId": {
+          "name": "conversationId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "senderRole": {
+          "name": "senderRole",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "message_conversationId_conversation_id_fk": {
+          "name": "message_conversationId_conversation_id_fk",
+          "tableFrom": "message",
+          "tableTo": "conversation",
+          "columnsFrom": [
+            "conversationId"
           ],
           "columnsTo": [
             "id"

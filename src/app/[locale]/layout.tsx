@@ -4,7 +4,9 @@ import Navbar from "@/components/layout/Navbar";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import Footer from "@/components/layout/Footer";
 import { WebVitals } from "@/components/WebVitals";
-import ContactPopup from "@/components/ContactPopup";
+import ChatWidget from "@/components/ChatWidget";
+import { auth } from "../lib/auth";
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: {
@@ -49,13 +51,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
+  const session = await auth.api.getSession({ headers: await headers() })
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
       <Navbar />
@@ -65,8 +68,8 @@ export default function RootLayout({
         </NuqsAdapter>
       </main>
       <Footer />
-      <ContactPopup />
       <WebVitals />
+     { session?.user?.role?.toLowerCase() !== 'admin' && <ChatWidget />}
     </div>
   );
 }

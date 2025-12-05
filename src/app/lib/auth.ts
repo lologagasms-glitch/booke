@@ -5,6 +5,7 @@ import nodemailer from "nodemailer"
 import { db } from "@/db";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { schema } from "@/db/schema";
+import { anonymous } from "better-auth/plugins/anonymous";
 export const transporter = nodemailer.createTransport({
   host: 'smtp.zoho.com',
   port: 465,
@@ -85,6 +86,7 @@ export const auth = betterAuth({
     admin({
       adminRoles:["admin"],
       defaultRole:"user",
-    })
+    }),
+    anonymous(),
   ],
 });

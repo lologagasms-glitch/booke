@@ -57,32 +57,30 @@ if (isSuccess) {
 
       <SearchBar setFilters={setFilters} isPending={isPending} handleSearch={handleSearch} />
 
-      <div className="mt-6 flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-1/4">
-          <button
-            onClick={() => setOpen(true)}
-            className="fixed bottom-6 left-6 z-40 inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-3 text-white shadow-lg hover:bg-indigo-700 transition-colors"
-          >
-            <AdjustmentsHorizontalIcon className="h-5 w-5" />
-            Filtres
-          </button>
+      {/* Bouton Filtres en haut */}
+      <div className="mt-6">
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-3 text-white shadow-lg hover:bg-indigo-700 transition-colors"
+        >
+          <AdjustmentsHorizontalIcon className="h-5 w-5" />
+          Filtres
+        </button>
+      </div>
 
-          <FilterSidebar
-            filters={filters}
-            isOpen={open}
-            onClose={() => setOpen(false)}
-            setFilters={setFilters}
-            handleSearch={handleSearch}
-          />
-        </div>
+      <FilterSidebar
+        filters={filters}
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        setFilters={setFilters}
+        handleSearch={handleSearch}
+      />
 
-        <div className="w-full md:w-3/4">
-         
-            <Suspense fallback={<Loading />}>
-              <EstablishmentList />
-            </Suspense>
-          
-        </div>
+      {/* Liste des établissements */}
+      <div className="mt-6">
+        <Suspense fallback={<Loading />}>
+          <EstablishmentList />
+        </Suspense>
       </div>
     </div>
   )

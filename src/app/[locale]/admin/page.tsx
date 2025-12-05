@@ -28,7 +28,7 @@ export default async function AdminPage({ params }: { params: Promise<Params> })
       title: 'Établissements',
       desc: 'Ajoutez ou modifiez vos hôtels, villégiatures et résidences de charme.',
       icon: HomeModernIcon,
-      bg: 'from-amber-400 to-orange-500',
+      bg: 'from-yellow-400 to-yellow-800',
       href: `/${locale}/admin/etablissements`,
       cta: 'Gérer',
       plus: `/${locale}/admin/etablissements/new`,
@@ -37,7 +37,7 @@ export default async function AdminPage({ params }: { params: Promise<Params> })
       title: 'Chambres & Suites',
       desc: 'Mettez en valeur vos suites vue-mer, lofts ou cabanes perchées.',
       icon: Bars3CenterLeftIcon,
-      bg: 'from-sky-400 to-cyan-500',
+      bg: 'from-yellow-400 to-yellow-800',
       href: `/${locale}/admin/chambres`,
       cta: 'Parcourir',
       plus: `/${locale}/admin/chambres/new`,
@@ -46,7 +46,7 @@ export default async function AdminPage({ params }: { params: Promise<Params> })
       title: 'Réservations',
       desc: 'Suivez les séjours, annulations et demandes spéciales en temps réel.',
       icon: CalendarDaysIcon,
-      bg: 'from-emerald-400 to-teal-500',
+      bg: 'from-yellow-400 to-yellow-800',
       href: `/${locale}/admin/reservations`,
       cta: 'Consulter',
     },
@@ -54,18 +54,18 @@ export default async function AdminPage({ params }: { params: Promise<Params> })
       title: 'Médias',
       desc: 'Ajoutez ou modifiez les images et vidéos de vos établissements et chambres.',
       icon: PhotoIcon,
-      bg: 'from-purple-400 to-indigo-500',
+      bg: 'from-yellow-400 to-yellow-800',
       href: `/${locale}/admin/medias/etablissements`,
       mediaButtons: [
         { label: 'Établissements', href: `/${locale}/admin/medias/etablissements` },
-        { label: 'Chambres', href: `/${locale}/admin/medias/chambres` },
+        
       ],
     },
     {
       title: 'Utilisateurs',
       desc: 'Gérez les utilisateurs, leurs rôles et leurs accès.',
       icon: UserIcon,
-      bg: 'from-pink-400 to-rose-500',
+      bg: 'from-yellow-400 to-yellow-800',
       href: `/${locale}/admin/users`,
       cta: 'Gérer',
     },
@@ -73,9 +73,20 @@ export default async function AdminPage({ params }: { params: Promise<Params> })
       title: 'Paiements & Validation',
       desc: 'Validez les paiements et générez des reçus multilingues.',
       icon: CalendarDaysIcon, // Using CalendarDaysIcon as a placeholder, ideally use BanknotesIcon or similar if available
-      bg: 'from-indigo-400 to-violet-500',
+      bg: 'from-yellow-400 to-yellow-800',
       href: `/${locale}/admin/payments`,
       cta: 'Accéder',
+    },
+    {
+      title: 'Message client',
+      desc: 'Contactez les clients et obtenez leurs retours.',
+      icon: EnvelopeIcon,
+      bg: 'from-yellow-400 to-yellow-800',
+      href: `/${locale}/admin/chat`,
+      mediaButtons: [
+        { label: 'Messages', href: `/${locale}/admin/chat` },
+        
+      ],
     }
   ];
 

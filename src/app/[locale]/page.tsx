@@ -13,10 +13,12 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import { useParams } from "next/navigation";
+import { authClient, useSession } from "../lib/auth-client";
 
 export default function Home() {
   const { locale } = useParams();
-
+  const {data:session}=useSession()
+ 
   // Témoignages avec images Pexels (URL corrigées sans espaces)
   const testimonials = [
     {
@@ -154,7 +156,7 @@ export default function Home() {
 ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
       <Carousel />
       
       {/* Hero Section */}
@@ -185,7 +187,7 @@ export default function Home() {
 
         {/* TESTIMONIALS SWIPER - THEME NOIR & BLANC AVEC ACCENTS JAUNES */}
         <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
-          <div className="relative overflow-hidden rounded-3xl bg-gray-900 py-12 sm:py-16 md:py-20">
+          <div className="relative rounded-3xl bg-gray-900 py-12 sm:py-16 md:py-20">
             
             <div className="relative z-10 max-w-7xl mx-auto px-4">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-8 sm:mb-12 md:mb-16">
@@ -296,8 +298,8 @@ export default function Home() {
 
         {/* PARTENAIRES - GRANDES ENTREPRISES HOTELIERES EUROPEENNES */}
         <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
-          <div className=" rounded-3xl p-6 sm:p-8 md:p-12">
-            <h2 className="text-2xl sm:text-3xl text-white md:text-4xl font-bold text-center text-gray-800 mb-8 sm:mb-10 md:mb-12">
+          <div className="rounded-3xl p-6 sm:p-8 md:p-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8 sm:mb-10 md:mb-12">
               <TransletText>Nos Partenaires Prestigieux</TransletText>
             </h2>
             

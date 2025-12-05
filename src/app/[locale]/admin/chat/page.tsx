@@ -1,103 +1,125 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { TransletText } from '@/app/lib/services/translation/transletText'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import Link from 'next/link'
 
 export default function AdminChatPage() {
-  const [current, setCurrent] = useState<any | null>(null)
+  const [activeConversationId, setActiveConversationId] = useState<string>('')
   const [input, setInput] = useState('')
-  const socketRef = useRef<any>(null)
-  const queryClient = useQueryClient()
+  const [showList, setShowList] = useState(true)
+  const qc = useQueryClient()
 
-  const { data: sessions = [] } = useQuery({
-    queryKey: ['adminSessions'],
+  const conversationsQuery = useQuery({
+    queryKey: ['chat-getConversations'],
     queryFn: async () => {
-      const res = await fetch('/api/messages?list=1')
-      const data = await res.json()
-      return data.sessions || []
+      const res = await fetch('/api/chat/getConversations')
+      const json = await res.json()
+      return json.conversations || []
     },
+    refetchInterval: 8000,
   })
 
-  const { data: messages = [] } = useQuery({
-    queryKey: ['adminMessages', current?.id],
+  const messagesQuery = useQuery({
+    queryKey: ['chat-getMessages', activeConversationId],
     queryFn: async () => {
-      if (!current) return []
-      const res = await fetch(`/api/messages?sessionId=${current.id}`)
-      const data = await res.json()
-      return (data.messages || []).reverse()
+      const res = await fetch(`/api/chat/getMessages?conversationId=${activeConversationId}`)
+      const json = await res.json()
+      return json.messages || []
     },
-    enabled: !!current,
+    enabled: !!activeConversationId,
+    refetchInterval: 4000,
   })
 
-  const sendMutation = useMutation({
+  const mutation = useMutation({
     mutationFn: async () => {
-      if (!current || !input) return
-      await fetch('/api/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: current.email || '', sessionId: current.id, message: input, from: 'admin' }),
-      })
-      if (socketRef.current) socketRef.current.emit('admin:reply', { email_hash: current.emailHash, message: input })
+      const res = await fetch('/api/chat/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: input, conversationId: activeConversationId }) })
+      if (!res.ok) throw new Error('send failed')
+      return res.json()
     },
     onSuccess: () => {
-      queryClient.setQueryData(['adminMessages', current?.id], (old: any[]) => [
-        ...old,
-        { id: crypto.randomUUID(), from: 'admin', message: input, timestamp: new Date(), status: 'sent' },
-      ])
+      qc.invalidateQueries({ queryKey: ['chat-getMessages', activeConversationId] })
+      qc.invalidateQueries({ queryKey: ['chat-getConversations'] })
       setInput('')
     },
   })
 
-  useEffect(() => {
-    ;(async () => {
-      const mod = await import('socket.io-client') as any
-      const url = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000'
-      socketRef.current = mod.io(url + '/chat')
-    })()
-  }, [])
+  const handleSelectConversation = (id: string) => {
+    setActiveConversationId(id)
+    setShowList(false)
+  }
 
-  const send = (e: React.FormEvent) => {
-    e.preventDefault()
-    sendMutation.mutate()
+  const handleBack = () => {
+    setShowList(true)
+    setActiveConversationId('')
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="md:col-span-1 border rounded-xl bg-white">
-        <div className="p-4 font-semibold"><TransletText>Conversations</TransletText></div>
-        <div className="divide-y max-h-[60vh] overflow-y-auto">
-          {sessions.map((s: any) => (
-            <button key={s.id} onClick={() => setCurrent(s)} className={`w-full text-left p-4 ${current?.id === s.id ? 'bg-blue-50' : ''}`}>
-              <div className="text-sm">{s.email || s.emailHash.slice(0,8)}</div>
-              <div className="text-xs text-gray-500">{new Date(s.lastActiveAt).toLocaleString()}</div>
+    <div className="max-w-6xl mx-auto p-6 flex flex-col md:flex-row gap-6">
+      {/* Mobile header when chat is open */}
+      {activeConversationId && (
+        <div className="md:hidden flex items-center gap-3 mb-3">
+          <button onClick={handleBack} className="text-blue-600 font-semibold">
+            ← <TransletText>Retour</TransletText>
+          </button>
+          <div className="font-semibold truncate">{activeConversationId}</div>
+        </div>
+      )}
+
+      {/* Conversations list */}
+      <div className={`${showList ? 'flex' : 'hidden'} md:flex md:w-1/3 flex-col bg-white p-2`}>
+        <div className="mb-4 px-1">
+          <h2 className="text-lg font-semibold text-gray-800 tracking-tight"><TransletText>Conversations</TransletText></h2>
+        </div>
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1 m-2 p-2">
+          {(conversationsQuery.data || []).map((c: any) => (
+            <button
+              key={c.id}
+              onClick={() => handleSelectConversation(c.id)}
+              className={`w-full text-left rounded-2xl border  p-4 shadow-sm transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-400 ${activeConversationId === c.id ? 'ring-3 ring-blue-500 shadow-md text-white bg-blue-600' : 'bg-white text-gray-800'}`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className={`text-sm font-medium ${activeConversationId === c.id ? 'text-white' : 'text-gray-900'}`}>{c.user?.email || c.userId}</div>
+                  <div className={`text-xs mt-1 ${activeConversationId === c.id ? 'text-white' : 'text-gray-500'}`}>{new Date(c.lastMessageAt).toLocaleString()}</div>
+                </div>
+                {c.hasUnreadMessages && (
+                  <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${activeConversationId === c.id ? 'bg-white text-blue-700' : 'bg-blue-100 text-blue-700'}`}>
+                    <TransletText>Non lu</TransletText>
+                  </span>
+                )}
+              </div>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="md:col-span-2 border rounded-xl bg-white flex flex-col">
+      {/* Chat panel */}
+      <div className={`${showList ? 'hidden' : 'flex'} md:flex md:w-2/3 border rounded-xl bg-white flex-col`}>
         <div className="p-4 border-b">
-          <div className="font-semibold">{current ? (current.email || current.emailHash.slice(0,8)) : ''}</div>
+          <div className="font-semibold ">{activeConversationId ? activeConversationId : ''}</div>
         </div>
         <div className="flex-1 p-4 space-y-2 overflow-y-auto">
-          {messages.map((m: any) => (
-            <div key={m.id} className={`flex ${m.from === 'admin' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] px-3 py-2 rounded-2xl shadow ${m.from === 'admin' ? 'bg-blue-600 text-white' : 'bg-white border'}`}>
-                <div>{m.message}</div>
-                <div className="text-[10px] opacity-70 mt-1">{new Date(m.timestamp).toLocaleTimeString()} • {m.status}</div>
+          {(messagesQuery.data || []).map((m: any) => (
+            <div key={m.id} className={`flex ${m.senderRole.toLowerCase() === 'admin' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] px-3 py-2 rounded-2xl shadow ${m.senderRole.toLowerCase() === 'admin' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white border'}`}>
+                <div>{m.content}</div>
+                <div className="text-[10px] opacity-70 mt-1">{new Date(m.createdAt).toLocaleTimeString()}</div>
               </div>
             </div>
           ))}
         </div>
-        <form onSubmit={send} className="p-4 flex items-center gap-2 border-t">
-          <input value={input} onChange={(e) => setInput(e.target.value)} className="flex-1 border rounded-xl px-3 py-2" />
-          <button type="submit" className="px-4 py-2 rounded-xl bg-blue-600 text-white flex items-center gap-2">
-            <PaperAirplaneIcon className="w-5 h-5" />
-            <TransletText>Envoyer</TransletText>
-          </button>
-        </form>
+        {activeConversationId && (
+          <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(); }} className="p-4 flex items-center gap-2 border-t">
+            <input value={input} onChange={(e) => setInput(e.target.value)} className="flex-1 border rounded-xl px-3 py-2 text-gray-800" />
+            <button type="submit" disabled={!activeConversationId || !input} className="px-4 py-2 rounded-xl bg-blue-600  flex items-center gap-2">
+              <PaperAirplaneIcon className="w-5 h-5" />
+              <TransletText>Envoyer</TransletText>
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )

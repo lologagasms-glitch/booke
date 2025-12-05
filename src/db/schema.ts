@@ -14,6 +14,7 @@ export const user = sqliteTable('user', {
   image: text('image'),
   role: text('role', { enum: ['user', 'admin'] }).notNull().default('user'),
   banned: integer('banned', { mode: 'boolean' }).notNull().default(false),
+  isAnonymous: integer('isAnonymous', { mode: 'boolean' }),
   createdAt: integer('createdAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updatedAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()).$onUpdateFn(() => new Date()),
 });
@@ -125,26 +126,29 @@ export const reservations = sqliteTable('reservation', {
   dateDebutIdx: index('reservation_dateDebut_idx').on(table.dateDebut),
 }));
 
-export const chatSessions = sqliteTable('chatSession', {
+
+
+
+
+// Chat support: Conversations & Messages
+export const conversations = sqliteTable('conversation', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  emailHash: text('emailHash').notNull(),
-  email: text('email'),
+  userId: text('userId').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  lastMessageAt: integer('lastMessageAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  hasUnreadMessages: integer('hasUnreadMessages', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('createdAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-  lastActiveAt: integer('lastActiveAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()).$onUpdateFn(() => new Date()),
-  online: integer('online', { mode: 'boolean' }).notNull().default(false),
-  unreadCount: integer('unreadCount').notNull().default(0),
-});
+}, (table) => ({
+  userUniqueIdx: index('conversation_user_unique_idx').on(table.userId),
+  lastMessageIdx: index('conversation_lastMessage_idx').on(table.lastMessageAt),
+}));
 
-export const chatMessages = sqliteTable('chatMessage', {
+export const messages = sqliteTable('message', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  sessionId: text('sessionId').notNull().references(() => chatSessions.id, { onDelete: 'cascade' }),
-  emailHash: text('emailHash').notNull(),
-  from: text('from', { enum: ['user', 'admin'] }).notNull(),
-  message: text('message').notNull(),
-  status: text('status', { enum: ['sent', 'delivered', 'read'] }).notNull().default('sent'),
-  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  conversationId: text('conversationId').notNull().references(() => conversations.id, { onDelete: 'cascade' }),
+  senderRole: text('senderRole', { enum: ['ADMIN', 'USER'] }).notNull(),
+  content: text('content').notNull(),
+  createdAt: integer('createdAt', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
-
 /* ------------------------------------------------------------------ */
 /* 3.  RELATIONS                                                      */
 /* ------------------------------------------------------------------ */
@@ -196,12 +200,13 @@ export const reservationRelations = relations(reservations, ({ one }) => ({
   etablissement: one(etablissements, { fields: [reservations.etablissementId], references: [etablissements.id] }),
 }));
 
-export const chatSessionRelations = relations(chatSessions, ({ many }) => ({
-  messages: many(chatMessages),
+export const conversationRelations = relations(conversations, ({ one, many }) => ({
+  user: one(user, { fields: [conversations.userId], references: [user.id] }),
+  messages: many(messages),
 }));
 
-export const chatMessageRelations = relations(chatMessages, ({ one }) => ({
-  session: one(chatSessions, { fields: [chatMessages.sessionId], references: [chatSessions.id] }),
+export const messageRelations = relations(messages, ({ one }) => ({
+  conversation: one(conversations, { fields: [messages.conversationId], references: [conversations.id] }),
 }));
 
 /* ------------------------------------------------------------------ */
@@ -212,13 +217,14 @@ export const schema = {
   // tables
   user, account, session, verification,
   etablissements, chambres, mediaEtablissements, mediaChambres, reservations,
-  chatSessions, chatMessages,
+  conversations, messages,
+ 
   // relations
   userRelations, accountRelations, sessionRelations,
   etablissementRelations, chambreRelations,
   mediaEtablissementRelations, mediaChambreRelations,
   reservationRelations,
-  chatSessionRelations, chatMessageRelations,
+  conversationRelations, messageRelations,
 };
 
 /* ---------------------------------------------------------- */

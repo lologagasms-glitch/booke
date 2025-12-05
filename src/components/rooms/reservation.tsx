@@ -28,6 +28,8 @@
   import { createReservation } from '@/app/lib/services/reservation.service'
   import { useSession } from '@/app/lib/auth-client'
   import { usePopup } from '@/components/popup'
+import { TransletText } from '@/app/lib/services/translation/transletText'
+import Image from 'next/image'
 
   const TrustMessageCard = () => (
     <div className="mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5">
@@ -190,14 +192,14 @@
       <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
         {/* Établissement */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Établissement</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3"><TransletText>Établissement</TransletText></h2>
           <div className="space-y-3">
             <div className="flex items-start justify-between">
               <div>
                 <p className="font-semibold text-gray-900">{room.etablissement.nom}</p>
                 <span className={`inline-block mt-1 px-2 py-1 rounded-full text-xs font-semibold capitalize ${etablissementTypeColors[room.etablissement.type]
                   }`}>
-                  {room.etablissement.type}
+                    <TransletText>{room.etablissement.type}</TransletText>
                 </span>
               </div>
               {room.etablissement.etoiles && (
@@ -218,12 +220,12 @@
             <div className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg">
               <MapPinIcon className="w-4 h-4 mt-0.5 text-gray-600 flex-shrink-0" />
               <span className="text-sm text-gray-700">
-                {room.etablissement.adresse}, {room.etablissement.ville}, {room.etablissement.pays}
+                <TransletText>{room.etablissement.adresse}</TransletText>, <TransletText>{room.etablissement.ville}</TransletText>, <TransletText>{room.etablissement.pays}</TransletText>
               </span>
             </div>
 
             <div className="p-2 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-1">Contact</p>
+              <p className="text-xs text-gray-500 mb-1"><TransletText>Contact</TransletText></p>
               <p className="text-sm font-medium text-gray-800">{room.etablissement.contact.telephone}</p>
             </div>
           </div>
@@ -231,12 +233,12 @@
 
         {/* Séjour */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Votre séjour</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3"><TransletText>Votre séjour</TransletText></h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm p-2 bg-blue-50 rounded-lg">
               <span className="text-gray-600 flex items-center gap-2">
                 <CalendarIcon className="w-4 h-4" />
-                Arrivée
+                <TransletText>Arrivée</TransletText>
               </span>
               <span className="font-medium text-gray-900">{formatDate(checkIn)}</span>
             </div>
@@ -244,7 +246,7 @@
             <div className="flex items-center justify-between text-sm p-2 bg-blue-50 rounded-lg">
               <span className="text-gray-600 flex items-center gap-2">
                 <CalendarIcon className="w-4 h-4" />
-                Départ
+                <TransletText>Départ</TransletText>
               </span>
               <span className="font-medium text-gray-900">{formatDate(checkOut)}</span>
             </div>
@@ -252,7 +254,7 @@
             <div className="flex items-center justify-between text-sm p-2 bg-blue-50 rounded-lg">
               <span className="text-gray-600 flex items-center gap-2">
                 <UsersIcon className="w-4 h-4" />
-                Nombre de personnes
+                <TransletText>Nombre de personnes</TransletText>
               </span>
               <span className="font-medium text-gray-900">{guests} / {room.capacite}</span>
             </div>
@@ -261,16 +263,16 @@
 
         {/* Chambre */}
         <div>
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Chambre</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3"><TransletText>Chambre</TransletText></h2>
           <div className="space-y-3">
             <div>
-              <p className="font-semibold text-gray-900">{room.nom}</p>
+              <p className="font-semibold text-gray-900"><TransletText>{room.nom}</TransletText></p>
             </div>
 
             <div className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
               <span className="text-gray-600 flex items-center gap-2">
                 <TagIcon className="w-4 h-4" />
-                Prix / nuit
+                <TransletText>Prix / nuit</TransletText>
               </span>
               <span className="font-medium text-gray-900">{room.prix} €</span>
             </div>
@@ -289,12 +291,12 @@
               <div className="p-3 bg-green-50 rounded-lg border border-green-100">
                 <p className="text-xs font-semibold text-green-800 mb-2 flex items-center gap-1">
                   <ShieldCheckIcon className="w-3 h-3" />
-                  Services inclus
+                  <TransletText>Services inclus</TransletText>
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {room.services.slice(0, 4).map((service: string, idx: number) => (
                     <span key={idx} className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md font-medium">
-                      {service}
+                      <TransletText>{service}</TransletText>
                     </span>
                   ))}
                   {room.services.length > 4 && (
@@ -526,7 +528,7 @@
             <div className="mb-8 bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
                 <PhotoIcon className="w-5 h-5 text-blue-600" />
-                Photos & Vidéos de la chambre
+               <TransletText>Photos & Vidéos de la chambre</TransletText> 
               </h2>
               <MediaGallery medias={roomMedias} />
             </div>
@@ -539,7 +541,7 @@
               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
             >
               <PencilSquareIcon className="w-4 h-4" />
-              <span className="text-sm font-medium">Modifier ma réservation</span>
+              <TransletText>Modifier ma réservation</TransletText> 
             </button>
           </div>
 
@@ -559,14 +561,16 @@
             {/* Colonne 2 : Formulaire */}
             <main className="lg:col-span-2">
               <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-                <h1 className="text-2xl font-bold mb-6 text-gray-900">✅ Finaliser votre réservation</h1>
+                <h1 className="text-2xl font-bold mb-6 text-gray-900">
+                  <TransletText>✅ Finaliser votre réservation</TransletText> 
+                </h1>
                 <TrustMessageCard />
 
                 {/* Dates de séjour - Ultra moderne */}
                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                   <div className="relative">
                     <label className="block mb-2 text-sm font-semibold text-gray-700">
-                      Date d'arrivée *
+                      <TransletText>Date d'arrivée *</TransletText> 
                     </label>
                     <div className="relative">
                       <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -580,13 +584,13 @@
                       />
                     </div>
                     {errors.checkIn && (
-                      <p className="text-red-500 text-xs mt-1 ml-2">{errors.checkIn.message}</p>
+                      <p className="text-red-500 text-xs mt-1 ml-2"> <TransletText>{ errors.checkIn.message||""}</TransletText> </p>
                     )}
                   </div>
 
                   <div className="relative">
                     <label className="block mb-2 text-sm font-semibold text-gray-700">
-                      Date de départ *
+                      <TransletText>Date de départ *</TransletText> 
                     </label>
                     <div className="relative">
                       <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -608,7 +612,7 @@
                 {/* Nombre de personnes - Ultra moderne */}
                 <div className="mb-6 relative">
                   <label className="block mb-2 text-sm font-semibold text-gray-700">
-                    Nombre de personnes *
+                    <TransletText>Nombre de personnes *</TransletText> 
                   </label>
                   <div className="relative">
                     <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -627,7 +631,7 @@
                     </select>
                   </div>
                   {errors.guests && (
-                    <p className="text-red-500 text-xs mt-1 ml-2">{errors.guests.message}</p>
+                    <p className="text-red-500 text-xs mt-1 ml-2"> <TransletText>{ errors.guests.message||""}</TransletText> </p>
                   )}
                 </div>
 
@@ -636,7 +640,7 @@
                   {/* Prénom - Ultra moderne */}
                   <div className="relative">
                     <label className="block mb-2 text-sm font-semibold text-gray-700">
-                      Prénom *
+                      <TransletText>Prénom *</TransletText> 
                     </label>
                     <div className="relative">
                       <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -650,14 +654,14 @@
                       />
                     </div>
                     {errors.firstName && (
-                      <p className="text-red-500 text-xs mt-1 ml-2">{errors.firstName.message}</p>
+                      <p className="text-red-500 text-xs mt-1 ml-2"> <TransletText>{ errors.firstName.message||""}</TransletText> </p>
                     )}
                   </div>
 
                   {/* Nom - Ultra moderne */}
                   <div className="relative">
                     <label className="block mb-2 text-sm font-semibold text-gray-700">
-                      Nom *
+                      <TransletText>Nom *</TransletText> 
                     </label>
                     <div className="relative">
                       <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -679,7 +683,7 @@
                 {/* Email - Ultra moderne */}
                 <div className="mb-6 relative">
                   <label className="block mb-2 text-sm font-semibold text-gray-700">
-                    Email *
+                    <TransletText>Email *</TransletText> 
                   </label>
                   <div className="relative">
                     <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -695,14 +699,14 @@
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-red-500 text-xs mt-1 ml-2">{errors.email.message}</p>
+                    <p className="text-red-500 text-xs mt-1 ml-2"> <TransletText>{ errors.email.message||""}</TransletText> </p>
                   )}
                 </div>
 
                 {/* Téléphone - Ultra moderne */}
                 <div className="mb-6 relative">
                   <label className="block mb-2 text-sm font-semibold text-gray-700">
-                    Téléphone *
+                    <TransletText>Téléphone *</TransletText> 
                   </label>
                   <div className="relative">
                     <PhoneIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -717,7 +721,7 @@
                     />
                   </div>
                   {errors.phone && (
-                    <p className="text-red-500 text-xs mt-1 ml-2">{errors.phone.message}</p>
+                    <p className="text-red-500 text-xs mt-1 ml-2"> <TransletText>{ errors.phone.message||""}</TransletText> </p>
                   )}
                 </div>
 
@@ -735,11 +739,11 @@
                       </div>
                     </div>
                     <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
-                      J'accepte les <a href="/cgv" className="text-blue-600 underline hover:text-blue-800 font-medium">conditions générales de vente</a> *
+                      <TransletText>J'accepte les conditions générales de vente</TransletText> *
                     </span>
                   </label>
                   {errors.acceptCGV && (
-                    <p className="text-red-500 text-xs mt-2 ml-10">{errors.acceptCGV.message}</p>
+                    <p className="text-red-500 text-xs mt-2 ml-10"> <TransletText>{errors.acceptCGV.message||""}</TransletText> </p>
                   )}
                 </div>
 
@@ -753,18 +757,36 @@
                   {isSubmitting ? (
                     <>
                       <ArrowPathIcon className="w-6 h-6 animate-spin" />
-                      <span>Traitement en cours...</span>
+                      <TransletText>Traitement en cours...</TransletText>
                     </>
                   ) : (
                     <>
                       <WhatsAppIcon className="w-7 h-7 text-white" />
-                      <span>Finaliser sur WhatsApp</span>
+                      <TransletText>Finaliser sur WhatsApp</TransletText>
                     </>
                   )}
                 </button>
 
+                {/* Moyens de paiement */}
+                <div className="mt-6 flex items-center justify-center gap-4">
+                  <Image
+                    src="https://vfluo.fr/cdn/shop/files/paypal-784404_640_750x.png?v=1666961944"
+                    alt="PayPal"
+                    width={80}
+                    height={32}
+                    className="h-8"
+                  />
+                  <Image
+                    src="https://vfluo.fr/cdn/shop/files/virement_bancaire_1300x1300_2267b12b-5f6f-4af6-8cc2-06c2f8590902_750x.png?v=1667486674"
+                    alt="Virement bancaire"
+                    width={80}
+                    height={32}
+                    className="h-8"
+                  />
+                </div>
+
                 <p className="text-xs text-gray-500 mt-6 text-center leading-relaxed">
-                  🔒 Vos données sont sécurisées et chiffrées. Un conseiller vous répondra sous 30 minutes sur WhatsApp pour confirmer et procéder au paiement sécurisé.
+                  <TransletText>🔒 Vos données sont sécurisées et chiffrées. Un conseiller vous répondra sous 30 minutes sur WhatsApp pour confirmer et procéder au paiement sécurisé.</TransletText>
                 </p>
               </form>
             </main>

@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "cf02c7b8-8e2b-4f15-80af-edcb48eb2093",
-  "prevId": "4e22ba62-64eb-4335-ae33-304d1f8e120e",
+  "id": "3e859cce-7621-4f72-b567-11accf2474ca",
+  "prevId": "051bf701-50b6-4423-9290-83bf5825178f",
   "tables": {
     "account": {
       "name": "account",
@@ -251,6 +251,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "receveId": {
+          "name": "receveId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -887,6 +894,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "isAnonymous": {
+          "name": "isAnonymous",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",

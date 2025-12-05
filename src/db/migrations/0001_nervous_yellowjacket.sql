@@ -1,0 +1,1 @@
+ALTER TABLE `chatMessage` ADD `receveId` text;

@@ -155,7 +155,7 @@ export default function Navbar() {
 
   // Menu utilisateur
   const UserMenu = () => {
-    if (!session?.user) return null;
+    if (!session?.user || session.user.isAnonymous) return null;
     
     return (
       <Dropdown
@@ -404,7 +404,7 @@ export default function Navbar() {
 
             {/* Desktop Right */}
             <div className="hidden lg:flex items-center space-x-4">
-              {session?.user?.role === 'admin' && (
+              {session?.user?.role === 'admin' && !session.user.isAnonymous && (
                 <Link
                   href="/admin"
                   className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg border border-destructive/50 text-destructive hover:bg-destructive/10 transition"
@@ -415,7 +415,7 @@ export default function Navbar() {
                 </Link>
               )}
 
-              {!session?.user ? (
+              {!session?.user || session.user.isAnonymous ? (
                 <div className="flex items-center space-x-3">
                   <Link
                     href="/auth/signin"
@@ -535,7 +535,7 @@ export default function Navbar() {
 
               {/* User section */}
               <div className="pt-4 border-t border-border space-y-3">
-                {session?.user ? (
+                {session?.user && !session.user.isAnonymous ? (
                   <>
                     <div className="px-4 py-3 rounded-xl bg-primary/10">
                       <p className="font-medium text-sm">{session.user.name}</p>

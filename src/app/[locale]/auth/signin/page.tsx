@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { authClient } from '@//app/lib/auth-client';
-import { connectUserSocialGoogle } from './sign';
 
 export default function SignIn() {
   const router = useRouter();
