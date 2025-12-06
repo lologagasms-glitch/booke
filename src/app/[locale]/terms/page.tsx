@@ -4,7 +4,7 @@ export default function TermsPage() {
     return (
         <div className="max-w-4xl mx-auto px-6 py-12">
             <h1 className="text-3xl font-bold mb-6"><TransletText>Conditions Générales d'Utilisation</TransletText></h1>
-            <div className="prose max-w-none space-y-6 text-gray-800">
+            <div className="prose max-w-none space-y-6 text-gray-400">
                 <p>
                     <TransletText>
                         Veuillez lire attentivement nos conditions générales d'utilisation avant d'utiliser nos services.

@@ -6,11 +6,9 @@ import {
   mediaChambres,
   reservations,
   etablissements,
-  schema,
 } from '@/db/schema';
-import { Chambre, Etablissement, MediaChambre, MediaEtablissement, NewEtablissement } from '@/types';
-import { eq, and, lte, gte, or, sql, desc, inArray, min, count, asc, like, SQL, ilike, notInArray } from 'drizzle-orm';
-import { inspect } from 'util';
+import { Chambre, Etablissement, MediaChambre, MediaEtablissement, NewEtablissement, SearchParams as SearchParamsIface } from '@/types';
+import { eq, and, lte, gte, or, sql, desc, inArray, min, count, asc, like, SQL, notInArray } from 'drizzle-orm';
 import z from 'zod';
 
 // ------------------------------------------------------------------
@@ -515,8 +513,8 @@ export async function searchGlobal(
       )`
     );
   }
-  if (p.ville) whereEtab.push(ilike(etablissements.ville, `%${p.ville.toLowerCase()}%`));
-  if (p.pays) whereEtab.push(ilike(etablissements.pays, `%${p.pays.toLowerCase()}%`));
+  if (p.ville) whereEtab.push(like(etablissements.ville, `%${p.ville.toLowerCase()}%`));
+  if (p.pays) whereEtab.push(like(etablissements.pays, `%${p.pays.toLowerCase()}%`));
   if (p.type) whereEtab.push(eq(etablissements.type, p.type));
   if (p.stars != null) whereEtab.push(eq(etablissements.etoiles, p.stars));
   if (servicesEtab.length) {
@@ -623,4 +621,66 @@ export async function searchGlobal(
     results: deduped.map(({  ...rest }) => rest as GlobalSearchResult),
     nextCursor,
   };
+}
+
+export async function searchData(params: Partial<SearchParamsIface>) {
+  const conds: any[] = [];
+  if (params.destination) {
+    const d = params.destination.toLowerCase();
+    conds.push(
+      or(
+        like(etablissements.nom, `%${d}%`),
+        like(etablissements.description, `%${d}%`),
+        like(etablissements.ville, `%${d}%`)
+      )
+    );
+  }
+  if (params.ville) conds.push(like(etablissements.ville, `%${params.ville.toLowerCase()}%`));
+  if (params.pays) conds.push(like(etablissements.pays, `%${params.pays.toLowerCase()}%`));
+  if (params.type) conds.push(eq(etablissements.type, params.type as any));
+  if (params.stars != null) conds.push(eq(etablissements.etoiles, Number(params.stars)));
+  if (params.minPrice != null) conds.push(gte(chambres.prix, Number(params.minPrice)));
+  if (params.maxPrice != null) conds.push(lte(chambres.prix, Number(params.maxPrice)));
+  if (params.capaciteMin != null) conds.push(gte(chambres.capacite, Number(params.capaciteMin)));
+  if (params.capaciteMax != null) conds.push(lte(chambres.capacite, Number(params.capaciteMax)));
+  if (params.disponible != null) conds.push(eq(chambres.disponible, Boolean(params.disponible)));
+
+  const base = db
+    .select({
+      etab: etablissements,
+      room: chambres,
+      etabMedia: mediaEtablissements,
+      roomMedia: mediaChambres,
+    })
+    .from(etablissements)
+    .leftJoin(chambres, eq(chambres.etablissementId, etablissements.id))
+    .leftJoin(mediaEtablissements, eq(mediaEtablissements.etablissementId, etablissements.id))
+    .leftJoin(mediaChambres, eq(mediaChambres.chambreId, chambres.id));
+
+  const rows = conds.length ? await base.where(and(...conds)) : await base;
+
+  const map = new Map<string, Etablissement & { medias: MediaEtablissement[]; chambres: (Chambre & { medias: MediaChambre[] })[] }>();
+  for (const r of rows) {
+    const e = r.etab;
+    if (!map.has(e.id)) {
+      map.set(e.id, { ...e, medias: [], chambres: [] });
+    }
+    const cur = map.get(e.id)!;
+    if (r.etabMedia && r.etabMedia.id) {
+      if (r.etabMedia && !cur.medias.find(m => m.id === r.etabMedia!.id)) cur.medias.push(r.etabMedia);
+    }
+    if (r.room && r.room.id) {
+      if (!r.room) continue;
+      let room = cur.chambres.find(c => c.id === r?.room?.id);
+      if (!room) {
+        room = { ...r.room, medias: [] } as any;
+        if (room) cur.chambres.push(room);
+      }
+      if (r.roomMedia && r.roomMedia.id) {
+        if (!room?.medias.find(m => m.id === r.roomMedia?.id)) room?.medias.push(r.roomMedia);
+      }
+    }
+  }
+
+  return Array.from(map.values());
 }

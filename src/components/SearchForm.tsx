@@ -1,12 +1,106 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { MagnifyingGlassIcon, CalendarIcon, UserIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, CalendarIcon, UserIcon, CheckIcon, MinusIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+
+// Toggle switch futuriste
+const FuturisticToggle = ({ 
+  active, 
+  onToggle, 
+  label 
+}: {
+  active: boolean;
+  onToggle: () => void;
+  label: string;
+}) => (
+  <button
+    type="button"
+    onClick={onToggle}
+    className="flex items-center justify-between w-full group"
+    role="switch"
+    aria-checked={active}
+  >
+    <span className="font-medium text-gray-900">{label}</span>
+    <div className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
+      active 
+        ? 'bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg shadow-blue-500/30' 
+        : 'bg-gray-300'
+    }`}>
+      <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-all duration-300 shadow-md ${
+        active ? 'translate-x-6' : ''
+      }`} />
+    </div>
+  </button>
+);
+
+// Compteur avec design futuriste
+const GuestCounter = ({ 
+  label, 
+  value, 
+  onIncrement, 
+  onDecrement, 
+  min = 0,
+  max = 20 
+}: {
+  label: string;
+  value: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+  min?: number;
+  max?: number;
+}) => (
+  <div className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+    <div>
+      <span className="font-semibold text-gray-900">{label}</span>
+      <p className="text-xs text-gray-500 mt-0.5">
+        {label === 'Adultes' && 'Âge 18+'}
+        {label === 'Enfants' && 'Âge 0-17'}
+        {label === 'Chambres' && 'Nombre de chambres'}
+      </p>
+    </div>
+    <div className="flex items-center gap-3">
+      <button 
+        type="button"
+        onClick={onDecrement}
+        disabled={value <= min}
+        className="w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center justify-center 
+                   transition-all hover:border-blue-500 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed
+                   group-hover:scale-105 active:scale-95"
+      >
+        <MinusIcon className="h-4 w-4 text-gray-700" />
+      </button>
+      <span className="w-8 text-center font-bold text-lg text-gray-900">{value}</span>
+      <button 
+        type="button"
+        onClick={onIncrement}
+        disabled={value >= max}
+        className="w-9 h-9 rounded-full border border-gray-300 bg-white flex items-center justify-center 
+                   transition-all hover:border-blue-500 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed
+                   group-hover:scale-105 active:scale-95"
+      >
+        <PlusIcon className="h-4 w-4 text-gray-700" />
+      </button>
+    </div>
+  </div>
+);
+
+// Hook générique pour fermer le dropdown
+function useClickOutside<T extends HTMLElement>(ref: React.RefObject<T>, handler: () => void) {
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) {
+        handler();
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [ref, handler]);
+}
 
 const SearchForm = () => {
   const router = useRouter();
@@ -19,51 +113,105 @@ const SearchForm = () => {
     rooms: 1
   });
   const [isGuestsOpen, setIsGuestsOpen] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
+  const [isBusinessTrip, setIsBusinessTrip] = useState(false);
+  const [isPetsAllowed, setIsPetsAllowed] = useState(false);
+  const {locale}=useParams()
+  const guestsRef = useRef<HTMLDivElement>(null);
+  useClickOutside(guestsRef as React.RefObject<HTMLDivElement>, () => setIsGuestsOpen(false));
 
-  const handleSearch = (e: React.FormEvent) => {
+  // Validation des dates
+  useEffect(() => {
+    if (checkIn && checkOut && checkOut <= checkIn) {
+      setCheckOut(null);
+      setDateError('La date de départ doit être après la date d\'arrivée');
+    } else {
+      setDateError(null);
+    }
+  }, [checkIn, checkOut]);
+
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    if (!destination.trim()) {
+      setDateError('Veuillez entrer une destination');
+      return;
+    }
+    if (!checkIn || !checkOut) {
+      setDateError('Veuillez sélectionner les dates');
+      return;
+    }
+
+    const searchParams = new URLSearchParams({
+      destination: destination.trim(),
+      checkIn: format(checkIn, 'yyyy-MM-dd'),
+      checkOut: format(checkOut, 'yyyy-MM-dd'),
+      adults: guests.adults.toString(),
+      children: guests.children.toString(),
+      rooms: guests.rooms.toString(),
+      ...(isBusinessTrip && { business: 'true' }),
+      ...(isPetsAllowed && { pets: 'true' })
+    });
     
-    const searchParams = new URLSearchParams();
-    
-    if (destination) searchParams.append('destination', destination);
-    if (checkIn) searchParams.append('checkIn', format(checkIn, 'yyyy-MM-dd'));
-    if (checkOut) searchParams.append('checkOut', format(checkOut, 'yyyy-MM-dd'));
-    searchParams.append('adults', guests.adults.toString());
-    searchParams.append('children', guests.children.toString());
-    searchParams.append('rooms', guests.rooms.toString());
-    
-    router.push(`/etablissements?${searchParams.toString()}`);
-  };
+    // Redirection vers locale/search-result avec les paramètres
+    router.push(`/${locale}/search-results?${searchParams.toString()}`);
+  }, [destination, checkIn, checkOut, guests, isBusinessTrip, isPetsAllowed, router, locale]);
+
+  // Animation du badge quand le nombre change
+  const [badgePulse, setBadgePulse] = useState(false);
+  const totalGuests = guests.adults + guests.children;
+  useEffect(() => {
+    setBadgePulse(true);
+    const timer = setTimeout(() => setBadgePulse(false), 300);
+    return () => clearTimeout(timer);
+  }, [totalGuests, guests.rooms]);
+
+  // ---------- FIX ICI : Ajout du manquant ----------
+  const guestsText = useMemo(() => {
+    const parts = [`${guests.adults} adulte${guests.adults > 1 ? 's' : ''}`];
+    if (guests.children > 0) {
+      parts.push(`${guests.children} enfant${guests.children > 1 ? 's' : ''}`);
+    }
+    parts.push(`${guests.rooms} chambre${guests.rooms > 1 ? 's' : ''}`);
+    return parts.join(', ');
+  }, [guests]);
+  // ---------- FIN FIX ----------
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
-      <form onSubmit={handleSearch} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="bg-white rounded-2xl shadow-xl p-5 md:p-8 transition-shadow hover:shadow-2xl">
+      {dateError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
+          {dateError}
+        </div>
+      )}
+      
+      <form onSubmit={handleSearch} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-6">
           {/* Destination */}
-          <div className="relative">
-            <label htmlFor="destination" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="relative group">
+            <label htmlFor="destination" className="block text-sm font-semibold text-gray-700 mb-2">
               Destination
             </label>
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none transition-colors group-focus-within:text-blue-600" />
               <input
                 type="text"
                 id="destination"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder="Où allez-vous ?"
-                className="pl-10 w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 w-full rounded-xl border border-gray-300 py-3 px-4 text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                required
               />
             </div>
           </div>
           
           {/* Check-in */}
-          <div>
-            <label htmlFor="check-in" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="relative group">
+            <label htmlFor="check-in" className="block text-sm font-semibold text-gray-700 mb-2">
               Arrivée
             </label>
             <div className="relative">
-              <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none transition-colors group-focus-within:text-blue-600" />
               <DatePicker
                 selected={checkIn}
                 onChange={(date) => setCheckIn(date)}
@@ -74,18 +222,19 @@ const SearchForm = () => {
                 locale={fr}
                 dateFormat="dd/MM/yyyy"
                 placeholderText="Date d'arrivée"
-                className="pl-10 w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 w-full rounded-xl border border-gray-300 py-3 px-4 text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                wrapperClassName="w-full"
               />
             </div>
           </div>
           
           {/* Check-out */}
-          <div>
-            <label htmlFor="check-out" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="relative group">
+            <label htmlFor="check-out" className="block text-sm font-semibold text-gray-700 mb-2">
               Départ
             </label>
             <div className="relative">
-              <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none transition-colors group-focus-within:text-blue-600" />
               <DatePicker
                 selected={checkOut}
                 onChange={(date) => setCheckOut(date)}
@@ -96,112 +245,141 @@ const SearchForm = () => {
                 locale={fr}
                 dateFormat="dd/MM/yyyy"
                 placeholderText="Date de départ"
-                className="pl-10 w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 w-full rounded-xl border border-gray-300 py-3 px-4 text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                wrapperClassName="w-full"
               />
             </div>
           </div>
           
-          {/* Guests */}
-          <div className="relative">
-            <label htmlFor="guests" className="block text-sm font-medium text-gray-700 mb-1">
+          {/* Champ Voyageurs - Design Futuriste */}
+          <div className="relative" ref={guestsRef}>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Voyageurs
             </label>
-            <div className="relative">
-              <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <button
-                type="button"
-                onClick={() => setIsGuestsOpen(!isGuestsOpen)}
-                className="pl-10 w-full rounded-md border border-gray-300 py-2 px-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {guests.adults} adulte{guests.adults > 1 ? 's' : ''}, {guests.children} enfant{guests.children > 1 ? 's' : ''}, {guests.rooms} chambre{guests.rooms > 1 ? 's' : ''}
-              </button>
+            
+            {/* Bouton principal avec effet glassmorphique */}
+            <button
+              type="button"
+              onClick={() => setIsGuestsOpen(!isGuestsOpen)}
+              className={`relative w-full rounded-2xl border-2 py-3 px-4 text-left transition-all overflow-hidden
+                ${isGuestsOpen 
+                  ? 'border-blue-500 bg-blue-50/50 ring-4 ring-blue-500/20' 
+                  : 'border-gray-300 bg-gray-50/80 hover:border-blue-400 hover:bg-white'
+                } backdrop-blur-sm`}
+            >
+              {/* Effet de brillance */}
+              <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full hover:translate-x-full duration-700" />
               
-              {isGuestsOpen && (
-                <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg p-4 border border-gray-200">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span>Adultes</span>
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          type="button" 
-                          onClick={() => setGuests({...guests, adults: Math.max(1, guests.adults - 1)})}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                        >
-                          -
-                        </button>
-                        <span className="w-6 text-center">{guests.adults}</span>
-                        <button 
-                          type="button" 
-                          onClick={() => setGuests({...guests, adults: guests.adults + 1})}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <span>Enfants</span>
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          type="button" 
-                          onClick={() => setGuests({...guests, children: Math.max(0, guests.children - 1)})}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                        >
-                          -
-                        </button>
-                        <span className="w-6 text-center">{guests.children}</span>
-                        <button 
-                          type="button" 
-                          onClick={() => setGuests({...guests, children: guests.children + 1})}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <span>Chambres</span>
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          type="button" 
-                          onClick={() => setGuests({...guests, rooms: Math.max(1, guests.rooms - 1)})}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                        >
-                          -
-                        </button>
-                        <span className="w-6 text-center">{guests.rooms}</span>
-                        <button 
-                          type="button" 
-                          onClick={() => setGuests({...guests, rooms: guests.rooms + 1})}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <button
-                      type="button"
-                      onClick={() => setIsGuestsOpen(false)}
-                      className="w-full bg-blue-700 text-white rounded-md py-2 hover:bg-blue-800 transition-colors"
-                    >
-                      Appliquer
-                    </button>
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className={`relative p-2 rounded-full transition-all ${
+                    isGuestsOpen ? 'bg-blue-500/10' : 'bg-gray-200/50'
+                  }`}>
+                    <UserIcon className={`h-5 w-5 transition-colors ${
+                      isGuestsOpen ? 'text-blue-600' : 'text-gray-600'
+                    }`} />
+                    {/* Badge animé */}
+                    <span className={`absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 
+                                    text-white text-xs flex items-center justify-center font-bold shadow-md
+                                    transition-transform ${badgePulse ? 'scale-110' : 'scale-100'}`}>
+                      {totalGuests}
+                    </span>
                   </div>
+                  <span className="font-medium text-gray-900">{guestsText}</span>
                 </div>
-              )}
+                <ChevronDownIcon className={`h-5 w-5 text-gray-600 transition-transform duration-300 ${
+                  isGuestsOpen ? 'rotate-180 text-blue-600' : ''
+                }`} />
+              </div>
+            </button>
+            
+            {/* Dropdown futuriste avec animation scale */}
+            <div 
+              className={`absolute z-20 mt-3 w-full rounded-2xl shadow-2xl border border-white/10 p-0 
+                         backdrop-blur-xl bg-white/95 overflow-hidden transform transition-all duration-300 origin-top
+                         ${isGuestsOpen 
+                           ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' 
+                           : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                         }`}
+            >
+              {/* Header avec gradient animé */}
+              <div className="relative bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 p-4 text-white overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                <h3 className="relative z-10 font-bold text-lg">🚀 Configuration</h3>
+                <p className="relative z-10 text-sm opacity-90">Personnalisez votre voyage</p>
+              </div>
+              
+              {/* Contenu */}
+              <div className="p-5 space-y-4">
+                <GuestCounter
+                  label="Adultes"
+                  value={guests.adults}
+                  min={1}
+                  onIncrement={() => setGuests(g => ({...g, adults: g.adults + 1}))}
+                  onDecrement={() => setGuests(g => ({...g, adults: Math.max(1, g.adults - 1)}))}
+                />
+                
+                <GuestCounter
+                  label="Enfants"
+                  value={guests.children}
+                  onIncrement={() => setGuests(g => ({...g, children: g.children + 1}))}
+                  onDecrement={() => setGuests(g => ({...g, children: Math.max(0, g.children - 1)}))}
+                />
+                
+                <GuestCounter
+                  label="Chambres"
+                  value={guests.rooms}
+                  min={1}
+                  onIncrement={() => setGuests(g => ({...g, rooms: g.rooms + 1}))}
+                  onDecrement={() => setGuests(g => ({...g, rooms: Math.max(1, g.rooms - 1)}))}
+                />
+                
+                {/* Toggle switches futuristes */}
+                <div className="pt-4 border-t border-gray-200 space-y-4">
+                  <FuturisticToggle
+                    active={isBusinessTrip}
+                    onToggle={() => setIsBusinessTrip(!isBusinessTrip)}
+                    label="💼 Voyage d'affaires"
+                  />
+                  <FuturisticToggle
+                    active={isPetsAllowed}
+                    onToggle={() => setIsPetsAllowed(!isPetsAllowed)}
+                    label="🐾 Animaux acceptés"
+                  />
+                </div>
+                
+                {/* Bouton Appliquer avec effet néon */}
+                <button
+                  type="button"
+                  onClick={() => setIsGuestsOpen(false)}
+                  className="relative w-full mt-4 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-blue-700 to-cyan-500 
+                           hover:from-blue-800 hover:to-cyan-600 transition-all transform hover:scale-[1.02] 
+                           shadow-lg hover:shadow-blue-500/25 active:scale-95 overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <CheckIcon className="h-5 w-5" />
+                    Appliquer
+                  </span>
+                  <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
         
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-2">
           <button
             type="submit"
-            className="bg-blue-700 text-white px-8 py-3 rounded-md font-medium hover:bg-blue-800 transition-colors"
+            disabled={!destination.trim() || !checkIn || !checkOut}
+            className="relative w-full md:w-auto px-12 py-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700
+                     transition-all transform hover:scale-[1.02] 
+                     disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed disabled:transform-none 
+                     shadow-xl hover:shadow-2xl overflow-hidden group"
           >
-            Rechercher
+            <span className="relative  z-10 flex items-center justify-center gap-2">
+              <MagnifyingGlassIcon className="h-5 w-5" />
+              Rechercher
+            </span>
           </button>
         </div>
       </form>

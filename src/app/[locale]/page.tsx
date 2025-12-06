@@ -128,27 +128,27 @@ export default function Home() {
 
 
   {
-    name: "Hyatt Hotels",
-    logo: "https://www.hyatt.com/content/dam/hyatt/hyatt-webstyles/logos/Hyatt_Logo.svg",
-    website: "https://www.hyatt.com",
-    description: "Park Hyatt, Grand Hyatt - Luxe et lifestyle"
+    name: "Accor",
+    logo: "https://logonews.fr/wp-content/uploads/2019/03/accor-fond.jpg",
+    website: "#",
+    description: "Accor est un groupe hôtelier mondial offrant des marques diversifiées de l'économique au luxe."
   },
   {
-    name: "Meliá Hotels",
-    logo: "https://www.melia.com/etc/designs/meliapublic/img/logos/logo-melia-hotels.png",
-    website: "https://www.melia.com",
-    description: "Leader espagnol avec 370+ hôtels en Europe"
+    name: "Royal Garden",
+    logo: "https://royalgarden.com.tn/wp-content/uploads/2021/11/258882747_300440018666716_688477937116930594_n.png",
+    website: "#",
+    description: "Le Royal Garden Hotel est un hôtel de luxe cinq étoiles situé à Kensington, Londres, offrant un service haut de gamme."
   },
   {
-    name: "NH Hotel Group",
-    logo: "https://www.nh-hotels.com/etc/designs/nh-hotels/logo.svg",
-    website: "https://www.nh-hotels.com",
-    description: "380+ hôtels dans 25 pays, partie de Minor Hotels"
+    name: "hotel hilton toronto",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYqcU6HmyRDTSTYBOzJN3G9MTl0E1TjkWsHA&s",
+    website: "#",
+    description: "Le Hilton Toronto est un hôtel urbain haut de gamme offrant un accès central aux attractions et services d'affaires."
   },
   {
     name: "Radisson Hotel Group",
-    logo: "https://www.radissonhotels.com/etc/designs/radissonhotels/img/logos/radisson-hotels-logo.svg",
-    website: "https://www.radissonhotels.com",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwuVpt40QuPW0Jin-jJz2or52eWj8ceu1iJg&s",
+    website: "#",
     description: "Radisson Blu, Red - 1 500+ propriétés"
   },
  
@@ -297,16 +297,16 @@ export default function Home() {
         </section>
 
         {/* PARTENAIRES - GRANDES ENTREPRISES HOTELIERES EUROPEENNES */}
-        <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
+        <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12 ">
           <div className="rounded-3xl p-6 sm:p-8 md:p-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8 sm:mb-10 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-200 mb-8 sm:mb-10 md:mb-12">
               <TransletText>Nos Partenaires Prestigieux</TransletText>
             </h2>
             
             {/* Grille des logos partenaires */}
-            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8">
+            <div className="  flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8">
               {partners.map((partner, index) => (
-                <div key={index} className="relative group flex flex-col items-center w-40 sm:w-44 md:w-48">
+                <div key={index} className="relative group flex flex-col items-center w-40 sm:w-44 md:w-48 rounded-md bg-gray-800 p-4 sm:p-6">
                   {/* Logo */}
                   <div className="relative w-full h-12 sm:h-16 mb-3 sm:mb-4 flex items-center justify-center">
                     <Image
@@ -320,7 +320,7 @@ export default function Home() {
                   </div>
 
                   {/* Nom de l'entreprise */}
-                  <h3 className="text-gray-800 text-center font-semibold text-sm sm:text-base">
+                  <h3 className="text-gray-400 text-center font-semibold text-sm sm:text-base">
                     {partner.name}
                   </h3>
                 </div>
@@ -341,7 +341,7 @@ export default function Home() {
                 <TransletText>Découvrez des offres de voyage dans le monde entier et économisez sur votre prochain séjour</TransletText>
               </p>
               <a
-                href="/offres"
+                href={`/${locale}/etablissements`}
                 className="inline-block bg-yellow-500 text-white px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 
                          rounded-md font-medium hover:bg-yellow-600 transition-all duration-300 
                          text-sm sm:text-base md:text-lg"

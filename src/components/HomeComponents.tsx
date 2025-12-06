@@ -16,7 +16,7 @@ export const CompanyHero = ({locale}: {locale: string}) => (
       </p>
       <div className="flex flex-wrap gap-4">
         <Link 
-          href={`/${locale}/a-propos`} 
+          href={`/${locale}/about`} 
           className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-indigo-600 transition-transform hover:scale-105 hover:bg-white/90"
         >
           <HeartIcon className="h-5 w-5" />
