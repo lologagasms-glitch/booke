@@ -15,6 +15,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { createReservationAction } from '@/app/lib/services/actions/reservations';
 import { useSession } from '@/app/lib/auth-client';
 import MediaModal from '../MediaModal';
+import { TransletText } from '@/app/lib/services/translation/transletText';
 type Media = {
   id?: string;
   createdAt: Date;
@@ -84,9 +85,7 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
   const etablissement = etablissementData;
   const mediaImage = chambre.medias?.find(media => media.type === 'image');
 
-  // État pour la media sélectionnée
-  const [selectedMedia, setSelectedMedia] = useState(mediaImage);
-
+ 
   // Calculer le prix total en fonction des dates sélectionnées
   const prixTotal = useMemo(() => {
     const debut = watch('dateDebut');
@@ -126,7 +125,10 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
           className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition-colors text-sm font-medium"
         >
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
-          Retour à l’établissement
+           <TransletText >   
+            Retour à l’établissement
+          </TransletText>
+          
         </Link>
       </div>
 
@@ -189,7 +191,11 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
                   )}
                   {media.type === 'video' && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-                      <span className="text-white text-sm font-semibold">▶ Vidéo</span>
+                      <span className="text-white text-sm font-semibold">
+                        <TransletText >   
+                         ▶ Vidéo
+                        </TransletText>
+                      </span>
                     </div>
                   )}
                 </button>
@@ -198,10 +204,22 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
           )}
           {/* Description */}
           <div className="bg-white rounded-2xl shadow p-6">
-            <h2 className="text-2xl font-bold mb-3">Description</h2>
-            <p className="text-gray-700 leading-relaxed">{chambre.description}</p>
+            <h2 className="text-2xl font-bold mb-3">
+              <TransletText >   
+                Description
+              </TransletText>
+            </h2>
+            <p className="text-gray-700 leading-relaxed">
+              <TransletText >   
+              {chambre.description}
+              </TransletText>
+            </p>
 
-            <h3 className="text-lg font-semibold mt-6 mb-3">Services inclus</h3>
+            <h3 className="text-lg font-semibold mt-6 mb-3">
+              <TransletText >   
+                Services inclus
+              </TransletText>
+              </h3>
             <ul className="grid grid-cols-2 gap-2 text-gray-700">
               {chambre.services?.map((service) => (
                 <li key={service} className="flex items-center">
@@ -219,17 +237,29 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
             onSubmit={handleSubmit(onSubmit)}
             className="bg-white rounded-2xl shadow-lg p-6 sticky top-10 space-y-5"
           >
-            <h3 className="text-xl font-bold text-gray-900">Réserver cette chambre</h3>
+            <h3 className="text-xl font-bold text-gray-900">
+              <TransletText >   
+                Réserver cette chambre
+              </TransletText>
+            </h3>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date d’arrivée</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <TransletText >    
+                {"Date d’arrivée"}
+               </TransletText>
+                </label>
               <input
                 type="date"
                 {...register('dateDebut')}
                 min={new Date().toISOString().split('T')[0]}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
               />
-              {errors.dateDebut && <p className="text-red-500 text-sm mt-1">{errors.dateDebut.message}</p>}
+              {errors.dateDebut && <p className="text-red-500 text-sm mt-1">
+                <TransletText >   
+                {errors.dateDebut.message||""}
+               </TransletText>
+                </p>}
             </div>
 
             <div>
@@ -253,7 +283,12 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
                   <option key={num} value={num}>{num}</option>
                 ))}
               </select>
-              {errors.nombrePersonnes && <p className="text-red-500 text-sm mt-1">{errors.nombrePersonnes.message}</p>}
+              {errors.nombrePersonnes && <p className="text-red-500 text-sm mt-1">
+                 <TransletText >
+                    {errors.nombrePersonnes.message||""}
+                  </TransletText>
+                
+              </p>}
             </div>
 
             <div className="border-t pt-4">
@@ -274,11 +309,17 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
               className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!chambre.disponible || createReservationMutation.isPending}
             >
-              {createReservationMutation.isPending ? 'Réservation en cours...' : 'Réserver maintenant'}
+               <TransletText >    
+                {createReservationMutation.isPending ? 'Réservation en cours...' : 'Réserver maintenant'}
+               </TransletText>
+              
             </button>
 
             {!chambre.disponible && (
-              <p className="text-red-500 text-sm text-center">Cette chambre n’est pas disponible.</p>
+              <p className="text-red-500 text-sm text-center"><TransletText > 
+               Cette chambre n’est pas disponible.
+               </TransletText>
+               </p>
             )}
           </form>
         </div>

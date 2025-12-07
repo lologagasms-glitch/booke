@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { EtabAndContentsType } from '@/app/api/etablissement/getById/route';
 import MediaGallery from '@/components/rooms/mediasGallerie';
 import { TransletText } from '@/app/lib/services/translation/transletText';
+import { Suspense } from 'react';
+import Loading from '@/components/Loading';
 
 export default function EstablishmentPage() {
   const params = useParams();
@@ -72,7 +74,10 @@ export default function EstablishmentPage() {
 
       {/* Image Gallery */}
       <div className="mb-8">
-        <MediaGallery medias={establishment.medias} />
+        <Suspense fallback={ <Loading/>} >
+             <MediaGallery medias={establishment.medias} />
+         </Suspense>
+        
       </div>
 
       <div className="">
@@ -121,7 +126,9 @@ export default function EstablishmentPage() {
           {/* Room List */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-semibold mb-6 text-blue-700"><TransletText>Chambres disponibles</TransletText></h2>
-            <RoomList rooms={establishment.chambres} />
+            <Suspense fallback={ <Loading/>} >
+              <RoomList rooms={establishment.chambres} />
+            </Suspense>
 
           </div>
         </div>
@@ -131,3 +138,4 @@ export default function EstablishmentPage() {
     </div>
   );
 }
+

@@ -3,36 +3,16 @@
 import { useState } from 'react';
 import EstablishmentCard from './EstablishmentCard';
 import Loading from '../Loading';
-import { useQuery } from '@tanstack/react-query';
 import { TransletText } from '@/app/lib/services/translation/transletText';
 import { DataEtabs } from '@/app/api/etablissement/getall/route';
 
-const LIMIT = 10; // items per page
 
-const EstablishmentList = () => {
-  const [offset, setOffset] = useState(0);
+const EstablishmentList = ({etablissements, isLoading, error,offset,hasNext,hasPrev,goNext,goPrev}: {etablissements: DataEtabs, isLoading: boolean, error: Error | null,offset: number,hasNext: boolean,hasPrev: boolean,goNext: () => void,goPrev: () => void}) => {
+  
 
-   const { data: etablissements = [], isLoading, error } = useQuery({
-    queryKey: ['etablissements', LIMIT, offset],
-    queryFn: async (): Promise<DataEtabs> => {
-      const res = await fetch(`/api/etablissement/getall?limit=${LIMIT}&offset=${offset}`);
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Failed to fetch: ${res.status} ${res.statusText} – ${errorText}`);
-      }
-      return res.json();
-    },
-    staleTime: 60 * 1000, // 1 minute
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    retry: 1,
-  });
+  
 
-  const hasNext = etablissements.length === LIMIT;
-  const hasPrev = offset > 0;
-
-  const goNext = () => setOffset((o) => o + LIMIT);
-  const goPrev = () => setOffset((o) => Math.max(0, o - LIMIT));
-
+ 
   if (isLoading) {
     return <Loading />;
   }

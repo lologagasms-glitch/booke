@@ -30,9 +30,9 @@ export default function ModernCarousel() {
   }
 
   return (
-    <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden group">
+    <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] rounded-xl overflow-hidden group">
       {/* Overlay radial pour profondeur */}
-      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
       <Swiper
         modules={[Autoplay, Pagination, Navigation, EffectCreative, Parallax]}
@@ -58,7 +58,6 @@ export default function ModernCarousel() {
             opacity: 0.7,
             scale: 0.85,
             translate: ["-40%", 0, -400],
-            // filter: "blur(5px)", // Removed – not allowed in CreativeEffectTransform
           },
           next: {
             opacity: 0.7,
@@ -71,8 +70,8 @@ export default function ModernCarousel() {
         {data?.map((img, index) => (
           <SwiperSlide key={img.id} className="relative overflow-hidden">
             {/* Background image avec parallax */}
-            <div 
-              data-swiper-parallax="50%" 
+            <div
+              data-swiper-parallax="50%"
               className="absolute inset-0 transform scale-110"
             >
               <Image
@@ -80,24 +79,24 @@ export default function ModernCarousel() {
                 alt={img.type}
                 fill
                 className="object-cover transition-transform duration-1000"
-                sizes="100vw"
+                sizes="(max-width: 768px) 100vw, 100vw"
                 priority={index === 0}
               />
             </div>
 
             {/* Éléments de contenu avec parallax */}
-            <div className="absolute inset-0 z-20 flex items-end p-8 md:p-12">
-              <div 
-                data-swiper-parallax="-300" 
+            <div className="absolute inset-0 z-20 flex items-end p-6 sm:p-8 md:p-12 pb-16 sm:pb-20 md:pb-12">
+              <div
+                data-swiper-parallax="-300"
                 data-swiper-parallax-opacity="0"
                 className="text-white max-w-2xl transform translate-y-8"
               >
-                <h2 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                 <TransletText>{ 'Établissement'}</TransletText> 
+                <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-2 sm:mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent leading-tight">
+                  <TransletText>{'Établissement'}</TransletText>
                 </h2>
-                <p className="text-lg md:text-xl opacity-80">
-                  <TransletText> { 'Découvrez nos espaces uniques'}</TransletText> 
-                 
+                <p className="text-base sm:text-lg md:text-xl opacity-90 font-medium">
+                  <TransletText> {'Découvrez nos espaces uniques'}</TransletText>
+
                 </p>
               </div>
             </div>
@@ -107,19 +106,19 @@ export default function ModernCarousel() {
           </SwiperSlide>
         ))}
 
-        {/* Navigation custom avec HEROICONS */}
+        {/* Navigation custom avec HEROICONS - Masquée sur mobile, visible au hover sur desktop */}
         <button
           onClick={() => swiperRef.current?.slidePrev()}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white/20"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white/20 hidden md:flex"
         >
-          <ChevronLeftIcon className="w-6 h-6 text-white" />
+          <ChevronLeftIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
         </button>
 
         <button
           onClick={() => swiperRef.current?.slideNext()}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white/20"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-white/20 hidden md:flex"
         >
-          <ChevronRightIcon className="w-6 h-6 text-white" />
+          <ChevronRightIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
         </button>
 
         {/* Pagination custom (bulles animées) */}
@@ -128,7 +127,7 @@ export default function ModernCarousel() {
 
       {/* Progress bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-20">
-        <div 
+        <div
           className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
           style={{ width: `${((activeIndex + 1) / (data?.length || 1)) * 100}%` }}
         />

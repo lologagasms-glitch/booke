@@ -13,12 +13,13 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import { useParams } from "next/navigation";
-import { authClient, useSession } from "../lib/auth-client";
+import { Suspense } from "react";
+import { usePopularEtablissements } from "@/components/hooks/etablissements";
 
 export default function Home() {
   const { locale } = useParams();
-  const {data:session}=useSession()
- 
+  const { data, isLoading, isError, refetch } = usePopularEtablissements({ limit: 10 });
+
   // Témoignages avec images Pexels (URL corrigées sans espaces)
   const testimonials = [
     {
@@ -124,44 +125,42 @@ export default function Home() {
   ];
 
   // PARTENAIRES avec logos (URLs corrigées sans espaces)
- const partners = [
-
-
-  {
-    name: "Accor",
-    logo: "https://logonews.fr/wp-content/uploads/2019/03/accor-fond.jpg",
-    website: "#",
-    description: "Accor est un groupe hôtelier mondial offrant des marques diversifiées de l'économique au luxe."
-  },
-  {
-    name: "Royal Garden",
-    logo: "https://royalgarden.com.tn/wp-content/uploads/2021/11/258882747_300440018666716_688477937116930594_n.png",
-    website: "#",
-    description: "Le Royal Garden Hotel est un hôtel de luxe cinq étoiles situé à Kensington, Londres, offrant un service haut de gamme."
-  },
-  {
-    name: "hotel hilton toronto",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYqcU6HmyRDTSTYBOzJN3G9MTl0E1TjkWsHA&s",
-    website: "#",
-    description: "Le Hilton Toronto est un hôtel urbain haut de gamme offrant un accès central aux attractions et services d'affaires."
-  },
-  {
-    name: "Radisson Hotel Group",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwuVpt40QuPW0Jin-jJz2or52eWj8ceu1iJg&s",
-    website: "#",
-    description: "Radisson Blu, Red - 1 500+ propriétés"
-  },
- 
-
-];
+  const partners = [
+    {
+      name: "Accor",
+      logo: "https://logonews.fr/wp-content/uploads/2019/03/accor-fond.jpg",
+      website: "#",
+      description: "Accor est un groupe hôtelier mondial offrant des marques diversifiées de l'économique au luxe."
+    },
+    {
+      name: "Royal Garden",
+      logo: "https://royalgarden.com.tn/wp-content/uploads/2021/11/258882747_300440018666716_688477937116930594_n.png",
+      website: "#",
+      description: "Le Royal Garden Hotel est un hôtel de luxe cinq étoiles situé à Kensington, Londres, offrant un service haut de gamme."
+    },
+    {
+      name: "hotel hilton toronto",
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYqcU6HmyRDTSTYBOzJN3G9MTl0E1TjkWsHA&s",
+      website: "#",
+      description: "Le Hilton Toronto est un hôtel urbain haut de gamme offrant un accès central aux attractions et services d'affaires."
+    },
+    {
+      name: "Radisson Hotel Group",
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwuVpt40QuPW0Jin-jJz2or52eWj8ceu1iJg&s",
+      website: "#",
+      description: "Radisson Blu, Red - 1 500+ propriétés"
+    },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
-      <Carousel />
-      
+      <Suspense fallback={<div className="h-64 bg-gray-200 animate-pulse rounded-xl" />}>
+        <Carousel />
+      </Suspense>
+
       {/* Hero Section */}
       <div className="bg-blue-700 text-white py-4 sm:py-6 md:py-12 lg:py-16">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 md:mb-4">
               <TransletText>Trouvez votre prochain séjour</TransletText>
@@ -170,25 +169,36 @@ export default function Home() {
               <TransletText>Recherchez des offres sur des hôtels, des maisons et bien plus encore...</TransletText>
             </p>
           </div>
-          <SearchForm />
+
+          <Suspense fallback={<div className="h-16 bg-blue-600 animate-pulse rounded-lg" />}>
+            <SearchForm />
+          </Suspense>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12">
-        
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12">
+
         {/* Popular Establishments */}
         <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-5 md:mb-6">
             <TransletText>Hébergements populaires</TransletText>
           </h2>
-          <PopularEstablishments locale={locale as string} />
+          <Suspense fallback={<div className="h-64 bg-gray-200 animate-pulse rounded-xl" />}>
+            <PopularEstablishments
+              locale={locale as string}
+              data={data}
+              refetch={refetch}
+              isLoading={isLoading}
+              isError={isError}
+            />
+          </Suspense>
         </section>
 
         {/* TESTIMONIALS SWIPER - THEME NOIR & BLANC AVEC ACCENTS JAUNES */}
         <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
           <div className="relative rounded-3xl bg-gray-900 py-12 sm:py-16 md:py-20">
-            
+
             <div className="relative z-10 max-w-7xl mx-auto px-4">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-8 sm:mb-12 md:mb-16">
                 <TransletText>Ce que disent nos clients</TransletText>
@@ -236,7 +246,7 @@ export default function Home() {
                     <div className="relative h-full p-2 sm:p-4">
                       {/* Carte noire avec bordure jaune */}
                       <div className="relative bg-gray-800 rounded-3xl p-6 sm:p-8 border border-yellow-400 shadow-lg group hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                        
+
                         {/* Étoiles jaunes */}
                         <div className="flex items-center mb-5 sm:mb-6 relative z-10">
                           <div className="flex text-yellow-400 text-2xl">
@@ -297,36 +307,38 @@ export default function Home() {
         </section>
 
         {/* PARTENAIRES - GRANDES ENTREPRISES HOTELIERES EUROPEENNES */}
-        <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12 ">
+        <section className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
           <div className="rounded-3xl p-6 sm:p-8 md:p-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-200 mb-8 sm:mb-10 md:mb-12">
               <TransletText>Nos Partenaires Prestigieux</TransletText>
             </h2>
-            
-            {/* Grille des logos partenaires */}
-            <div className="  flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8">
-              {partners.map((partner, index) => (
-                <div key={index} className="relative group flex flex-col items-center w-40 sm:w-44 md:w-48 rounded-md bg-gray-800 p-4 sm:p-6">
-                  {/* Logo */}
-                  <div className="relative w-full h-12 sm:h-16 mb-3 sm:mb-4 flex items-center justify-center">
-                    <Image
-                      src={partner.logo}
-                      alt={`${partner.name} logo`}
-                      width={150}
-                      height={60}
-                      className="object-contain max-w-full max-h-full"
-                      priority
-                    />
-                  </div>
 
-                  {/* Nom de l'entreprise */}
-                  <h3 className="text-gray-400 text-center font-semibold text-sm sm:text-base">
-                    {partner.name}
-                  </h3>
+            {/* Grille des logos partenaires - CONVERTIE EN FLEX */}
+            <div className="flex flex-wrap gap-4 sm:gap-6 md:gap-8">
+              {partners.map((partner, index) => (
+                <div key={index} className="w-1/2 sm:w-1/3 lg:w-1/4 flex-shrink-0">
+                  <div className="relative group flex flex-col items-center w-full rounded-md bg-gray-800 p-4 sm:p-6">
+                    {/* Logo */}
+                    <div className="relative w-full h-12 sm:h-16 mb-3 sm:mb-4 flex items-center justify-center">
+                      <Image
+                        src={partner.logo}
+                        alt={`${partner.name} logo`}
+                        width={150}
+                        height={60}
+                        className="object-contain max-w-full max-h-full"
+                        priority
+                      />
+                    </div>
+
+                    {/* Nom de l'entreprise */}
+                    <h3 className="text-gray-400 text-center font-semibold text-sm sm:text-base">
+                      {partner.name}
+                    </h3>
+                  </div>
                 </div>
               ))}
             </div>
-          
+
           </div>
         </section>
 
@@ -346,7 +358,7 @@ export default function Home() {
                          rounded-md font-medium hover:bg-yellow-600 transition-all duration-300 
                          text-sm sm:text-base md:text-lg"
               >
-                <TransletText>Explorer les offres</TransletText> 
+                <TransletText>Explorer les offres</TransletText>
               </a>
             </div>
             <div className="w-full lg:w-1/3">

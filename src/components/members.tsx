@@ -491,7 +491,7 @@ const CompanyHQ = memo(function CompanyHQ() {
               <PremiumMapPinIcon className="h-6 w-6 text-indigo-600 flex-shrink-0 mt-1" />
               <div>
                 <p className="font-semibold text-slate-800"><TransletText>Adresse</TransletText></p>
-                <p className="text-slate-600"><TransletText>123 Avenue de l'Innovation, 75001 Paris, France</TransletText></p>
+                <p className="text-slate-600"><TransletText>46 Rue de Trévis, 75009 Paris, France</TransletText></p>
               </div>
             </div>
             <div className="flex items-start gap-3">
