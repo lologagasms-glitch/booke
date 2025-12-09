@@ -7,6 +7,9 @@ import { WebVitals } from "@/components/WebVitals";
 import ChatWidget from "@/components/ChatWidget";
 import { auth } from "../lib/auth";
 import { headers } from "next/headers";
+import { Suspense } from "react";
+import Loading from "./loading";
+import SearchDrawer from "@/components/searchBagBar";
 
 export const metadata: Metadata = {
   title: {
@@ -64,6 +67,9 @@ export default async function RootLayout({
       <Navbar />
       <main className="flex-grow">
         <NuqsAdapter>
+        <Suspense fallback={<Loading />}>
+          <SearchDrawer />
+        </Suspense>
           {children}
         </NuqsAdapter>
       </main>

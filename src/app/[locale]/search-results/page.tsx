@@ -1,9 +1,8 @@
 'use client'
 
-import { useSearchParams, useRouter, useParams } from 'next/navigation'
+import { useSearchParams, useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
-import Image from 'next/image'
-import { StarIcon, MapPinIcon, HomeIcon, UsersIcon, CalendarIcon, ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/solid'
+import { StarIcon, MapPinIcon, HomeIcon, UsersIcon, ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
 import Link from 'next/link'
 import { TransletText } from '@/app/lib/services/translation/transletText'
@@ -102,7 +101,6 @@ const CardImage = ({ src, alt, className }: { src?: string; alt: string; classNa
 }
 
 export default function Page() {
-  const router = useRouter()
   const sp = useSearchParams()
   const qs = sp.toString()
   const {locale}=useParams()
