@@ -37,9 +37,9 @@ export default function PartnersSlider({
   if (!partners.length) return null;
 
   return (
-    <section className="relative py-20 sm:py-28  overflow-hidden">
+    <section className="relative py-20 sm:py-28 overflow-hidden bg-theme-base">
       {/* Fond subtil sans dégradé */}
-      <div className="absolute inset-0 " />
+      <div className="absolute inset-0" />
       
       {/* Container centré */}
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,16 +52,16 @@ export default function PartnersSlider({
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide uppercase">
+            <div className="px-3 py-1 rounded-full bg-theme-btn text-theme-main text-xs font-semibold tracking-wide uppercase">
               <TransletText>Nos partenaires de confiance</TransletText>
             </div>
           </div>
           
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-950 mb-4">
-            <TransletText>Ils nous font </TransletText><span className="text-blue-600"><TransletText>confiance </TransletText> </span>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-theme-main mb-4">
+            <TransletText>Ils nous font </TransletText><span className="text-theme-btn"><TransletText>confiance </TransletText> </span>
           </h2>
           
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-theme-main/80 max-w-2xl mx-auto">
             <TransletText>Des leaders du secteur qui choisissent Evasion pour booster leurs réservations</TransletText>
           </p>
         </motion.header>
@@ -112,7 +112,7 @@ export default function PartnersSlider({
             {partners.map((partner, index) => (
               <SwiperSlide key={`${partner.name}-${index}`}>
                 <motion.article
-                  className="group bg-white/90 backdrop-blur rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-6 sm:p-8 h-full flex flex-col items-center text-center"
+                  className="group bg-theme-card/90 backdrop-blur rounded-xl border border-theme-main/10 shadow-sm hover:shadow-lg transition-all duration-300 p-6 sm:p-8 h-full flex flex-col items-center text-center"
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -130,19 +130,19 @@ export default function PartnersSlider({
                         sizes="(max-width: 640px) 96px, (max-width: 1024px) 112px, 112px"
                       />
                     ) : (
-                      <div className="w-full h-full rounded-xl bg-gray-100 flex items-center justify-center">
-                        <BuildingOfficeIcon className="w-10 h-10 text-gray-400" />
+                      <div className="w-full h-full rounded-xl bg-theme-main/10 flex items-center justify-center">
+                        <BuildingOfficeIcon className="w-10 h-10 text-theme-main/60" />
                       </div>
                     )}
                   </Link>
 
                   {/* Nom */}
-                  <Link href={partner.website} target="_blank" rel="noopener noreferrer" className="text-xl sm:text-2xl font-bold text-gray-950 mb-3 line-clamp-1 hover:text-blue-600 transition-colors">
+                  <Link href={partner.website} target="_blank" rel="noopener noreferrer" className="text-xl sm:text-2xl font-bold text-theme-main mb-3 line-clamp-1 hover:text-theme-btn transition-colors">
                     {partner.name}
                   </Link>
 
                   {/* Description */}
-                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-6 flex-1">
+                  <p className="text-sm sm:text-base text-theme-main/80 leading-relaxed mb-6 flex-1">
                     <TransletText>{partner.description}</TransletText>
                   </p>
 
@@ -152,7 +152,7 @@ export default function PartnersSlider({
                       href={partner.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50"
+                      className="inline-flex items-center gap-2 text-theme-btn hover:text-theme-btn/80 font-medium text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-theme-btn/10"
                     >
                       <ArrowTopRightOnSquareIcon className="w-4 h-4" />
                       <TransletText>Visiter le site</TransletText>
@@ -160,7 +160,7 @@ export default function PartnersSlider({
                   )}
                   
                   {partner.website === "#" && (
-                    <span className="text-gray-400 text-sm italic">
+                    <span className="text-theme-main/60 text-sm italic">
                       <TransletText>Site à venir</TransletText>
                     </span>
                   )}
@@ -169,14 +169,14 @@ export default function PartnersSlider({
             ))}
 
             {/* Navigation Boutons - Glassmorphism minimal */}
-            <button className="partner-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 sm:w-12 sm:h-12 bg-white/80 backdrop-blur border border-gray-200 rounded-full shadow-md flex items-center justify-center hover:bg-white transition-all cursor-pointer">
-              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="partner-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 sm:w-12 sm:h-12 bg-theme-card/80 backdrop-blur border border-theme-main/10 rounded-full shadow-md flex items-center justify-center hover:bg-theme-card transition-all cursor-pointer">
+              <svg className="w-5 h-5 text-theme-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
-            <button className="partner-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 sm:w-12 sm:h-12 bg-white/80 backdrop-blur border border-gray-200 rounded-full shadow-md flex items-center justify-center hover:bg-white transition-all cursor-pointer">
-              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="partner-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 sm:w-12 sm:h-12 bg-theme-card/80 backdrop-blur border border-theme-main/10 rounded-full shadow-md flex items-center justify-center hover:bg-theme-card transition-all cursor-pointer">
+              <svg className="w-5 h-5 text-theme-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>

@@ -1,29 +1,21 @@
-'use client';
-
-import { useState } from 'react';
 import EstablishmentCard from './EstablishmentCard';
 import Loading from '../Loading';
 import { TransletText } from '@/app/lib/services/translation/transletText';
 import { DataEtabs } from '@/app/api/etablissement/getall/route';
 
-
 const EstablishmentList = ({etablissements, isLoading, error,offset,hasNext,hasPrev,goNext,goPrev}: {etablissements: DataEtabs, isLoading: boolean, error: Error | null,offset: number,hasNext: boolean,hasPrev: boolean,goNext: () => void,goPrev: () => void}) => {
   
-
-  
-
- 
   if (isLoading) {
     return <Loading />;
   }
 
   if (etablissements.length === 0 && offset === 0) {
     return (
-      <div className="text-center py-12">
-        <h3 className="text-xl font-semibold mb-2">
+      <div className="text-center py-12 bg-theme-base">
+        <h3 className="text-xl font-semibold mb-2 text-theme-main">
           <TransletText>Aucun établissement trouvé</TransletText>
         </h3>
-        <p className="text-gray-600">
+        <p className="text-theme-main opacity-80">
           <TransletText>Essayez de modifier vos critères de recherche</TransletText>
         </p>
       </div>
@@ -31,9 +23,9 @@ const EstablishmentList = ({etablissements, isLoading, error,offset,hasNext,hasP
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-theme-base">
       <div className="flex justify-between items-center">
-        <p className="text-gray-600">
+        <p className="text-theme-main opacity-80">
           {etablissements.length > 0 ? (
             <>
               {etablissements.length}
@@ -61,8 +53,8 @@ const EstablishmentList = ({etablissements, isLoading, error,offset,hasNext,hasP
           disabled={!hasPrev}
           className={`px-4 py-2 rounded ${
             hasPrev
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? 'bg-theme-btn text-theme-main hover:opacity-90'
+              : 'bg-theme-card text-theme-main opacity-50 cursor-not-allowed'
           }`}
         >
           <TransletText>Précédent</TransletText>
@@ -73,8 +65,8 @@ const EstablishmentList = ({etablissements, isLoading, error,offset,hasNext,hasP
           disabled={!hasNext}
           className={`px-4 py-2 rounded ${
             hasNext
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? 'bg-theme-btn text-theme-main hover:opacity-90'
+              : 'bg-theme-card text-theme-main opacity-50 cursor-not-allowed'
           }`}
         >
           <TransletText>Suivant</TransletText>

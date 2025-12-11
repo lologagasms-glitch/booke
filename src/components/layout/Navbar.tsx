@@ -29,7 +29,7 @@ import { flagEmoji, localeNames, routing } from '@/i18n/routing';
 import { useParams } from 'next/navigation';
 import { TransletText } from '@/app/lib/services/translation/transletText';
 
-export const NavbarSpacer = () => <div className="h-16" />; // Réduit de h-20
+export const NavbarSpacer = () => <div className="h-16" />;
 
 type NavItem = {
   href?: string;
@@ -55,6 +55,10 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
+// Définit l'ordre de rotation des thèmes
+const themeOrder = ['white', 'dark', 'yellow'] as const;
+type ThemeValue = typeof themeOrder[number];
+
 export default function Navbar() {
   const t = useTranslations('common');
   const pathname = usePathname();
@@ -70,7 +74,6 @@ export default function Navbar() {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Gestion du scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     handleScroll();
@@ -78,13 +81,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Ferme le menu mobile quand la route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setActiveDropdown(null);
   }, [pathname]);
 
-  // Gestion du clic extérieur pour mobile
   useEffect(() => {
     if (!isMobileMenuOpen) return;
     
@@ -99,7 +100,6 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMobileMenuOpen]);
 
-  // Empêche le scroll quand le menu mobile est ouvert
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -108,20 +108,26 @@ export default function Navbar() {
   const isActivePath = (path: string) => pathname === path || pathname.startsWith(path);
 
   const switchLanguage = (newLocale: string) => {
-      const cleanPath = pathname.startsWith(`/${locale}`)
-    ? pathname.slice(3) 
-    : pathname;
+    const cleanPath = pathname.startsWith(`/${locale}`)
+      ? pathname.slice(3) 
+      : pathname;
     
-  router.replace(cleanPath || '/', { locale: newLocale });
+    router.replace(cleanPath || '/', { locale: newLocale });
+  };
+
+  // Fonction pour faire cycler les thèmes
+  const cycleTheme = () => {
+    const currentIndex = themeOrder.indexOf(theme as ThemeValue);
+    const nextIndex = (currentIndex + 1) % themeOrder.length;
+    setTheme(themeOrder[nextIndex]);
   };
 
   const Logo = () => (
-    <Link href="/" className="flex items-center" locale={locale as string} >
+    <Link href="/" className="flex items-center" locale={locale as string}>
       <Image src="/vercel.svg" alt="Logo" width={100} height={24} className="h-12 w-auto" />
     </Link>
   );
 
-  // Composant Dropdown unifié
   const Dropdown = ({ 
     trigger, 
     children, 
@@ -153,7 +159,6 @@ export default function Navbar() {
     </div>
   );
 
-  // Menu utilisateur
   const UserMenu = () => {
     if (!session?.user || session.user.isAnonymous) return null;
     
@@ -206,7 +211,6 @@ export default function Navbar() {
     );
   };
 
-  // Sélecteur de langue
   const LanguageSelector = ({ isMobile = false }: { isMobile?: boolean }) => {
     const currentFlag = flagEmoji[locale as keyof typeof flagEmoji];
     
@@ -274,31 +278,36 @@ export default function Navbar() {
     );
   };
 
-  // Sélecteur de thème
+  // Sélecteur de thème avec rotation au clic
   const ThemeSelector = ({ isMobile = false }: { isMobile?: boolean }) => {
+    const themeOptions = [
+      { value: 'white' as ThemeValue, icon: SunIcon, label: 'Clair' },
+      { value: 'dark' as ThemeValue, icon: MoonIcon, label: 'Sombre' },
+      { value: 'yellow' as ThemeValue, icon: SwatchIcon, label: 'Jaune' },
+    ];
+
     if (isMobile) {
       return (
         <div className="space-y-2">
           <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider">
-            <SunIcon className="h-4 w-4 inline mr-2" />
+            <SwatchIcon className="h-4 w-4 inline mr-2" />
             Theme
           </label>
           <div className="grid grid-cols-3 gap-2">
-            {[
-              { value: 'white', icon: SunIcon, label: 'Clair' },
-              { value: 'dark', icon: MoonIcon, label: 'Sombre' },
-              { value: 'yellow', icon: SwatchIcon, label: 'Jaune' },
-            ].map(({ value, icon: Icon, label }) => (
+            {themeOptions.map(({ value, icon: Icon, label }) => (
               <button
                 key={value}
-                onClick={() => setTheme(value as any)}
+                onClick={() => setTheme(value)}
                 className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg border-2 transition-all ${
                   theme === value
                     ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                     : 'border-transparent bg-surface hover:border-primary/50'
                 }`}
               >
-                <Icon className={`h-5 w-5 ${value === 'dark' ? 'text-indigo-400' : value === 'yellow' ? 'text-yellow-500' : 'text-amber-500'}`} />
+                <Icon className={`h-5 w-5 ${
+                  value === 'dark' ? 'text-indigo-400' : 
+                  value === 'yellow' ? 'text-yellow-500' : 'text-amber-500'
+                }`} />
                 <span className="text-xs">{label}</span>
               </button>
             ))}
@@ -307,37 +316,19 @@ export default function Navbar() {
       );
     }
 
+    // Version desktop : une seule icône qui change au clic
+    const currentThemeIndex = themeOrder.indexOf(theme as ThemeValue);
+    const nextTheme = themeOptions[(currentThemeIndex + 1) % themeOrder.length];
+    const CurrentIcon = themeOptions.find(opt => opt.value === theme)?.icon || SunIcon;
+
     return (
-      <Dropdown
-        isOpen={activeDropdown === 'theme'}
-        onToggle={() => setActiveDropdown(activeDropdown === 'theme' ? null : 'theme')}
-        trigger={
-          <div className="p-1">
-            {theme === 'white' && <SunIcon className="h-5 w-5" />}
-            {theme === 'dark' && <MoonIcon className="h-5 w-5" />}
-            {theme === 'yellow' && <SwatchIcon className="h-5 w-5" />}
-          </div>
-        }
+      <button
+        onClick={cycleTheme}
+        className="p-2 rounded-lg hover:bg-foreground/10 transition relative"
+        title={`Changer de thème (${themeOptions.find(opt => opt.value === theme)?.label})`}
       >
-        <div className="py-1">
-          {[
-            { value: 'white', icon: SunIcon, label: 'Clair' },
-            { value: 'dark', icon: MoonIcon, label: 'Sombre' },
-            { value: 'yellow', icon: SwatchIcon, label: 'Jaune' },
-          ].map(({ value, icon: Icon, label }) => (
-            <button
-              key={value}
-              onClick={() => setTheme(value as any)}
-              className={`flex items-center gap-3 w-full px-4 py-2 text-sm hover:bg-primary/10 transition ${
-                theme === value ? 'text-primary font-medium' : ''
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-      </Dropdown>
+        <CurrentIcon className="h-5 w-5" />
+      </button>
     );
   };
 

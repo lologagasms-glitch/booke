@@ -41,7 +41,9 @@ export default function ChatWidget() {
     e.preventDefault()
     if (!input.trim()) return
     if (!session) {
-      await authClient.signIn.anonymous()
+      const {data} = await authClient.signIn.anonymous();
+      const res = await fetch('/api/chat/createUser?userId='+data?.user?.id, { method: 'POST' })
+      if (!res.ok) throw new Error('delete user failed')
     }
     mutation.mutate({ content: input.trim() })
     setInput('')

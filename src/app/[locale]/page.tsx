@@ -1,13 +1,14 @@
 "use client"
 import { SearchBar } from "@/components/SearchBar";
 import ModernCarousel from "./Carousel";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import Loading from "./loading";
 import { usePopularEtablissements } from "@/components/hooks/etablissements";
 import CompanyStats from "@/components/companyState";
 import PopularEtablissements from "@/components/establishments/populaEtablissement";
 import TestimonialSlider from "@/components/establishments/testimonialSlider";
 import PartnersSlider from "@/components/establishments/partenerSlide";
+import { useTheme } from "@/components/providers/ThemeProvider";
 const testimonials = [
     {
       id: 1,
@@ -138,8 +139,12 @@ const testimonials = [
   ];
 export default function Main(){
   const { data:popularEtab, isLoading, isError, refetch } = usePopularEtablissements({ limit: 12 });
+  const {theme} =useTheme()
+  useEffect(()=>{
+
+  })
   return( <>
-    <div className="bg-gray-800">
+    <div >
         <Suspense fallback={<Loading />}>
           <ModernCarousel />
         </Suspense>

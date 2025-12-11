@@ -33,7 +33,7 @@ export type MapClientProps = {
 };
 
 /* --------------  GLASS PIN  -------------- */
-function useGlassPin(size: number, color = '#ff0055') {
+function useGlassPin(size: number, color = 'var(--color-theme-main, #ff0055)') {
   return useMemo(() => {
     const uid = `g-${Math.random().toString(36).slice(2)}`;
     const gradId = `${uid}-gradient`;
@@ -79,7 +79,7 @@ export default function MapClient({
       zoom={zoom}
       scrollWheelZoom={scrollWheelZoom}
       zoomControl={zoomControl}
-      className={className}
+      className={`theme-card bg-theme-card ${className ?? ''}`}
       style={{ height: '100%', width: '100%', borderRadius: '1rem' }}
       dragging={true}
     >
@@ -103,7 +103,13 @@ function EmojiMarker({ position, size = 40, popupText }: MarkerData) {
   const icon = useGlassPin(size);
   return (
     <Marker position={position} icon={icon}>
-      {popupText && <Popup><TransletText>{popupText}</TransletText></Popup>}
+      {popupText && (
+        <Popup className="theme-card bg-theme-card">
+          <span className="theme-main text-theme-main">
+            <TransletText>{popupText}</TransletText>
+          </span>
+        </Popup>
+      )}
     </Marker>
   );
 }

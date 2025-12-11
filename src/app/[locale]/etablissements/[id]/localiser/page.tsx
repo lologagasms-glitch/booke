@@ -14,14 +14,14 @@ export default function LocaliserPage() {
   return (
     <>
       <section>
-        <main className="w-full bg-gray-50 pt-24 pb-8 px-4 md:px-8">
+        <main className="w-full bg-theme-base pt-24 pb-8 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          <h1 className="text-2xl font-bold text-theme-main mb-6">
             Localisation sur la carte
           </h1>
 
           {/* Carte : hauteur fixe + scroll interdit */}
-          <div className="w-full h-[60vh] max-h-[60vh] rounded-2xl overflow-hidden shadow-lg">
+          <div className="w-full h-[60vh] max-h-[60vh] rounded-2xl overflow-hidden shadow-lg bg-theme-card">
             <MapClient 
               size={40} 
               position={[lat, lng]} 
@@ -31,16 +31,16 @@ export default function LocaliserPage() {
             />
           </div>
 
-          <div className="mt-4 text-sm text-gray-600">
+          <div className="mt-4 text-sm text-theme-main">
             <p>Latitude: {lat.toFixed(6)}</p>
             <p>Longitude: {lng.toFixed(6)}</p>
           </div>
 
           {/* Bouton retour placé en bas du card localisation */}
-          <div className="mt-6 cursor-pointer ">
+          <div className="mt-6 cursor-pointer">
             <button
               onClick={() => router.back()}
-              className="inline-flex items-center gap-2 px-4 py-2 pointer rounded-xl bg-gray-50 hover:bg-red-400 shadow hover:shadow-md transition-all duration-300 text-gray-700 hover:text-white"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-btn hover:bg-red-400 shadow hover:shadow-md transition-all duration-300 text-theme-main hover:text-white"
               aria-label="Retour"
             >
               <ArrowLeftIcon className="w-5 h-5" />

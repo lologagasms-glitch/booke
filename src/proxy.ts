@@ -31,7 +31,6 @@ export async function proxy(request: NextRequest) {
 	}
 	
 
-
 	// Redirect root and /dashboard to localized home
 	if (isBaseRoute || isDashboard) {
 		url.pathname = `/en`;
@@ -39,6 +38,10 @@ export async function proxy(request: NextRequest) {
 	}
 	
 	if (isProfileRoute && !sessionCookie) {
+		url.pathname = `/${locale}/auth/signin`;
+		return NextResponse.redirect(url);
+	}
+	if(session?.user?.isAnonymous && isProfileRoute){
 		url.pathname = `/${locale}/auth/signin`;
 		return NextResponse.redirect(url);
 	}

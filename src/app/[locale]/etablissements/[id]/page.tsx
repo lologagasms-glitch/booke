@@ -27,7 +27,7 @@ export default function EstablishmentPage() {
   });
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 bg-theme-base">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
@@ -48,9 +48,9 @@ export default function EstablishmentPage() {
   }
   const media = establishment.medias.find((media) => media.type === 'image')
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 bg-theme-base">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-blue-700"><TransletText>{establishment.nom}</TransletText></h1>
+        <h1 className="text-3xl font-bold mb-2 text-theme-main"><TransletText>{establishment.nom}</TransletText></h1>
 
         <div className="flex items-center mb-4">
           <div className="flex mr-4">
@@ -59,12 +59,12 @@ export default function EstablishmentPage() {
             ))}
           </div>
 
-          <div className="flex items-center text-white">
+          <div className="flex items-center text-theme-main">
             <MapPinIcon className="h-5 w-5 mr-1" />
             <span><TransletText>{establishment.adresse}, {establishment.ville}, {establishment.pays}</TransletText></span>
             <Link
               href={`/fr/etablissements/${id}/localiser?lat=${establishment.latitude}&lng=${establishment.longitude}`}
-              className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
+              className="ml-3 inline-flex items-center px-3 py-1 text-sm font-medium bg-theme-btn rounded-full hover:opacity-90 transition-opacity"
             >
               <TransletText>Voir la localisation</TransletText>
             </Link>
@@ -83,29 +83,29 @@ export default function EstablishmentPage() {
       <div className="">
         {/* Main Content */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-2xl font-semibold mb-4 text-blue-700"><TransletText>À propos de cet établissement</TransletText></h2>
-            <p className="text-black mb-6"><TransletText>{establishment.description}</TransletText></p>
+          <div className="bg-theme-card rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-2xl font-semibold mb-4 text-theme-main"><TransletText>À propos de cet établissement</TransletText></h2>
+            <p className="text-theme-main mb-6"><TransletText>{establishment.description}</TransletText></p>
 
-            <h3 className="text-lg font-semibold mb-3 text-blue-700"><TransletText>Services et équipements</TransletText></h3>
+            <h3 className="text-lg font-semibold mb-3 text-theme-main"><TransletText>Services et équipements</TransletText></h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
               {establishment.services.map((service, index) => (
                 <div key={index} className="flex items-center">
-                  <div className="h-2 w-2 bg-blue-700 rounded-full mr-2"></div>
-                  <span className="text-black"><TransletText>{service}</TransletText></span>
+                  <div className="h-2 w-2 bg-theme-btn rounded-full mr-2"></div>
+                  <span className="text-theme-main"><TransletText>{service}</TransletText></span>
                 </div>
               ))}
             </div>
 
-            <h3 className="text-lg font-semibold mb-3 text-blue-700"><TransletText>Informations de contact</TransletText></h3>
+            <h3 className="text-lg font-semibold mb-3 text-theme-main"><TransletText>Informations de contact</TransletText></h3>
             <div className="space-y-2">
               <div className="flex items-center">
                 <PhoneIcon className="h-5 w-5 text-gray-500 mr-2" />
-                <span className="text-black"><TransletText>{establishment.contact.telephone}</TransletText></span>
+                <span className="text-theme-main"><TransletText>{establishment.contact.telephone}</TransletText></span>
               </div>
               <div className="flex items-center">
                 <EnvelopeIcon className="h-5 w-5 text-gray-500 mr-2" />
-                <span className="text-black"><TransletText>{establishment.contact.email}</TransletText></span>
+                <span className="text-theme-main"><TransletText>{establishment.contact.email}</TransletText></span>
               </div>
               {establishment.contact.siteWeb && (
                 <div className="flex items-center">
@@ -114,7 +114,7 @@ export default function EstablishmentPage() {
                     href={`https://${establishment.contact.siteWeb}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-700 hover:underline"
+                    className="text-theme-btn hover:underline"
                   >
                     <TransletText>{establishment.contact.siteWeb}</TransletText>
                   </a>
@@ -124,8 +124,8 @@ export default function EstablishmentPage() {
           </div>
 
           {/* Room List */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold mb-6 text-blue-700"><TransletText>Chambres disponibles</TransletText></h2>
+          <div className="bg-theme-card rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-6 text-theme-main"><TransletText>Chambres disponibles</TransletText></h2>
             <Suspense fallback={ <Loading/>} >
               <RoomList rooms={establishment.chambres} />
             </Suspense>
@@ -138,4 +138,3 @@ export default function EstablishmentPage() {
     </div>
   );
 }
-

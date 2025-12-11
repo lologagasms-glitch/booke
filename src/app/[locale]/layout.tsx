@@ -10,6 +10,7 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 import Loading from "./loading";
 import SearchDrawer from "@/components/searchBagBar";
+import Theme from "./theme";
 
 export const metadata: Metadata = {
   title: {
@@ -63,14 +64,16 @@ export default async function RootLayout({
 }) {
   const session = await auth.api.getSession({ headers: await headers() })
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex flex-col min-h-screen  text-foreground transition-colors duration-300" >
       <Navbar />
       <main className="flex-grow">
         <NuqsAdapter>
         <Suspense fallback={<Loading />}>
           <SearchDrawer />
         </Suspense>
+        <Theme>
           {children}
+        </Theme>
         </NuqsAdapter>
       </main>
       <Footer />

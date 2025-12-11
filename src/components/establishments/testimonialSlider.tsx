@@ -1,4 +1,3 @@
-// components/TestimonialSlider.tsx
 'use client';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -43,9 +42,9 @@ export default function TestimonialSlider({
   if (!testimonials.length) return null;
 
   return (
-    <section className="relative py-20 sm:py-28 bg-gray-50 overflow-hidden">
+    <section className="relative py-20 sm:py-28 bg-theme-base overflow-hidden">
       {/* Fond architectural subtil sans dégradé */}
-      <div className="absolute inset-0 bg-gray-50" />
+      <div className="absolute inset-0 bg-theme-base" />
       
       {/* En-tête */}
       <motion.div 
@@ -61,10 +60,10 @@ export default function TestimonialSlider({
               <StarSolid key={star} className="w-6 h-6 text-yellow-500" />
             ))}
           </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-950 mb-4 leading-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-theme-main mb-4 leading-tight">
             <TransletText>Ce que nos clients disent</TransletText>
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-theme-main max-w-2xl mx-auto">
             <TransletText>Des milliers d'expériences satisfaisantes</TransletText>
           </p>
         </div>
@@ -115,7 +114,7 @@ export default function TestimonialSlider({
           {testimonials.map((testimonial, index) => (
             <SwiperSlide key={testimonial.id}>
               <motion.article 
-                className="bg-white/80 backdrop-blur rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 p-6 sm:p-8 h-full"
+                className="bg-theme-card/80 backdrop-blur rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 p-6 sm:p-8 h-full"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -136,10 +135,10 @@ export default function TestimonialSlider({
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-950 truncate">
+                    <h3 className="text-base sm:text-lg font-semibold text-theme-main truncate">
                       <TransletText>{testimonial.nameKey}</TransletText>
                     </h3>
-                    <p className="text-sm text-gray-500 flex items-center gap-1">
+                    <p className="text-sm text-theme-main flex items-center gap-1">
                       <MapPinIcon className="w-3 h-3" />
                       <TransletText>{testimonial.locationKey}</TransletText>
                     </p>
@@ -160,7 +159,7 @@ export default function TestimonialSlider({
                 {/* Commentaire */}
                 <blockquote className="relative mb-6">
                   <span className="absolute -top-3 -left-2 text-5xl text-gray-200 select-none">"</span>
-                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed pl-4">
+                  <p className="text-base sm:text-lg text-theme-main leading-relaxed pl-4">
                     <TransletText>{testimonial.commentKey}</TransletText>
                   </p>
                 </blockquote>
@@ -173,10 +172,10 @@ export default function TestimonialSlider({
                     <BuildingOfficeIcon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">
+                    <p className="text-xs text-theme-main uppercase tracking-wide font-medium">
                       {testimonial.type === 'hotel' ? 'Hôtel' : 'Loisirs'}
                     </p>
-                    <p className="text-sm sm:text-base font-semibold text-gray-950 truncate">
+                    <p className="text-sm sm:text-base font-semibold text-theme-main truncate">
                       <TransletText>{testimonial.establishmentKey}</TransletText>
                     </p>
                   </div>
@@ -186,14 +185,14 @@ export default function TestimonialSlider({
           ))}
 
           {/* Navigation Boutons - Glassmorphism */}
-          <button className="testimonial-prev absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-14 sm:h-14 bg-white/80 backdrop-blur border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-white transition-all cursor-pointer">
-            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button className="testimonial-prev absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-14 sm:h-14 bg-theme-btn/80 backdrop-blur border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-theme-btn transition-all cursor-pointer">
+            <svg className="w-5 h-5 text-theme-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
-          <button className="testimonial-next absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-14 sm:h-14 bg-white/80 backdrop-blur border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-white transition-all cursor-pointer">
-            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button className="testimonial-next absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-14 sm:h-14 bg-theme-btn/80 backdrop-blur border border-gray-200 rounded-full shadow-lg flex items-center justify-center hover:bg-theme-btn transition-all cursor-pointer">
+            <svg className="w-5 h-5 text-theme-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

@@ -1,4 +1,3 @@
-// components/PopularEtablissements.tsx
 'use client';
 
 import Image from 'next/image';
@@ -74,7 +73,7 @@ function EtablissementCard({ data }: { data: DataEtabsPopularType }) {
   return (
     <Link
       href={`/${locale}/etablissements/${data.etablissementId}`}
-      className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden block"
+      className="group relative bg-theme-card rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden block"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         {data.mediaUrl ? (
@@ -113,7 +112,7 @@ function EtablissementCard({ data }: { data: DataEtabsPopularType }) {
 
       <div className="p-5 sm:p-6">
         <div className="mb-3">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-950 mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">
+          <h3 className="text-lg sm:text-xl font-semibold text-theme-main mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">
             {data.nom}
           </h3>
           
@@ -197,7 +196,7 @@ function ErrorState({ refetch }: { refetch?: () => void }) {
         <p className="text-gray-600 mb-4">Impossible de charger les établissements populaires</p>
         <button
           onClick={refetch}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          className="bg-theme-btn text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
         >
           Réessayer
         </button>
@@ -217,10 +216,10 @@ export default function PopularEtablissements({
   // Si chargement
   if (isLoading) {
     return (
-      <section className="py-16 sm:py-24 bg-gray-50">
+      <section className="py-16 sm:py-24 bg-theme-base">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-950 mb-4">{title}</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-theme-main mb-4">{title}</h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</p>
           </div>
           <LoadingSkeleton />
@@ -232,10 +231,10 @@ export default function PopularEtablissements({
   // Si erreur
   if (isError) {
     return (
-      <section className="py-16 sm:py-24 bg-gray-50">
+      <section className="py-16 sm:py-24 bg-theme-base">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-950 mb-4">{title}</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-theme-main mb-4">{title}</h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</p>
           </div>
           <ErrorState refetch={refetch} />
@@ -247,10 +246,10 @@ export default function PopularEtablissements({
   // Si pas de données
   if (!data || data.length === 0) {
     return (
-      <section className="py-16 sm:py-24 bg-gray-50">
+      <section className="py-16 sm:py-24 bg-theme-base">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-950 mb-4">{title}</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-theme-main mb-4">{title}</h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</p>
           </div>
           <div className="text-center py-16">
@@ -262,10 +261,10 @@ export default function PopularEtablissements({
   }
 
   return (
-    <section className="py-16 sm:py-24 bg-gray-50">
+    <section className="py-16 sm:py-24 bg-theme-base">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-950 mb-4">{title}</h2>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-theme-main mb-4">{title}</h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">{subtitle}</p>
         </div>
 

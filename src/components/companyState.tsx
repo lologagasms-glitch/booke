@@ -75,14 +75,14 @@ tables de restaurants, activités de loisirs. Nous connectons voyageurs et
 professionnels pour des expériences sans stress, de la découverte à la confirmation.
 `;
 
-// Configuration des couleurs sans dégradé
+// Configuration des couleurs en utilisant les variables CSS thématiques
 const ACCENT_CONFIG = {
-  blue: { text: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
-  emerald: { text: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  violet: { text: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-200' },
-  amber: { text: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' },
-  rose: { text: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200' },
-  teal: { text: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-200' },
+  blue: { text: 'text-theme-main', bg: 'bg-theme-card', border: 'border-theme-main' },
+  emerald: { text: 'text-theme-main', bg: 'bg-theme-card', border: 'border-theme-main' },
+  violet: { text: 'text-theme-main', bg: 'bg-theme-card', border: 'border-theme-main' },
+  amber: { text: 'text-theme-main', bg: 'bg-theme-card', border: 'border-theme-main' },
+  rose: { text: 'text-theme-main', bg: 'bg-theme-card', border: 'border-theme-main' },
+  teal: { text: 'text-theme-main', bg: 'bg-theme-card', border: 'border-theme-main' },
 };
 
 export default function CompanyStats() {
@@ -128,10 +128,10 @@ export default function CompanyStats() {
   };
 
   return (
-    <section className="relative py-20 sm:py-28 lg:py-32 bg-white">
+    <section className="relative py-20 sm:py-28 lg:py-32 bg-theme-base">
       {/* Effet de lumière subtil - sans dégradé */}
-      <div className="absolute inset-0 bg-white" />
-      <div className="absolute inset-0 bg-gray-50/60" />
+      <div className="absolute inset-0 bg-theme-base" />
+      <div className="absolute inset-0 bg-theme-card/60" />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* En-tête moderne */}
@@ -143,23 +143,23 @@ export default function CompanyStats() {
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
           <div className="inline-flex items-center gap-2 mb-6">
-            <div className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide uppercase">
+            <div className="px-3 py-1 rounded-full bg-theme-card text-theme-main text-xs font-semibold tracking-wide uppercase">
               <TransletText>Depuis 2014</TransletText>
             </div>
           </div>
           
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-950 mb-6 leading-tight">
-            <span className="text-blue-600">Evasion</span>
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-theme-main mb-6 leading-tight">
+            <span className="text-theme-main">Evasion</span>
           </h1>
           
-          <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 mb-8 font-light max-w-3xl mx-auto leading-snug">
+          <p className="text-xl sm:text-2xl lg:text-3xl text-theme-main mb-8 font-light max-w-3xl mx-auto leading-snug">
             <TransletText>La réservation simplifiée, l&apos;expérience amplifiée</TransletText>
           </p>
           
-          <div className="mx-auto w-24 h-1 bg-blue-600 rounded-full mb-8" />
+          <div className="mx-auto w-24 h-1 bg-theme-main rounded-full mb-8" />
           
           <div className="max-w-4xl mx-auto">
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-theme-main leading-relaxed">
               <TransletText>{COMPANY_DESCRIPTION}</TransletText>
             </p>
           </div>
@@ -181,7 +181,7 @@ export default function CompanyStats() {
               <motion.article
                 key={stat.key}
                 variants={itemVariants as any}
-                className="group relative bg-white/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+                className="group relative bg-theme-card/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-theme-main shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
                 whileHover={{ 
                   y: -8,
                   transition: { type: 'spring', stiffness: 300, damping: 20 }
@@ -208,13 +208,13 @@ export default function CompanyStats() {
                 </motion.div>
 
                 {/* Label */}
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-950 mb-2">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-theme-main mb-2">
                   <TransletText>{stat.label}</TransletText>
                 </h3>
 
                 {/* Description avec ligne accent */}
                 <div className={`w-10 h-0.5 ${config.bg} rounded-full mb-3 sm:mb-4`} />
-                <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                <p className="text-sm sm:text-base text-theme-main leading-relaxed">
                   <TransletText>{stat.description}</TransletText>
                 </p>
 
@@ -235,7 +235,7 @@ export default function CompanyStats() {
         >
           <Link 
             href={`/${locale}/etablissements`}
-            className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 sm:px-12 py-4 sm:py-5 rounded-xl font-semibold text-lg sm:text-xl hover:bg-blue-700 transition-all active:scale-95 shadow-lg hover:shadow-2xl group"
+            className="inline-flex items-center gap-3 bg-theme-btn text-white px-8 sm:px-12 py-4 sm:py-5 rounded-xl font-semibold text-lg sm:text-xl hover:opacity-90 transition-all active:scale-95 shadow-lg hover:shadow-2xl group"
           >
             <TransletText>Commencer une réservation</TransletText>
             <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-1" />

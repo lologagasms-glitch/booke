@@ -8,6 +8,7 @@ import { eq, desc } from 'drizzle-orm'
 export async function GET(req: NextRequest) {
   const h = await headers()
   let session = await auth.api.getSession({ headers: h })
+
   if (!session) {
     const anon = await auth.api.signInAnonymous({ headers: h })
     if (!anon?.user) return NextResponse.json({ error: 'auth failed' }, { status: 401 })

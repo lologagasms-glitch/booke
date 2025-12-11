@@ -17,27 +17,27 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-gradient-to-br from-gray-900 via-indigo-900 to-black text-white overflow-hidden">
+    <footer className="relative bg-theme-base text-theme-main overflow-hidden">
       {/* Background animated gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 animate-gradient-xy -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-theme-base/20 via-theme-card/20 to-theme-btn/20 animate-gradient-xy -z-10" />
 
       <div className="relative max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-16">
         {/* Newsletter Section */}
-        <div className="mb-12 p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
+        <div className="mb-12 p-6 rounded-2xl bg-theme-card backdrop-blur-md border border-white/20 shadow-xl">
           <h3 className="text-xl font-bold mb-2"><TransletText>Restez informé</TransletText></h3>
-          <p className="text-sm text-gray-300 mb-4"><TransletText>Recevez nos offres exclusives et nouveautés.</TransletText></p>
+          <p className="text-sm text-theme-main/70 mb-4"><TransletText>Recevez nos offres exclusives et nouveautés.</TransletText></p>
           <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Votre email"
-              className="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="flex-1 px-4 py-2 rounded-lg bg-theme-card border border-theme-main/30 text-theme-main placeholder-theme-main/60 focus:outline-none focus:ring-2 focus:ring-theme-btn"
               required
             />
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition font-semibold"
+              className="px-5 py-2 rounded-lg bg-theme-btn hover:bg-theme-btn/80 transition font-semibold text-white"
               onClick={()=>{
                 router.push('/'+locale+'/auth/signin')
               }}
@@ -93,10 +93,10 @@ export default function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-gray-300 hover:text-white transition-all duration-200 relative group"
+                      className="text-theme-main/70 hover:text-theme-main transition-all duration-200 relative group"
                     >
                       <TransletText>{link.label}</TransletText>
-                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-indigo-400 group-hover:w-full transition-all duration-300" />
+                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-theme-btn group-hover:w-full transition-all duration-300" />
                     </Link>
                   </li>
                 ))}
@@ -106,8 +106,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
+        <div className="mt-12 pt-8 border-t border-theme-main/10 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-theme-main/60 text-sm">
             © {currentYear} Evasion services. Tous droits réservés.
           </p>
           <div className="flex space-x-5 mt-4 md:mt-0">
@@ -117,7 +117,7 @@ export default function Footer() {
                 href={`https://${social}.com`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-transform duration-200 hover:scale-110"
+                className="text-theme-main/60 hover:text-theme-main transition-transform duration-200 hover:scale-110"
               >
                 <span className="sr-only">{social}</span>
                 <svg

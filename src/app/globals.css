@@ -1,38 +1,52 @@
 @import "tailwindcss";
-
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-surface: var(--surface);
-  --color-surface-foreground: var(--surface-foreground);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+  /* BACKGROUNDS ET BORDURES */
+  --color-theme-base: var(--color-bg);
+  --color-theme-card: var(--color-card);
+  --color-theme-border: var(--color-border);
+
+  /* TEXTES */
+  --color-theme-main: var(--color-text-main);
+  --color-theme-muted: var(--color-text-muted);
+
+  /* BOUTONS */
+  --color-theme-btn: var(--color-btn-bg);
+  --color-theme-btn-txt: var(--color-btn-text);
 }
+@layer base {
+  /* Thème par défaut (White) */
+  :root {
+    --color-bg: #F9FAFB;
+    --color-card: #FFFFFF;
+    --color-text-main: #111827;
+    --color-text-muted: #6B7280;
+    --color-btn-bg: #bf0d04;
+    --color-btn-text: #FFFFFF;
+    --color-border: #5c0a06;
+  }
 
+  /* Thème Dark */
+  [data-theme='dark'] {
+    --color-bg: #99a2a8; /* Bleu marine très profond (presque noir) */
+  --color-card: #1B263B; /* Bleu marine profond avec teinte légèrement plus claire */
+  --color-text-main: #ffffff; /* Blanc bleuté doux, très lisible */
+  --color-text-muted: #acb7c6; /* Gris-bleu pour les textes secondaires */
+  --color-btn-bg: #000064; /* Cyan vif, accent moderne tiré des verts OKLCH */
+  --color-btn-text: #FFFFFF; /* Blanc pur pour le contraste */
+  --color-border: #000064; 
+  }
 
+  /* Thème Yellow */
+[data-theme='yellow'] {
+  --color-bg: #fafafa; /* Gris très clair */
+  --color-card: #ffffff; /* Blanc pur */
+  --color-text-main: #222222; /* Noir doux */
+  --color-text-muted: #000000; /* Gris */
+  --color-btn-bg: #f90303; /* Rouge corail vif */
+  --color-btn-text: #ffffff; /* Blanc */
+  --color-border: #f90303; /* Corail */
+}
+}
 
 
 @import "./styles/themes.css";
