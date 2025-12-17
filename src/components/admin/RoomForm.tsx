@@ -5,11 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { getChambreById, update, create } from '@/app/lib/services/chambre.service';
+import { getChambreById, update, create, getEtablissementAndChambreWithMedia } from '@/app/lib/services/chambre.service';
 import { chambreSchema } from '@/types';
 import { ArrowPathIcon, ExclamationTriangleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { usePopup } from '../popup';
 import { useTranslations } from 'next-intl';
+import FileUploadModern from './ImageInput';
+import { useFileUploadWithOptions } from './useSaveFilfe';
 
 const schema = chambreSchema;
 type FormValues = z.infer<typeof schema>;
@@ -20,17 +22,19 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { show, PopupComponent } = usePopup();
-
-  const { data: defaultValuesChambre, isLoading, isError, isSuccess } = useQuery({
+  const mutationFile=useFileUploadWithOptions()
+  const { data: defaultChambreWithEtab, isLoading, isError, isSuccess } = useQuery({
     queryKey: ['chambres', id],
     queryFn: async () => {
       if (id) {
-        return getChambreById(id);
+        return getEtablissementAndChambreWithMedia(etablissementId,id);
       }
       return Promise.resolve(undefined);
     },
     enabled: !!id,
   });
+  const defaultValuesChambre=defaultChambreWithEtab?.etablissement
+  const defaultValuesEtab=defaultChambreWithEtab?.chambre
 
   const {
     register,
@@ -100,6 +104,15 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
     { value: 'double', label: t('double'), description: '2-3 pers.' },
     { value: 'suite', label: t('suite'), description: '2-4 pers.' },
   ];
+    const handleSave = async (files: File[]): Promise<void> => {
+    await mutationFile.mutate({
+    files: files, 
+    nom: defaultValuesChambre?.nom||"",
+     id: defaultValuesChambre?.id||"",
+     nomParent: defaultValuesEtab?.nom||"", 
+    type: "etablissement"
+});
+}
 
   // ✅ CORRECTION : Utiliser watch pour obtenir les valeurs actuelles
   const watchedServices = watch('services') || [];
@@ -389,6 +402,22 @@ export default function RoomForm({ etablissementId, id }: { etablissementId: str
         </div>
       </div>
       {PopupComponent}
+             <div className="min-h-screen bg-gray-50 py-12">
+            <div className="container mx-auto px-4">
+              <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+                Téléchargement de fichiers
+              </h1>
+              
+              <FileUploadModern 
+                handleSave={handleSave}
+                maxFiles={10}
+                maxSize={10 * 1024 * 1024} // 10MB
+                acceptedTypes="image/*,.pdf,.doc,.docx"
+                isLoading={mutationFile.isPending}
+                isSuccess={mutationFile.isSuccess}
+              />
+            </div>
+          </div>
     </div>
   );
 }

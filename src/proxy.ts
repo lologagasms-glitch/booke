@@ -1,54 +1,84 @@
+"use server"
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
-import { auth } from "./app/lib/auth";
 import { headers } from "next/headers";
 
-export async function proxy(request: NextRequest) {
-	const sessionCookie = getSessionCookie(request);
-	const session = await auth.api.getSession({
-        headers: await headers()
-    })
-	const url = request.nextUrl.clone();
-	const locale = url.pathname.split("/")[1];
-	
+type User = {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    email: string;
+    emailVerified: boolean;
+    name: string;
+    image?: string | null | undefined;
+    banned: boolean | null | undefined;
+    role?: string | null | undefined;
+    banReason?: string | null | undefined;
+    banExpires?: Date | null | undefined;
+    isAnonymous?: boolean | null | undefined;
+} | undefined
 
-	const isAdminRoute = url.pathname.includes("/admin"); ;
-	const isProfileRoute = url.pathname.includes("/profile");
-	const isDashboard = url.pathname.includes("/dashboard");
-	const isBaseRoute=url.pathname==="/"
-	// 1. Admin Routes Protection
-	if (isAdminRoute) {
-		if (!session || !session.user || session.user.role?.toLowerCase() !== 'admin') {
-			url.pathname = `/${locale}/auth/signin`;
-			return NextResponse.redirect(url);
-		}
-		if (session.user.role?.toLowerCase() !== 'admin') {
-			url.pathname = `/${locale}`;
-			return NextResponse.redirect(url);
-		}
-		
-		return NextResponse.next();
-	}
-	
+const PUBLIC_ROUTES = ["/", "/auth/signin", "/auth/signup"];
+const PROTECTED_ROUTES = ["/profile", "/dashboard"];
+const ADMIN_ROUTES = ["/admin"];
 
-	// Redirect root and /dashboard to localized home
-	if (isBaseRoute || isDashboard) {
-		url.pathname = `/en`;
-		return NextResponse.redirect(url);
-	}
-	
-	if (isProfileRoute && !sessionCookie) {
-		url.pathname = `/${locale}/auth/signin`;
-		return NextResponse.redirect(url);
-	}
-	if(session?.user?.isAnonymous && isProfileRoute){
-		url.pathname = `/${locale}/auth/signin`;
-		return NextResponse.redirect(url);
-	}
+const DEFAULT_LOCALE = "en";
 
-	return NextResponse.next();
+function extractLocale(pathname: string): string {
+  const segments = pathname.split("/");
+  const maybeLocale = segments[1];
+  return maybeLocale?.match(/^[a-z]{2}$/) ? maybeLocale : DEFAULT_LOCALE;
+}
+
+function isRouteMatch(routes: string[], pathname: string): boolean {
+  return routes.some((route) => pathname.startsWith(route));
+}
+
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.includes(pathname);
+}
+
+function isProtectedRoute(pathname: string): boolean {
+  return isRouteMatch(PROTECTED_ROUTES, pathname);
+}
+
+function isAdminRoute(pathname: string): boolean {
+  return isRouteMatch(ADMIN_ROUTES, pathname);
+}
+
+function redirectTo(locale: string, path: string, req: NextRequest): NextResponse {
+  const url = req.nextUrl.clone();
+  url.pathname = `/${locale}${path}`;
+  return NextResponse.redirect(url);
+}
+
+export async function proxy(req: NextRequest): Promise<NextResponse> {
+  const pathname = req.nextUrl.pathname;
+
+  if (pathname.startsWith("/_next") || pathname.startsWith("/api") || pathname.includes("favicon")) {
+    return NextResponse.next();
+  }
+
+  const locale = extractLocale(pathname);
+  const sessionCookie = getSessionCookie(req);
+
+  let user: User | null = null;
+  let isAdminUser = false;
+
+ 
+
+
+ 
+
+  if (pathname === "/" || pathname === `/${locale}/dashboard`) {
+    return redirectTo(locale, "", req);
+  }
+
+ 
+
+  return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

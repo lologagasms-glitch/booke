@@ -307,3 +307,148 @@ export async function getChambreById(id: string) {
     where: (chambres, { eq }) => eq(chambres.id, id),
   });
 }
+
+
+/**
+ * Récupère un établissement et une chambre spécifique par leurs IDs
+ * @param etablissementId - ID de l'établissement
+ * @param chambreId - ID de la chambre
+ * @returns Object contenant l'établissement et la chambre, ou null si non trouvés
+ */
+export async function getEtablissementAndChambre(
+  etablissementId: string,
+  chambreId: string
+) {
+  try {
+    // Récupérer l'établissement
+    const [etablissement] = await db
+      .select()
+      .from(etablissements)
+      .where(eq(etablissements.id, etablissementId))
+      .limit(1);
+
+    if (!etablissement) {
+      return { error: 'Établissement non trouvé', etablissement: null, chambre: null };
+    }
+
+    // Récupérer la chambre avec vérification qu'elle appartient bien à l'établissement
+    const [chambre] = await db
+      .select()
+      .from(chambres)
+      .where(
+        and(
+          eq(chambres.id, chambreId),
+          eq(chambres.etablissementId, etablissementId)
+        )
+      )
+      .limit(1);
+
+    if (!chambre) {
+      return { 
+        error: 'Chambre non trouvée ou ne correspond pas à cet établissement', 
+        etablissement, 
+        chambre: null 
+      };
+    }
+
+    return {
+      success: true,
+      etablissement,
+      chambre,
+      error: null
+    };
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération:', error);
+    return { 
+      error: 'Erreur serveur lors de la récupération des données', 
+      etablissement: null, 
+      chambre: null 
+    };
+  }
+}
+
+// Version avec les médias inclus
+export async function getEtablissementAndChambreWithMedia(
+  etablissementId: string,
+  chambreId: string
+) {
+  try {
+    // Récupérer l'établissement avec ses médias
+    const etablissementWithMedia = await db
+      .select({
+        etablissement: etablissements,
+        medias: mediaEtablissements
+      })
+      .from(etablissements)
+      .leftJoin(
+        mediaEtablissements,
+        eq(mediaEtablissements.etablissementId, etablissements.id)
+      )
+      .where(eq(etablissements.id, etablissementId));
+
+    if (!etablissementWithMedia.length) {
+      return { error: 'Établissement non trouvé', etablissement: null, chambre: null };
+    }
+
+    // Récupérer la chambre avec ses médias
+     const chambreWithMedia = await db
+      .select({
+        chambre: chambres,
+        medias: mediaChambres
+      })
+      .from(chambres)
+      .leftJoin(
+        mediaChambres,
+        eq(mediaChambres.chambreId, chambres.id)
+      )
+      .where(
+        and(
+          eq(chambres.id, chambreId),
+          eq(chambres.etablissementId, etablissementId)
+        )
+      );
+
+    if (!chambreWithMedia.length) {
+      return { 
+        error: 'Chambre non trouvée ou ne correspond pas à cet établissement', 
+        etablissement: etablissementWithMedia[0].etablissement, 
+        chambre: null 
+      };
+    }
+
+    // Formater les résultats
+    const etablissement = {
+      ...etablissementWithMedia[0].etablissement,
+      medias: etablissementWithMedia
+        .filter(item => item.medias)
+        .map(item => item.medias)
+    };
+
+    const chambre = {
+      ...chambreWithMedia[0].chambre,
+      medias: chambreWithMedia
+        .filter(item => item.medias)
+        .map(item => item.medias)
+    };
+
+    return {
+      success: true,
+      etablissement,
+      chambre,
+      error: null
+    };
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération avec médias:', error);
+    return { 
+      error: 'Erreur serveur lors de la récupération des données', 
+      etablissement: null, 
+      chambre: null 
+    };
+  }
+}
+
+// Types TypeScript pour les retours
+export type GetEtablissementAndChambreResult = Awaited<ReturnType<typeof getEtablissementAndChambre>>;
+export type GetEtablissementAndChambreWithMediaResult = Awaited<ReturnType<typeof getEtablissementAndChambreWithMedia>>;

@@ -7,8 +7,10 @@ import clsx from 'clsx';
 import { getEtablissementById, updateEtablissement } from '@/app/lib/services/etablissement.service';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
+import { file, z } from 'zod';
 import { usePopup } from '../popup';
+import FileUploadModern, { ProcessedFile } from './ImageInput';
+import { useFileUpload, useFileUploadWithOptions } from './useSaveFilfe';
 
 // ✅ Schéma de validation Zod
 const formSchema = z.object({
@@ -148,6 +150,7 @@ export default function UpdateEstablishmentForm({ id }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const {locale}=useParams();
+  const mutationFile=useFileUploadWithOptions()
    const { show, PopupComponent } = usePopup();
   // ✅ Utilisation de React Hook Form avec Zod
   const { 
@@ -160,7 +163,7 @@ export default function UpdateEstablishmentForm({ id }: Props) {
     queryFn: () => getEtablissementById(id),
     enabled: !!id,
   });
-
+  const uploadFile=useFileUpload()
   const {
     control,
     register,
@@ -255,6 +258,17 @@ export default function UpdateEstablishmentForm({ id }: Props) {
     "w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border focus:ring-2 focus:ring-indigo-500 transition shadow-sm text-black",
     errors[field] && isSubmitted ? 'border-red-500' : 'border-gray-300 focus:border-indigo-500'
   );
+  const handleSave = async (files: File[]): Promise<void> => {
+    await mutationFile.mutate({
+    files: files, 
+    nom: etablissement.nom,
+     id: etablissement.id,
+     nomParent: "", 
+    type: "etablissement"
+});
+    
+   
+  };
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 md:p-8 space-y-8">
@@ -522,6 +536,23 @@ export default function UpdateEstablishmentForm({ id }: Props) {
         </div>
       </form>
       { PopupComponent }
+
+       <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+          Téléchargement de fichiers
+        </h1>
+        
+        <FileUploadModern 
+          handleSave={handleSave}
+          maxFiles={10}
+          maxSize={10 * 1024 * 1024} // 10MB
+          acceptedTypes="image/*,.pdf,.doc,.docx"
+          isLoading={mutationFile.isPending}
+          isSuccess={mutationFile.isSuccess}
+        />
+      </div>
+    </div>
     </div>
   );
 }

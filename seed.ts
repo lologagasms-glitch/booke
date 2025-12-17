@@ -1,18 +1,19 @@
-// seed.ts
+// seed.ts - VERSION DÉFINITIVE
 import { db } from '@/db';
 import { schema } from '@/db/schema';
-import type {
-  NewUser,
-  NewEtablissement,
-  NewChambre,
-  NewReservation,
-  NewMediaEtablissement,
-  NewMediaChambre,
-} from '@/types';
 import { faker } from '@faker-js/faker';
+import { seedData } from './seedata';
 
 /* ---------- helpers ---------- */
 const sample = <T>(arr: T[]): T => arr[faker.number.int({ min: 0, max: arr.length - 1 })];
+
+/* ---------- types strictes ---------- */
+type ValidEtablissementType = 'hotel' | 'auberge' | 'villa' | 'residence' | 'autre';
+
+const validateType = (type: string): ValidEtablissementType => {
+  const validTypes: ValidEtablissementType[] = ['hotel', 'auberge', 'villa', 'residence', 'autre'];
+  return validTypes.includes(type as ValidEtablissementType) ? type as ValidEtablissementType : 'hotel';
+};
 
 /* ---------- main ---------- */
 async function seed() {
@@ -30,122 +31,169 @@ async function seed() {
       image: faker.image.avatar(),
       role: i === 0 ? 'admin' : 'user',
       banned: false,
-      createdAt: faker.date.past(),
+      createdAt: faker.date.past({ years: 2 }),
       updatedAt: new Date(),
     });
     userIds.push(id);
   }
 
-  /* 2. Établissements */
-  const etablissementIds: string[] = [];
-  for (let i = 0; i < 60; i++) {
+  /* 2. Établissements – insertion séparée */
+  const etablissementData: { id: string; data: typeof seedData.etablissements[0] }[] = [];
+  
+  for (const etab of seedData.etablissements) {
     const id = crypto.randomUUID();
+    const validType = validateType(etab.type);
+    
+    // ✅ INSERTION SANS L'ID (laisser Drizzle générer l'ID)
     await db.insert(schema.etablissements).values({
-      id,
-      nom: `${faker.company.name()} Hôtel`,
-      adresse: faker.location.streetAddress(),
-      description: faker.lorem.paragraph(),
-      longitude: faker.location.longitude().toFixed(6),
-      latitude: faker.location.latitude().toFixed(6),
-      pays: faker.location.country(),
-      ville: faker.location.city(),
-      type: sample(['hotel', 'auberge', 'villa', 'residence', 'autre']),
-      services: faker.helpers.arrayElements(
-        ['Wi-Fi', 'Piscine', 'Spa', 'Parking', 'Petit-déjeuner', 'Salle de sport'],
-        { min: 2, max: 4 }
-      ),
-      etoiles: faker.number.int({ min: 1, max: 5 }),
+      nom: etab.nom,
+      adresse: etab.adresse,
+      description: etab.description,
+      longitude: etab.longitude,
+      latitude: etab.latitude,
+      pays: etab.pays,
+      ville: etab.ville,
+      type: validType,
+      services: etab.services,
+      etoiles: etab.etoiles,
       contact: {
         telephone: faker.phone.number(),
         email: faker.internet.email(),
         siteWeb: faker.internet.url(),
       },
       userId: sample(userIds),
-      createdAt: faker.date.past(),
+      createdAt: faker.date.past({ years: 1 }),
     });
-    etablissementIds.push(id);
+    
+    etablissementData.push({ id, data: etab });
   }
 
-  /* 3. Médias établissement (3 à 6 par hôtel) */
-  for (const eid of etablissementIds) {
-    const count = faker.number.int({ min: 3, max: 6 });
-    for (let i = 0; i < count; i++) {
-      const seed = faker.string.uuid();
-      const media: NewMediaEtablissement = {
+  /* 3. Récupérer les vrais IDs depuis la base */
+  const realEtablissements = await db.select().from(schema.etablissements);
+  
+  /* 4. Médias établissement – avec vrais IDs */
+  for (let i = 0; i < realEtablissements.length && i < seedData.etablissements.length; i++) {
+    const realEtab = realEtablissements[i];
+    const etab = seedData.etablissements[i];
+    
+    console.log(`📸 Insertion médias pour: ${realEtab.nom} (ID: ${realEtab.id})`);
+    
+    // Images
+    for (let j = 0; j < etab.images.length; j++) {
+      await db.insert(schema.mediaEtablissements).values({
         id: crypto.randomUUID(),
-        etablissementId: eid,
-        url: `https://picsum.photos/seed/${seed}/1200/800.jpg`,
-        filename: `etab-${eid}-${i}.jpg`,
+        etablissementId: realEtab.id,
+        url: etab.images[j],
+        filename: `etab-${realEtab.id}-img-${j}.jpg`,
         type: 'image',
-        createdAt: faker.date.past(),
-      };
-      await db.insert(schema.mediaEtablissements).values(media);
+        createdAt: faker.date.past({ years: 1 }),
+      });
+    }
+
+    // Vidéos
+    if (etab.videos) {
+      for (let j = 0; j < etab.videos.length; j++) {
+        await db.insert(schema.mediaEtablissements).values({
+          id: crypto.randomUUID(),
+          etablissementId: realEtab.id,
+          url: etab.videos[j],
+          filename: `etab-${realEtab.id}-video-${j}.mp4`,
+          type: 'video',
+          createdAt: faker.date.past({ years: 1 }),
+        });
+      }
     }
   }
 
-  /* 4. Chambres */
+  /* 5. Chambres – avec vrais IDs */
   const chambreIds: string[] = [];
-  for (const eid of etablissementIds) {
-    const count = faker.number.int({ min: 4, max: 10 });
-    for (let i = 0; i < count; i++) {
+  
+  for (const realEtab of realEtablissements) {
+    const roomTypes = faker.helpers.arrayElements(seedData.chambresTypes, { min: 4, max: 6 });
+    
+    for (let i = 0; i < roomTypes.length; i++) {
+      const roomType = roomTypes[i];
       const id = crypto.randomUUID();
+      
       await db.insert(schema.chambres).values({
         id,
-        etablissementId: eid,
-        nom: `Chambre ${faker.helpers.arrayElement(['Standard', 'Deluxe', 'Suite', 'Cosy'])} ${i + 1}`,
-        description: faker.lorem.sentence(),
-        prix: faker.number.float({ min: 50, max: 300, fractionDigits: 2 }),
-        capacite: faker.number.int({ min: 1, max: 4 }),
+        etablissementId: realEtab.id,
+        nom: `${roomType.type} ${i + 1}`,
+        description: roomType.description,
+        prix: faker.number.float({ 
+          min: roomType.prixMin, 
+          max: roomType.prixMax, 
+          fractionDigits: 2 
+        }),
+        capacite: roomType.capacite,
         disponible: faker.datatype.boolean(0.8),
-        type: sample(['Double', 'Twin', 'Single', 'Suite']),
+        type: roomType.type.includes('Suite') ? 'Suite' : sample(['Double', 'Twin', 'Single']),
         services: faker.helpers.arrayElements(
-          ['Clim', 'TV', 'Mini-bar', 'Balcon', 'Coffre-fort'],
-          { min: 1, max: 3 }
+          ['Clim', 'TV', 'Mini-bar', 'Balcon', 'Coffre-fort', 'Vue mer', 'Baignoire'],
+          { min: 2, max: 5 }
         ),
-        createdAt: faker.date.past(),
+        createdAt: faker.date.past({ years: 1 }),
       });
+      
       chambreIds.push(id);
     }
   }
 
-  /* 5. Médias chambres (4 à 8 par chambre) */
-  for (const cid of chambreIds) {
-    const count = faker.number.int({ min: 4, max: 8 });
-    for (let i = 0; i < count; i++) {
-      const seed = faker.string.uuid();
-      const media: NewMediaChambre = {
+  /* 6. Récupérer les vrais IDs des chambres */
+  const realChambres = await db.select().from(schema.chambres);
+  
+  /* 7. Médias chambres – avec vrais IDs */
+  for (const realChambre of realChambres) {
+    const roomType = sample(seedData.chambresTypes);
+    
+    // Images
+    for (let i = 0; i < roomType.images.length; i++) {
+      await db.insert(schema.mediaChambres).values({
         id: crypto.randomUUID(),
-        chambreId: cid,
-        url: `https://picsum.photos/seed/${seed}/800/600.jpg`,
-        filename: `room-${cid}-${i}.jpg`,
+        chambreId: realChambre.id,
+        url: roomType.images[i],
+        filename: `room-${realChambre.id}-img-${i}.jpg`,
         type: 'image',
-        createdAt: faker.date.past(),
-      };
-      await db.insert(schema.mediaChambres).values(media);
+        createdAt: faker.date.past({ years: 1 }),
+      });
+    }
+
+    // Vidéos
+    if (roomType.videos) {
+      for (let i = 0; i < roomType.videos.length; i++) {
+        await db.insert(schema.mediaChambres).values({
+          id: crypto.randomUUID(),
+          chambreId: realChambre.id,
+          url: roomType.videos[i],
+          filename: `room-${realChambre.id}-video-${i}.mp4`,
+          type: 'video',
+          createdAt: faker.date.past({ years: 1 }),
+        });
+      }
     }
   }
 
-  /* 6. Réservations */
+  /* 8. Réservations */
   for (let i = 0; i < 200; i++) {
     const debut = faker.date.soon({ days: 60 });
-    const fin   = faker.date.soon({ days: faker.number.int({ min: 1, max: 14 }), refDate: debut });
+    const fin = faker.date.soon({ days: faker.number.int({ min: 1, max: 14 }), refDate: debut });
 
     await db.insert(schema.reservations).values({
       id: crypto.randomUUID(),
       userId: sample(userIds),
-      roomId: sample(chambreIds),
-      etablissementId: sample(etablissementIds),
+      roomId: sample(realChambres).id,
+      etablissementId: sample(realEtablissements).id,
       dateDebut: debut,
       dateFin: fin,
       nombrePersonnes: faker.number.int({ min: 1, max: 3 }),
       prixTotal: faker.number.float({ min: 100, max: 1200, fractionDigits: 2 }),
       statut: sample(['confirm', 'en_attente', 'annul']),
-      createdAt: faker.date.past(),
+      createdAt: faker.date.past({ years: 1 }),
     });
   }
 
   console.log(
-    `✅ Seed terminé → ${userIds.length} users, ${etablissementIds.length} hôtels, ${chambreIds.length} chambres.`
+    `✅ Seed terminé → ${userIds.length} users, ${realEtablissements.length} hôtels, ${realChambres.length} chambres.`
   );
   process.exit(0);
 }

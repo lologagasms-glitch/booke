@@ -16,11 +16,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Evasion",
-  description: "Book leisure, hotel stays & travel in a few clicks. Hotels, activities & getaways across France. Évasion, your expert in well-being and discovery.",
-};
 
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  openGraph: {
+    images: '/images/og-image.png', // chemin relatif, sera résolu via metadataBase
+  },
+  twitter: {
+    images: '/images/og-image.png',
+  },
+}
 export default function RootLayout({
   children,
 }: Readonly<{

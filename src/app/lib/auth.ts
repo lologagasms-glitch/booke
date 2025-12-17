@@ -11,14 +11,14 @@ export const transporter = nodemailer.createTransport({
   port: 465,
   secure: true, 
   auth: {
-    user: process.env.MAIL_ZOHO_FROM,         
-    pass: process.env.PASSWORD_MAIL_APP_ZOHO 
+    user: process.env.MAIL_USER_SPACE||"",         
+    pass: process.env.PASSWORD_MAIL_SPACE||"",
     }
 });
 
 export const auth = betterAuth({
 
-  appName: "bookeing",
+  appName: "evasion",
   database: drizzleAdapter(db, {
     schema:schema,
     provider: "sqlite",
@@ -32,7 +32,7 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
       await transporter.sendMail({
-        from: process.env.MAIL_ZOHO_FROM||"",
+        from: process.env.MAIL_USER_SPACE||"",
         to: user.email,
         subject: "Reset Password",
         html: `Click the link to reset your password: ${url}`,
@@ -52,7 +52,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       try {
         await transporter.sendMail({
-          from: process.env.MAIL_ZOHO_FROM||"",
+          from: process.env.MAIL_USER_SPACE||"",
           to: user.email,
           subject: "Email Verification",
           html: `Click the link to verify your email: ${url}`,
@@ -74,11 +74,7 @@ export const auth = betterAuth({
       prompt: "select_account", 
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    },
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    },
+    }
   },
  
  
