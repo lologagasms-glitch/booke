@@ -47,9 +47,6 @@ const ImageUpload = ({ onUpload }: ImageUploadProps) => {
   
   const handleFiles = (files: FileList) => {
     setIsUploading(true);
-    
-    // In a real app, you would upload these files to your server or a service like Cloudinary
-    // For this demo, we'll simulate the upload and return placeholder URLs
     setTimeout(() => {
       const uploadedUrls = Array.from(files).map(() => '/file.svg');
       onUpload(uploadedUrls);
@@ -84,7 +81,7 @@ const ImageUpload = ({ onUpload }: ImageUploadProps) => {
             </label>
             <p className="pl-1">ou glisser-déposer</p>
           </div>
-          <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+          <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB par image</p>
         </div>
       </div>
       

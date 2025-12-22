@@ -142,7 +142,7 @@ export default function ChambreByEtabId({ etablissementId }: { etablissementId: 
             <div className="aspect-w-16 aspect-h-10 bg-gray-100">
               {item.firstMedia ? (
                 <img
-                  src={item.firstMedia || ''}
+                  src={encodeURI(item.firstMedia ) || ''}
                   alt={item.chambre.nom}
                   className="w-full h-40 sm:h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
@@ -221,7 +221,7 @@ export default function ChambreByEtabId({ etablissementId }: { etablissementId: 
           isMobile && "flex-col space-y-3"
         )}>
           <div className="text-xs sm:text-sm text-gray-500">
-            Affichage de {offset + 1} à {offset + chambres.length} résultats
+            Affichage de {Math.round(offset/LIMIT) + 1} à {offset + chambres.length} résultats
           </div>
 
           <div className={clsx(

@@ -75,7 +75,7 @@ export default function ModernCarousel() {
               className="absolute inset-0 transform scale-110"
             >
               <Image
-                src={img.url}
+                src={encodeURI(img.url)}
                 alt={img.type}
                 fill
                 className="object-cover transition-transform duration-1000"

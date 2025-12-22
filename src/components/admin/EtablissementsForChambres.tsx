@@ -259,7 +259,7 @@ function Card({ etablissement, onDelete ,locale}: { etablissement: Etablissement
       {firstImage && (
         <div className="relative w-full h-48">
           <Image
-            src={firstImage}
+            src={encodeURI(firstImage)}
             alt={nom}
             fill
             className="object-cover"

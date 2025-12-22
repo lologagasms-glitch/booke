@@ -78,7 +78,7 @@ function EtablissementCard({ data }: { data: DataEtabsPopularType }) {
       <div className="relative aspect-[4/3] overflow-hidden">
         {data.mediaUrl ? (
           <Image
-            src={data.mediaUrl}
+            src={encodeURI(data.mediaUrl)}
             alt={data.nom}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"

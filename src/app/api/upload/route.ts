@@ -17,18 +17,43 @@ const ALLOWED_TYPES = [
   'image/webp',
 ];
 
+// 🔧 Fonction de nettoyage des noms de fichiers
+function sanitizeFilename(filename: string): string {
+  return filename
+    .toLowerCase()
+    .replace(/[^a-z0-9.-]/g, '-') // Remplace caractères spéciaux par des tirets
+    .replace(/-+/g, '-') // Remplace plusieurs tirets consécutifs par un seul
+    .replace(/^-|-$/g, '') // Supprime les tirets au début et à la fin
+    .substring(0, 50); // Limite à 50 caractères
+}
+
 async function ensureUploadDir() {
   if (!existsSync(UPLOAD_DIR)) {
     await mkdir(UPLOAD_DIR, { recursive: true });
   }
 }
 
+// 🔧 Fonction améliorée de génération de nom unique
 function generateUniqueFilename(nom: string, originalName: string): string {
   const timestamp = Date.now();
   const randomString = Math.random().toString(36).substring(2, 8);
-  const extension = originalName.split('.').pop();
-  const baseName = nom && nom.trim() !== '' ? nom.trim() : originalName.split('.')[0];
-  return `${baseName}_${timestamp}_${randomString}.${extension}`;
+  
+  // Extrait l'extension et le nom de base
+  const extension = originalName.split('.').pop()?.toLowerCase() || 'jpg';
+  const originalBaseName = originalName.split('.')[0];
+  
+  // Utilise le nom fourni ou le nom original comme base
+  let baseName = nom && nom.trim() !== '' ? nom.trim() : originalBaseName;
+  
+  // Nettoie le nom de base
+  baseName = sanitizeFilename(baseName);
+  
+  // Si le nom nettoyé est trop court, utilise une partie du nom original
+  if (baseName.length < 3) {
+    baseName = sanitizeFilename(originalBaseName).substring(0, 20);
+  }
+  
+  return `${baseName}-${timestamp}-${randomString}.${extension}`;
 }
 
 async function createFolderStructure(parent: string, nom: string): Promise<string> {
@@ -38,10 +63,11 @@ async function createFolderStructure(parent: string, nom: string): Promise<strin
     return UPLOAD_DIR;
   }
   
-  const nomTrimmed = nom.trim();
+  // 🔧 Nettoie le nom du dossier aussi
+  const nomTrimmed = sanitizeFilename(nom.trim());
   
   if (parent && parent.trim() !== '') {
-    const parentTrimmed = parent.trim();
+    const parentTrimmed = sanitizeFilename(parent.trim());
     targetDir = join(UPLOAD_DIR, parentTrimmed, nomTrimmed);
   } else {
     targetDir = join(UPLOAD_DIR, nomTrimmed);
@@ -128,10 +154,13 @@ export async function POST(request: NextRequest) {
         
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
+        
+        // 🔧 Génère un nom de fichier sécurisé
         const uniqueFilename = generateUniqueFilename(nom, file.name);
         const filepath = join(targetDirectory, uniqueFilename);
         await writeFile(filepath, buffer);
 
+        // 🔧 Corrige le chemin pour Windows/Linux
         const relativePath = filepath.replace(join(process.cwd(), 'public'), '');
         const url = relativePath.replace(/\\/g, '/');
 
@@ -147,17 +176,18 @@ export async function POST(request: NextRequest) {
         }
 
         uploadedFiles.push({
-          name: file.name,
+          originalName: file.name,
+          sanitizedName: uniqueFilename,
           size: file.size,
           type: file.type,
           url: url,
-          savedAs: uniqueFilename,
           directory: targetDirectory,
           databaseId: id,
           mediaType: type
         });
 
       } catch (error) {
+        console.error(`Erreur traitement ${file.name}:`, error);
         errors.push(`Erreur lors du traitement de ${file.name}: ${error}`);
       }
     }
@@ -196,4 +226,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

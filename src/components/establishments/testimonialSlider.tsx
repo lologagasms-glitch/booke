@@ -125,7 +125,7 @@ export default function TestimonialSlider({
                   <div className="relative w-14 h-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white shadow-md">
                     {testimonial.avatar ? (
                       <Image
-                        src={testimonial.avatar}
+                        src={encodeURI(testimonial.avatar)}
                         alt={testimonial.nameKey}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-110"

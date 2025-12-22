@@ -21,9 +21,7 @@ import {
   CalendarIcon
 } from '@heroicons/react/24/outline'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { getChambreMedias } from '@/app/lib/services/media.services'
 import MediaGallery from './mediasGallerie'
-import { getById } from '@/app/lib/services/chambre.service'
 import { ChatBubbleLeftRightIcon, LockClosedIcon } from '@heroicons/react/24/solid'
 import { createReservation } from '@/app/lib/services/reservation.service'
 import { useSession } from '@/app/lib/auth-client'
@@ -295,7 +293,6 @@ const ReservationSummary = ({
 // Page principale - Style thématique
 export default function ReservationValidationPage({ roomId }: { roomId: string }) {
   const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const { show, PopupComponent } = usePopup()
 
   const [reservationDetails, setReservationDetails] = useState({
@@ -308,17 +305,66 @@ export default function ReservationValidationPage({ roomId }: { roomId: string }
   const room = useRoom(roomId)
   const roomMedias = room?.medias
 
-  const { mutate } = useMutation({
-    mutationFn: createReservation,
-    onSuccess: (response) => {},
-    onError: (err) => {
-      show({
-        type: 'error',
-        message: "Une erreur technique est survenue. Veuillez réessayer.",
-        title: "Erreur"
-      })
+  const { mutate:createReservation, isPending:isLoadingReservation ,isSuccess:isSuccessReservation} = useMutation({
+  mutationFn: async (data: ValidationFormData) => {
+    const form = new FormData();
+
+    form.append("reservation", JSON.stringify(data));
+    form.append("room", JSON.stringify({
+      roomId,
+      etablissementId: room?.etablissementId,
+      roomPrix: room?.prix,
+    }));
+
+    const res = await fetch(encodeURI("/api/reservation/create") , {
+      method: "POST",
+      body: form,
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(error || "Erreur serveur");
     }
-  })
+
+    return res.json(); 
+  },
+
+  onSuccess: (data) => {
+    show({
+      type: "success",
+      title: "Réservation envoyée",
+      message: "Votre demande a été transmise avec succès.",
+    });
+     reset({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        checkIn: '',
+        checkOut: '',
+        guests: 1,
+        acceptCGV: true, 
+      });
+
+      localStorage.removeItem('draft-reservation');
+      localStorage.removeItem('reservation-details');
+      const message = generateWhatsAppMessage(data)
+      const encodedMessage = encodeURIComponent(message)
+      const hotelPhone = HOTEL_WHATSAPP_NUMBER
+      const whatsappUrl = `https://wa.me/${hotelPhone}?text=${encodedMessage}`
+      window.open(whatsappUrl, '_blank')
+      localStorage.removeItem('draft-reservation')
+      router.push('/')
+  },
+
+  onError: (err) => {
+    show({
+      type: "error",
+      title: "Erreur",
+      message: err instanceof Error ? err.message : "Une erreur inattendue est survenue.",
+    });
+  },
+});
 
   // Charger les détails de réservation
   useEffect(() => {
@@ -396,7 +442,7 @@ export default function ReservationValidationPage({ roomId }: { roomId: string }
     return `🛎️ *NOUVELLE RÉSERVATION* #${reservationId}
 
 👤 *CLIENT*
-• Nom: ${data.lastName.toUpperCase()}
+• Nom: ${data.lastName}
 • Prénom: ${data.firstName}
 • Email: ${data.email}
 • Tél: ${data.phone}
@@ -419,22 +465,13 @@ Le client souhaite finaliser cette réservation. Veuillez confirmer et procéder
   }
 
   const onSubmit = async (data: ValidationFormData) => {
-    setIsSubmitting(true)
-
+    
     try {
-      const response = await createReservation({
-        roomId: roomId,
-        userId: session?.user?.id || null,
-        etablissementId: room?.etablissementId || "",
-        dateDebut: new Date(data.checkIn),
-        dateFin: new Date(data.checkOut),
-        nombrePersonnes: data.guests,
-        prixTotal: (room?.prix || 0) * Math.ceil((new Date(data.checkOut).getTime() - new Date(data.checkIn).getTime()) / (1000 * 60 * 60 * 24)),
-        statut: "en_attente",
-        ...data
-      })
+      await createReservation({
+      ...data
+    })
 
-      if (response.success) {
+      if (isSuccessReservation) {
         reset({
           firstName: '',
           lastName: '',
@@ -446,39 +483,7 @@ Le client souhaite finaliser cette réservation. Veuillez confirmer et procéder
           acceptCGV: false
         })
 
-        show({
-          type: 'success',
-          title: "Demande enregistrée !",
-          message: "Redirection vers WhatsApp pour finaliser...",
-          duration: 3000,
-          onAction: () => {
-            const message = generateWhatsAppMessage(data)
-            const encodedMessage = encodeURIComponent(message)
-            const hotelPhone = HOTEL_WHATSAPP_NUMBER
-            const whatsappUrl = `https://wa.me/${hotelPhone}?text=${encodedMessage}`
-            window.open(whatsappUrl, '_blank')
-            localStorage.removeItem('draft-reservation')
-            router.push('/')
-          }
-        })
-
-        setTimeout(() => {
-          const message = generateWhatsAppMessage(data)
-          const encodedMessage = encodeURIComponent(message)
-          const hotelPhone = HOTEL_WHATSAPP_NUMBER
-          const whatsappUrl = `https://wa.me/${hotelPhone}?text=${encodedMessage}`
-          window.open(whatsappUrl, '_blank')
-          localStorage.removeItem('draft-reservation')
-          router.push('/')
-        }, 1500)
-
-      } else {
-        show({
-          type: 'error',
-          title: "Erreur",
-          message: response.error || "Une erreur est survenue lors de la réservation."
-        })
-      }
+      } 
 
     } catch (err) {
       show({
@@ -486,9 +491,7 @@ Le client souhaite finaliser cette réservation. Veuillez confirmer et procéder
         message: "Une erreur inattendue est survenue.",
         title: "Erreur"
       })
-    } finally {
-      setIsSubmitting(false)
-    }
+    } 
   }
 
   return (
@@ -699,35 +702,33 @@ Le client souhaite finaliser cette réservation. Veuillez confirmer et procéder
               </div>
 
               {/* Conditions */}
-              <div className="mb-8">
-                <label className="flex items-center gap-4 cursor-pointer group">
-                  <div className="relative">
-                    <input
-                      {...register("acceptCGV")}
-                      type="checkbox"
-                      className="sr-only peer"
-                    />
-                    <div className="w-6 h-6 rounded-lg border-2 border-theme-border peer-checked:bg-theme-btn peer-checked:border-theme-btn transition-all duration-200 peer-focus:ring-4 peer-focus:ring-theme-btn/20 flex items-center justify-center">
-                      <CheckCircleIcon className="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
-                    </div>
-                  </div>
-                  <span className="text-sm text-theme-main group-hover:text-theme-btn transition-colors">
-                    <TransletText>J'accepte les conditions générales de vente</TransletText> *
+             <div className="mb-8">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span className="text-sm text-theme-main">
+                    <TransletText>J&apos;accepte les conditions générales de vente</TransletText> *
                   </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={watch('acceptCGV')}
+                    onClick={() => setValue('acceptCGV', !watch('acceptCGV'))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${watch('acceptCGV') ? 'bg-theme-btn' : 'bg-gray-300'}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${watch('acceptCGV') ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
                 </label>
                 {errors.acceptCGV && (
-                  <p className="text-red-500 text-xs mt-2 ml-10"><TransletText>{errors.acceptCGV.message || ""}</TransletText></p>
+                  <p className="text-red-500 text-xs mt-2"><TransletText>{errors.acceptCGV.message || ''}</TransletText></p>
                 )}
               </div>
-
               {/* Bouton WhatsApp */}
               <button
                 type="submit"
-                disabled={isSubmitting || !isValid}
+                disabled={isLoadingReservation || !isValid}
                 className="w-full bg-theme-btn hover:bg-theme-btn-hover disabled:bg-gray-300 text-white font-bold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-2xl hover:scale-[1.02] disabled:scale-100 disabled:cursor-not-allowed relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                {isSubmitting ? (
+                {isLoadingReservation ? (
                   <>
                     <ArrowPathIcon className="w-6 h-6 animate-spin" />
                     <TransletText>Traitement en cours...</TransletText>
@@ -769,30 +770,16 @@ Le client souhaite finaliser cette réservation. Veuillez confirmer et procéder
 }
 
 // Hooks Data
-const useRoomMedias = (roomId: string) => {
-  const { data: roomMedias, isLoading, error, isSuccess } = useQuery({
-    queryKey: ['roomMedias', roomId],
-    queryFn: async () => {
-      return await getChambreMedias(roomId)
-    },
-    enabled: !!roomId,
-    staleTime: 5 * 60 * 1000,
-  })
 
-  if (isSuccess) {
-    return roomMedias.medias
-  }
-  if (error) {
-    throw new Error(error.message)
-  }
-  return undefined
-}
 
 const useRoom = (roomId: string) => {
-  const { data: room, isLoading, error, isSuccess } = useQuery({
+  const { data: room, isLoading, error, isSuccess } = useQuery<RoomData>({
     queryKey: ['room', roomId],
     queryFn: async () => {
-      return await getById(roomId)
+      const response=await fetch(encodeURI("/api/reservation/get?room="+roomId))
+      if(response.ok){
+        return response.json()
+      }
     },
     enabled: !!roomId,
     staleTime: 5 * 60 * 1000,

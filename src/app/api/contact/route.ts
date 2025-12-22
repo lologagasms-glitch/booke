@@ -1,7 +1,6 @@
 "use server";
 import { transporter } from "@/app/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     console.log(name, emailClient, message);
 
-    const to = process.env.CONTACT_RECEIVER || process.env.MAIL_ZOHO_FROM || "";
+    const to = emailClient
     if (!to) {
       console.error("Aucun destinataire défini dans les variables d'environnement.");
       return NextResponse.json(
@@ -39,10 +38,10 @@ export async function POST(req: NextRequest) {
     }
 
     await transporter.sendMail({
-      from: process.env.MAIL_ZOHO_FROM || "",
+      from: process.env.MAIL_FROM_SPACE|| "",
       to,
-      replyTo: "carmelgbohoui@gmail.com",
-      subject: `[Contact] ${emailClient}`,
+      replyTo:to,
+      subject: ` ${name} e-mail:${emailClient}`,
       html: `<div>
         <p><strong>Nom:</strong> ${name}</p>
         <p><strong>Email:</strong> ${emailClient}</p>

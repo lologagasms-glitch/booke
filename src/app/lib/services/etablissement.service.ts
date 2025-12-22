@@ -49,19 +49,29 @@ export async function getAllEtablissements(limit?: number, offset?: number) {
     return data     
 }
 
-export const getAllEtablissementsOnlyNameAndId = async (limit?: number, offset?: number) => {
-  const query = db
+export const getAllEtablissementsOnlyNameAndId = async (limit: number = 10, offset: number = 0) => {
+  // 1. Requête pour les données
+  const dataQuery = db
     .select({
       id: etablissements.id,
       nom: etablissements.nom,
     })
     .from(etablissements)
-    .orderBy(asc(etablissements.nom));
+    .orderBy(asc(etablissements.nom))
+    .limit(limit)
+    .offset(offset);
 
-  if (limit) query.limit(limit);
-  if (offset) query.offset(offset);
+  // 2. Requête pour le total (nécessaire pour calculer la dernière page)
+  const countQuery = db
+    .select({ count: sql<number>`count(*)` })
+    .from(etablissements);
 
-  return query;
+  // On exécute les deux en parallèle pour gagner du temps
+  const [data, countResult] = await Promise.all([dataQuery, countQuery]);
+  return {
+    items: data,
+    totalCount: countResult[0].count,
+  };
 };
 export async function getPopularEtablissements(limit = 10) {
   /* 1. établissements populaires (stats uniquement) */
@@ -213,9 +223,30 @@ export async function updateEtablissement(id: string, data: Partial<NewEtablisse
 }
 
 export async function deleteEtablissement(id: string) {
+  // 1. D'abord supprimer les médias des chambres
+  await db.delete(mediaChambres)
+    .where(
+      inArray(
+        mediaChambres.chambreId,
+        db.select({ id: chambres.id })
+          .from(chambres)
+          .where(eq(chambres.etablissementId, id))
+      )
+    );
+
+  // 2. Ensuite supprimer les réservations des chambres
+  await db.delete(reservations)
+    .where(eq(reservations.etablissementId, id));
+
+  // 3. Supprimer les chambres de l'établissement
+  await db.delete(chambres).where(eq(chambres.etablissementId, id));
+
+  // 4. Supprimer les médias de l'établissement
+  await db.delete(mediaEtablissements).where(eq(mediaEtablissements.etablissementId, id));
+
+  // 5. Enfin supprimer l'établissement lui-même
   await db.delete(etablissements).where(eq(etablissements.id, id));
 }
-
 export async function addMediasToEtablissement(
   etablissementId: string,
   medias: { url: string; type: "image" | "video"; caption?: string }[]

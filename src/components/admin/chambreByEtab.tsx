@@ -1,33 +1,82 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllEtablissementsOnlyNameAndId } from '@/app/lib/services/etablissement.service';
 import ChambreByEtabId from './chambreByEtabId';
 import clsx from 'clsx';
+import Loading from '../Loading';
 
 const Limit = 10;
 
 export default function ChambreByEtab() {
-  const [offset, setOffset] = useState(0);
+
+  const [offset, setOffset] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedOffset = localStorage.getItem('etablissementOffset');
+      return savedOffset ? parseInt(savedOffset, 10) : 0;
+    }
+    return 0;
+  });
+
 
   const {
-    data: etablissements,
+    data,
     isLoading,
     isError,
     isSuccess,
   } = useQuery({
     queryKey: ['etablissementIdAndName', offset],
     queryFn: () => getAllEtablissementsOnlyNameAndId(Limit, offset),
+    
   });
+  const etablissements=data?.items
+  // Sauvegarder l'offset dans localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('etablissementOffset', offset.toString());
+    }
+  }, [offset]);
 
+  // Sauvegarder la position de défilement
+  useEffect(() => {
+    const saveScrollPosition = () => {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('etablissementScrollPosition', window.scrollY.toString());
+      }
+    };
+
+    window.addEventListener('scroll', saveScrollPosition);
+    return () => window.removeEventListener('scroll', saveScrollPosition);
+  }, []);
+
+  // Restaurer la position de défilement après le chargement
+  useEffect(() => {
+    if (typeof window !== 'undefined' && isSuccess) {
+      const savedPosition = localStorage.getItem('etablissementScrollPosition');
+      if (savedPosition) {
+        setTimeout(() => {
+          window.scrollTo(0, parseInt(savedPosition, 10));
+        }, 100);
+      }
+    }
+  }, [isSuccess]);
+
+const total = data?.totalCount || 0;
+const isLastPage = offset + Limit >= total;
   const handlePrevious = () => {
     setOffset((prev) => Math.max(prev - Limit, 0));
   };
 
   const handleNext = () => {
-    setOffset((prev) => prev + Limit);
+    if (!isLastPage) {
+      setOffset((prev) => prev + Limit);
+    }
   };
+
+
+  if (isLoading) return <Loading/>;
+  if (isError) return <div>Erreur lors du chargement</div>;
 
   // Skeleton loader
   if (isLoading) {
@@ -77,7 +126,6 @@ export default function ChambreByEtab() {
   }
 
   const hasPrevious = offset > 0;
-  const hasNext = etablissements.length === Limit;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -148,10 +196,10 @@ export default function ChambreByEtab() {
 
           <button
             onClick={handleNext}
-            disabled={!hasNext}
+            disabled={isLastPage}
             className={clsx(
               "inline-flex items-center px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-              hasNext 
+              !isLastPage 
                 ? "bg-gray-900 text-white hover:bg-gray-800" 
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             )}
@@ -164,18 +212,7 @@ export default function ChambreByEtab() {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+     
     </div>
   );
 }

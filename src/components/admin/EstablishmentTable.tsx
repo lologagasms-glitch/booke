@@ -15,11 +15,10 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { getAllEtablissementsAction, deleteEtablissementAction } from '@/app/lib/services/actions/etablissements';
 import { Etablissement } from '@/types';
-import { getAllEtablissements } from '@/app/lib/services/etablissement.service';
-import { Params } from 'next/dist/server/request/params';
+import { deleteEtablissement, getAllEtablissements } from '@/app/lib/services/etablissement.service';
 import { useParams } from 'next/navigation';
+import { usePopup } from '../popup';
 
 /* -------------------------------------------------- */
 /*  Types                                             */
@@ -35,13 +34,7 @@ function StarStepProgress({
   value: number;
   onChange: (stars: number) => void;
 }) {
-  const handleBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const width = rect.width;
-    const clickedValue = Math.ceil((x / width) * 5);
-    onChange(Math.max(1, Math.min(5, clickedValue)));
-  };
+  
 
   const handleStepClick = (starValue: number) => {
     onChange(starValue);
@@ -125,7 +118,7 @@ export default function EstablishmentTable() {
   const [offset, setOffset] = useState<number>(0);
 
   /* ---- React-Query ---- */
-  const { data: etablissements = [], isLoading } = useQuery({
+  const { data: etablissements = [], isPending } = useQuery({
     queryKey: ['etablissements', limit, offset],
     queryFn: async () => {
       const res = await getAllEtablissements(limit, offset);
@@ -133,10 +126,25 @@ export default function EstablishmentTable() {
       return res ?? [];
     },
   });
-
+const {show,PopupComponent}=usePopup()
   const deleteMutation = useMutation({
-    mutationFn: deleteEtablissementAction,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['etablissements'] }),
+    mutationFn: deleteEtablissement,
+    onSuccess: ()=>{
+      show({
+        type:"success",
+        message:"l'établissement est supprimé !",
+        duration:5000,
+        title:"success"
+      })
+    },
+    onError:()=>{
+      show({
+        type:"error",
+        message:"erreur inconue!",
+        duration:5000,
+        title:"erreur"
+      })
+    }
   });
   /* ---- Filtres ---- */
   const [search, setSearch] = useState('');
@@ -155,7 +163,7 @@ export default function EstablishmentTable() {
   /* ---- UI helpers ---- */
   const typeOptions = [...new Set((Array.isArray(etablissements) ? etablissements : etablissements).map((e) => e.etablissements.type))];
 
-  if (isLoading)
+  if (isPending)
     return (
       <div className="min-h-screen bg-sand-50 flex items-center justify-center">
         <p className="text-gray-600">Chargement…</p>
@@ -163,7 +171,7 @@ export default function EstablishmentTable() {
     );
 
   return (
-    <div className="min-h-screen bg-sand-50">
+    <div className="min-h-screen bg-sand-50 mb-4 ">
       {/* En-tête */}
       <header className="bg-white/80 backdrop-blur sticky top-0 z-10 border-b border-sand-200">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -219,7 +227,15 @@ export default function EstablishmentTable() {
               key={e.etablissements.id}
               etablissement={{ ...e.etablissements, etoiles: e.etablissements.etoiles ?? 0 ,firstImage:e.firstImageUrl}}
               onDelete={() => {
-                if (confirm(`Supprimer « ${e.etablissements.nom} » ?`)) deleteMutation.mutate({ id: e.etablissements.id });
+               show({
+                  type:"warning",
+                  message:"cette action supprimmerà définitivements l'établissement et ces chambres!",
+                  onAction:async()=>{
+                   await  deleteMutation.mutate(e.etablissements.id)
+                  },
+                  title:"suppresion!",
+
+                });
               }}
             />
           ))}
@@ -232,31 +248,33 @@ export default function EstablishmentTable() {
         )}
 
         {/* Pagination */}
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <button
-            onClick={() => setOffset((o) => Math.max(o - limit, 0))}
-            disabled={offset === 0}
-            className={clsx(
-              'inline-flex items-center gap-2 px-4 py-2 rounded-full border border-sand-300 bg-white text-gray-700 hover:bg-sand-50 transition',
-              offset === 0 && 'opacity-50 cursor-not-allowed'
-            )}
-          >
-            <ChevronLeftIcon className="w-5 h-5" />
-            Précédent
-          </button>
-          <button
-            onClick={() => setOffset((o) => o + limit)}
-            disabled={filtered.length < limit}
-            className={clsx(
-              'inline-flex items-center gap-2 px-4 py-2 rounded-full border border-sand-300 bg-white text-gray-700 hover:bg-sand-50 transition',
-              filtered.length < limit && 'opacity-50 cursor-not-allowed'
-            )}
-          >
-            Suivant
-            <ChevronRightIcon className="w-5 h-5" />
-          </button>
-        </div>
+      <div className="mt-8 flex items-center justify-center gap-4">
+  <button
+    onClick={() => setOffset((o) => Math.max(o - limit, 0))}
+    disabled={offset === 0}
+    className={clsx(
+      'inline-flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-indigo-500 bg-indigo-600 font-semibold text-white shadow-lg transition-all duration-300 hover:border-indigo-600 hover:bg-indigo-700 hover:shadow-xl hover:scale-105 active:scale-95',
+      offset === 0 && 'disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none disabled:hover:scale-100'
+    )}
+  >
+    <ChevronLeftIcon className="w-5 h-5" />
+    Précédent
+  </button>
+  
+  <button
+    onClick={() => setOffset((o) => o + limit)}
+    disabled={filtered.length < limit}
+    className={clsx(
+      'inline-flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-indigo-500 bg-indigo-600 font-semibold text-white shadow-lg transition-all duration-300 hover:border-indigo-600 hover:bg-indigo-700 hover:shadow-xl hover:scale-105 active:scale-95',
+      filtered.length < limit && 'disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none disabled:hover:scale-100'
+    )}
+  >
+    Suivant
+    <ChevronRightIcon className="w-5 h-5" />
+  </button>
+</div>
       </main>
+      {PopupComponent}
     </div>
   );
 }

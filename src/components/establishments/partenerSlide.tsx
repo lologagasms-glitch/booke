@@ -123,7 +123,7 @@ export default function PartnersSlider({
                   <Link href={partner.website} target="_blank" rel="noopener noreferrer" className="relative w-24 h-24 sm:w-28 sm:h-28 mb-5 block">
                     {partner.logo ? (
                       <Image
-                        src={partner.logo}
+                        src={encodeURI(partner.logo)}
                         alt={`${partner.name} logo`}
                         fill
                         className="object-contain transition-transform duration-300 group-hover:scale-110"

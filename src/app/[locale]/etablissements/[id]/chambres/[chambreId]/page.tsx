@@ -157,7 +157,7 @@ const [modalMedia, setModalMedia] = useState<Media | null>(null);
           {/* Image principale */}
           <div className="relative h-96 w-full rounded-2xl overflow-hidden shadow-lg">
             <Image
-              src={mediaImage?.url || '/file.svg'}
+              src={encodeURI(mediaImage?.url || '/file.svg')}
               alt={chambre.nom}
               fill
               className="object-cover"

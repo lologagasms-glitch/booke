@@ -27,7 +27,7 @@ const EstablishmentCard = ({ establishment, firstImageUrl }: EstablishmentCardPr
           aria-label={establishment.nom}
         >
           <Image
-            src={firstImageUrl || '/file.svg'}
+            src={encodeURI(firstImageUrl || '/file.svg')}
             alt={establishment.nom}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"

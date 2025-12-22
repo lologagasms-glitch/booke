@@ -11,6 +11,7 @@ import {
   SparklesIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline';
+import { ImageWithFallback } from '../images';
 
 type ChambreWithMedia = {
   id: string;
@@ -57,10 +58,17 @@ const RoomList: FC<{ rooms: ChambreWithMedia[] }> = ({ rooms }) => {
           >
             {/* Image Section */}
             <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
-              <img
-                src={coverImage || '/placeholder-room.jpg'}
-                alt={room.nom || undefined}
+              <ImageWithFallback
+                width={400}
+                height={400}src={encodeURI(coverImage || '/placeholder-room.jpg')}
+                alt={coverImage ||""}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                timeout={8000} // 8 second timeout
+                fallbackSrc="/placeholder-image.jpg"
+                retryAttempts={2}
+              />
+              <img
+                
               />
               <div className="absolute inset-0 bg-gradient-to-t from-theme-main/60 via-transparent to-transparent opacity-60" />
 
@@ -120,7 +128,7 @@ const RoomList: FC<{ rooms: ChambreWithMedia[] }> = ({ rooms }) => {
                   <TransletText>Réserver maintenant</TransletText>
                 </Link>
                 <Link
-                  href={`/${locale}/reservation/${room.id}`}
+                  href={encodeURI(`/${locale}/reservation/${room.id}`)}
                   // Bouton secondaire avec fond thème
                   className="px-3 py-2.5 bg-theme-base/10 text-theme-main rounded-lg hover:bg-theme-base/20 transition-colors border border-theme-base/20 group/btn"
                 >

@@ -625,7 +625,7 @@ export default function Navbar() {
                           <UserCircleIcon className="h-4 w-4" /> <TransletText>{"Profile"}</TransletText>
                         </LocalizedLink>
                         <LocalizedLink href="/reservations" className="flex items-center gap-3 px-4 py-2 hover:bg-foreground/5 rounded-lg transition cursor-pointer">
-                          <ClipboardDocumentListIcon className="h-4 w-4" /> <TransletText>{"réservervations"}</TransletText>
+                          <ClipboardDocumentListIcon className="h-4 w-4" /> <TransletText>{"réservations"}</TransletText>
                         </LocalizedLink>
                         {session.user.role === "admin" && (
                           <LocalizedLink href="/admin" className="flex items-center gap-3 px-4 py-2 text-destructive hover:bg-destructive/10 rounded-lg transition cursor-pointer">

@@ -4,7 +4,7 @@ import { getAllEtablissementsOnlyNameAndId } from '@/app/lib/services/etablissem
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://bookeing.com';
 
-    const etablissements = await getAllEtablissementsOnlyNameAndId();
+    const {items:etablissements} = await getAllEtablissementsOnlyNameAndId();
 
     const etablissementUrls = etablissements.map((etab) => ({
         url: `${baseUrl}/etablissements/${etab.id}`,
